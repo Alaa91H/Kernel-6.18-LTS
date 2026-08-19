@@ -1,0 +1,15 @@
+cape-pmic-overlay.dtsi
+marble-pinctrl.dtsi
+marble-sm7475-pm8008-overlay.dts
+marble-sm7475.dtsi
+pm8350.dtsi
+pm8350b.dtsi
+pm8350c.dtsi
+pm8450.dtsi
+pmk8350.dtsi
+pmr735a.dtsi
+pmr735b.dtsi
+waipio-pm8008.dtsi
+waipio-thermal-overlay.dtsi
+xiaomi-sm7475-common.dtsi
+xiaomi-sm8475-common.dtsi

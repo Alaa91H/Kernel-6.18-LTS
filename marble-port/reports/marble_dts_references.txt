@@ -1,0 +1,4 @@
+qcom/marble-pinctrl.dtsi
+qcom/marble-sm7475-pm8008-overlay.dts
+qcom/marble-sm7475.dtsi
+qcom/xiaomi-sm7475-common.dtsi

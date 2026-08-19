@@ -1,0 +1,14 @@
+external	dt-bindings/gpio/gpio.h
+external	dt-bindings/iio/qcom,spmi-adc7-pm8350.h
+external	dt-bindings/iio/qcom,spmi-adc7-pm8350b.h
+external	dt-bindings/iio/qcom,spmi-adc7-pmk8350.h
+external	dt-bindings/iio/qcom,spmi-adc7-pmr735a.h
+external	dt-bindings/iio/qcom,spmi-adc7-pmr735b.h
+external	dt-bindings/iio/qcom,spmi-adc7-smb139x.h
+external	dt-bindings/input/input.h
+external	dt-bindings/input/qcom,hv-haptics.h
+external	dt-bindings/input/qcom,qpnp-power-on.h
+external	dt-bindings/interrupt-controller/irq.h
+external	dt-bindings/pinctrl/qcom,pmic-gpio.h
+external	dt-bindings/spmi/spmi.h
+external	dt-bindings/thermal/thermal_qti.h

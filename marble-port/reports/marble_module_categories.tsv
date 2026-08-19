@@ -1,0 +1,8 @@
+clocks-and-pinctrl	10
+diagnostics-and-vendor-hooks	10
+interconnect-memory-and-iommu	14
+ipc-virtualization-and-firmware	14
+other-vendor-modules	15
+peripherals-and-connectivity	14
+power-and-scheduling	24
+storage-and-crypto	10

@@ -36,7 +36,7 @@
 | BOOT-001 | UFS وUSB وserial وreboot reason | `blocked` | DT-002، DT-003، MOD-001. | سجل إقلاع واسترداد فعلي. |
 | PWR-001 | PMIC وregulator وRPMh وthermal | `blocked` | DT-002، DT-005، KC-002. | تعليق/استئناف وشحن بلا kernel panic. |
 | NET-001 | Wi-Fi/BT/CNSS وQRTR/modem | `blocked` | BOOT-001، وحدات vendor، firmware. | اختبار اتصال وسجل modem. |
-| UI-001 | display وtouch وGPU | `blocked` | PWR-001، DT-004، تعريفات العرض/Adreno. | شاشة ورسوميات تعملان على الجهاز. |
-| MEDIA-001 | audio وDSP والكاميرا | `blocked` | NET-001 وUI-001 وتعريفات vendor. | اختبار صوت وكاميرا متكرر. |
+| UI-001 | display وtouch وGPU | `researched` | PWR-001، DT-004، تعريفات العرض/Adreno. | فجوات ACK موثقة في `MEDIA_VENDOR_GAPS.md`؛ لا تزال شاشة ورسوميات الجهاز غير متحققة. |
+| MEDIA-001 | audio وDSP والكاميرا | `researched` | NET-001 وUI-001 وتعريفات vendor. | فجوات ACK وغياب المصدر الكامل موثقة؛ لا يزال الاختبار الوظيفي محجوباً. |
 
 > عناصر `blocked` ليست مهملة: تعني أن ترتيب الاعتماد يمنع إنتاج رقعة مضللة قبل أن يصبح أساس المنصة قابلاً للبناء والتحقق.

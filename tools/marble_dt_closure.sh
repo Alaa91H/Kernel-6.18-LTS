@@ -42,6 +42,8 @@ walk() {
   done < <(sed -nE 's/^[[:space:]]*#include[[:space:]]+([^[:space:]]+).*/\1/p' "$source")
 }
 
+# يربط Makefile الرسمي للـDevice Tree هذا الـoverlay بقاعدة ukee.dtb.
+walk "ukee.dts"
 walk "marble-sm7475.dtsi"
 walk "marble-sm7475-pm8008-overlay.dts"
 sort -u -o "$OUT" "$OUT"

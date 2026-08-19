@@ -1,3 +1,11 @@
+external	dt-bindings/arm/msm/qcom_dma_heap_dt_constants.h
+external	dt-bindings/clock/qcom,aop-qmp.h
+external	dt-bindings/clock/qcom,camcc-waipio.h
+external	dt-bindings/clock/qcom,dispcc-waipio.h
+external	dt-bindings/clock/qcom,gcc-waipio.h
+external	dt-bindings/clock/qcom,gpucc-waipio.h
+external	dt-bindings/clock/qcom,rpmh.h
+external	dt-bindings/clock/qcom,videocc-waipio.h
 external	dt-bindings/gpio/gpio.h
 external	dt-bindings/iio/qcom,spmi-adc7-pm8350.h
 external	dt-bindings/iio/qcom,spmi-adc7-pm8350b.h
@@ -8,7 +16,15 @@ external	dt-bindings/iio/qcom,spmi-adc7-smb139x.h
 external	dt-bindings/input/input.h
 external	dt-bindings/input/qcom,hv-haptics.h
 external	dt-bindings/input/qcom,qpnp-power-on.h
+external	dt-bindings/interconnect/qcom,icc.h
+external	dt-bindings/interconnect/qcom,waipio.h
+external	dt-bindings/interrupt-controller/arm-gic.h
 external	dt-bindings/interrupt-controller/irq.h
+external	dt-bindings/phy/qcom,usb3-4nm-qmp-combo.h
 external	dt-bindings/pinctrl/qcom,pmic-gpio.h
+external	dt-bindings/regulator/qcom,rpmh-regulator-levels.h
+external	dt-bindings/soc/qcom,dcc_v2.h
+external	dt-bindings/soc/qcom,ipcc.h
+external	dt-bindings/soc/qcom,rpmh-rsc.h
 external	dt-bindings/spmi/spmi.h
 external	dt-bindings/thermal/thermal_qti.h

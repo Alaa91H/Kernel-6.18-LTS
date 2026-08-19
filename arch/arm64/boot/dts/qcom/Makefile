@@ -1,6 +1,10 @@
 # SPDX-License-Identifier: GPL-2.0
 dtb-$(CONFIG_ARCH_QCOM)	+= apq8016-sbc.dtb
 
+# Qualcomm SM7475 / POCO F5 (marble) bring-up targets.
+dtb-$(CONFIG_ARCH_QCOM)	+= ukee.dtb
+marble-sm7475-pm8008-overlay-dtbs := ukee.dtb marble-sm7475-pm8008-overlay.dtbo
+
 apq8016-sbc-d3-camera-mezzanine-dtbs	:= apq8016-sbc.dtb apq8016-sbc-d3-camera-mezzanine.dtbo
 apq8016-sbc-usb-host-dtbs		:= apq8016-sbc.dtb apq8016-sbc-usb-host.dtbo
 

@@ -15,10 +15,10 @@
 | المعرّف | المهمة الذرية | الحالة | الاعتمادات | معيار القبول |
 |---|---|---|---|---|
 | DT-001 | تكييف 15 binding مفقوداً في ACK أو تحديد بدائل upstream لها. | `static-validated` | headers منقولة من Xiaomi وسجل `marble_dt_bindings_imported.tsv`. | 30 تضميناً خارجياً موجودة نصياً؛ تحقق providers يؤجل إلى DT-002/DT-003. |
-| DT-002 | نقل قاعدة `ukee.dtb` و`ukee.dtsi` وطبقة SoC cape/SM7475. | `in-progress` | DT-001 وطبقة Qualcomm L1. | DTB أساسي يترجم بلا labels أو phandles مكسورة. |
-| DT-003 | نقل reserved-memory وIOMMU وinterconnect وclocks للمنصة. | `blocked` | DT-002. | تحقق `dtbs_check` الخاص بالرقع ووجود العقد المرجعية. |
-| DT-004 | نقل `marble-sm7475.dtsi` و`marble-pinctrl.dtsi`. | `blocked` | DT-002 وDT-003. | دمج اللوحة يترجم فوق قاعدة ukee. |
-| DT-005 | نقل overlay `marble-sm7475-pm8008-overlay.dts`. | `blocked` | DT-004 وPMIC/regulator. | DTBO يترجم ويُعلن توافقه مع `ukee.dtb`. |
+| DT-002 | نقل قاعدة `ukee.dtb` و`ukee.dtsi` وطبقة SoC cape/SM7475. | `static-validated` | DT-001 وطبقة Qualcomm L1. | يبني `ukee.dtb` ويدعم تطبيق overlay ثابتاً؛ تحذيرات DTC موثقة. |
+| DT-003 | نقل reserved-memory وIOMMU وinterconnect وclocks للمنصة. | `in-progress` | DT-002. | تحقق `dtbs_check` الخاص بالرقع ووجود العقد المرجعية. |
+| DT-004 | نقل `marble-sm7475.dtsi` و`marble-pinctrl.dtsi`. | `static-validated` | DT-002 وDT-003. | يندمج اللوح ثابتاً فوق قاعدة ukee؛ ما زال تحقق العتاد مطلوباً. |
+| DT-005 | نقل overlay `marble-sm7475-pm8008-overlay.dtso`. | `static-validated` | DT-004 وPMIC/regulator. | يبني DTBO ويطبّق عبر `fdtoverlay` على `ukee.dtb`؛ تحذيرات DTC موثقة. |
 
 ## إعدادات النواة والوحدات
 

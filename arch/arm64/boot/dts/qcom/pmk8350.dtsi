@@ -1,174 +1,260 @@
-// SPDX-License-Identifier: BSD-3-Clause
-/*
- * Copyright (c) 2021, Linaro Limited
- */
-
 #include <dt-bindings/input/input.h>
-#include <dt-bindings/input/linux-event-codes.h>
+#include <dt-bindings/input/qcom,qpnp-power-on.h>
 #include <dt-bindings/interrupt-controller/irq.h>
 #include <dt-bindings/spmi/spmi.h>
-
-/* (Sadly) this PMIC can be configured to be at different SIDs */
-#ifndef PMK8350_SID
-	#define PMK8350_SID 0
-#endif
-
-/ {
-	reboot-mode {
-		compatible = "nvmem-reboot-mode";
-		nvmem-cells = <&reboot_reason>;
-		nvmem-cell-names = "reboot-mode";
-		mode-recovery = <0x01>;
-		mode-bootloader = <0x02>;
-	};
-};
+#include <dt-bindings/iio/qcom,spmi-adc7-pm8350b.h>
+#include <dt-bindings/iio/qcom,spmi-adc7-pm8350.h>
+#include <dt-bindings/iio/qcom,spmi-adc7-pmk8350.h>
+#include <dt-bindings/iio/qcom,spmi-adc7-pmr735a.h>
+#include <dt-bindings/iio/qcom,spmi-adc7-pmr735b.h>
+#include "marble-adc7-compat.h"
 
 &spmi_bus {
-	pmk8350: pmic@PMK8350_SID {
-		compatible = "qcom,pmk8350", "qcom,spmi-pmic";
-		reg = <PMK8350_SID SPMI_USID>;
+	#address-cells = <2>;
+	#size-cells = <0>;
+	interrupt-controller;
+	#interrupt-cells = <4>;
+
+	pmk8350: qcom,pmk8350@0 {
+		compatible = "qcom,spmi-pmic";
+		reg = <0 SPMI_USID>;
 		#address-cells = <1>;
 		#size-cells = <0>;
 
-		pmk8350_pon: pon@1300 {
-			compatible = "qcom,pmk8350-pon";
-			reg = <0x1300>, <0x800>;
-			reg-names = "hlos", "pbs";
+		pon_pbs@800 {
+			compatible = "qcom,qpnp-power-on";
+			reg = <0x800>;
+			qcom,system-reset;
+			qcom,store-hard-reset-reason;
+		};
 
-			pon_pwrkey: pwrkey {
-				compatible = "qcom,pmk8350-pwrkey";
-				interrupts = <PMK8350_SID 0x13 0x7 IRQ_TYPE_EDGE_BOTH>;
+		pmk8350_pon: pon_hlos@1300 {
+			compatible = "qcom,qpnp-power-on";
+			reg = <0x1300>;
+			interrupts = <0x0 0x13 0x7 IRQ_TYPE_EDGE_BOTH>,
+				     <0x0 0x13 0x6 IRQ_TYPE_EDGE_BOTH>;
+			interrupt-names = "kpdpwr", "resin";
+
+			qcom,pon_1 {
+				qcom,pon-type = <PON_POWER_ON_TYPE_KPDPWR>;
 				linux,code = <KEY_POWER>;
-				status = "disabled";
 			};
 
-			pon_resin: resin {
-				compatible = "qcom,pmk8350-resin";
-				interrupts = <PMK8350_SID 0x13 0x6 IRQ_TYPE_EDGE_BOTH>;
-				status = "disabled";
+			qcom,pon_2 {
+				qcom,pon-type = <PON_POWER_ON_TYPE_RESIN>;
+				linux,code = <KEY_VOLUMEDOWN>;
 			};
 		};
 
-		pmk8350_vadc: adc@3100 {
+		pmk8350_vadc: vadc@3100 {
 			compatible = "qcom,spmi-adc7";
 			reg = <0x3100>;
 			#address-cells = <1>;
 			#size-cells = <0>;
-			interrupts = <PMK8350_SID 0x31 0x0 IRQ_TYPE_EDGE_RISING>;
+			interrupts = <0x0 0x31 0x0 IRQ_TYPE_EDGE_RISING>;
+			interrupt-names = "eoc-int-en-set";
 			#io-channel-cells = <1>;
+			io-channel-ranges;
+
+			/* PMK8350 Channel nodes */
+			pmk8350_ref_gnd {
+				reg = <PMK8350_ADC7_REF_GND>;
+				label = "pmk8350_ref_gnd";
+				qcom,pre-scaling = <1 1>;
+			};
+
+			pmk8350_vref_1p25 {
+				reg = <PMK8350_ADC7_1P25VREF>;
+				label = "pmk8350_vref_1p25";
+				qcom,pre-scaling = <1 1>;
+			};
+
+			pmk8350_die_temp {
+				reg = <PMK8350_ADC7_DIE_TEMP>;
+				label = "pmk8350_die_temp";
+				qcom,pre-scaling = <1 1>;
+			};
+
+			/* PM8350 Channel nodes */
+			pm8350_ref_gnd {
+				reg = <PM8350_ADC7_REF_GND>;
+				label = "pm8350_ref_gnd";
+				qcom,pre-scaling = <1 1>;
+			};
+
+			pm8350_vref_1p25 {
+				reg = <PM8350_ADC7_1P25VREF>;
+				label = "pm8350_vref_1p25";
+				qcom,pre-scaling = <1 1>;
+			};
+
+			pm8350_die_temp {
+				reg = <PM8350_ADC7_DIE_TEMP>;
+				label = "pm8350_die_temp";
+				qcom,pre-scaling = <1 1>;
+			};
+
+			pm8350_vph_pwr {
+				reg = <PM8350_ADC7_VPH_PWR>;
+				label = "pm8350_vph_pwr";
+				qcom,pre-scaling = <1 3>;
+			};
+
+			/* PM8350b Channel nodes */
+			pm8350b_ref_gnd {
+				reg = <PM8350B_ADC7_REF_GND>;
+				label = "pm8350b_ref_gnd";
+				qcom,pre-scaling = <1 1>;
+			};
+
+			pm8350b_vref_1p25 {
+				reg = <PM8350B_ADC7_1P25VREF>;
+				label = "pm8350b_vref_1p25";
+				qcom,pre-scaling = <1 1>;
+			};
+
+			pm8350b_die_temp {
+				reg = <PM8350B_ADC7_DIE_TEMP>;
+				label = "pm8350b_die_temp";
+				qcom,pre-scaling = <1 1>;
+			};
+
+			pm8350b_vph_pwr {
+				reg = <PM8350B_ADC7_VPH_PWR>;
+				label = "pm8350b_vph_pwr";
+				qcom,pre-scaling = <1 3>;
+			};
+
+			pm8350b_vbat_sns {
+				reg = <PM8350B_ADC7_VBAT_SNS>;
+				label = "pm8350b_vbat_sns";
+				qcom,pre-scaling = <1 3>;
+			};
+
+			/* PMR735a Channel nodes */
+			pmr735a_ref_gnd {
+				reg = <PMR735A_ADC7_REF_GND>;
+				label = "pmr735a_ref_gnd";
+				qcom,pre-scaling = <1 1>;
+			};
+
+			pmr735a_vref_1p25 {
+				reg = <PMR735A_ADC7_1P25VREF>;
+				label = "pmr735a_vref_1p25";
+				qcom,pre-scaling = <1 1>;
+			};
+
+			pmr735a_die_temp {
+				reg = <PMR735A_ADC7_DIE_TEMP>;
+				label = "pmr735a_die_temp";
+				qcom,pre-scaling = <1 1>;
+			};
+
+			/* PMR735b Channel nodes */
+			pmr735b_ref_gnd {
+				reg = <PMR735B_ADC7_REF_GND>;
+				label = "pmr735b_ref_gnd";
+				qcom,pre-scaling = <1 1>;
+			};
+
+			pmr735b_vref_1p25 {
+				reg = <PMR735B_ADC7_1P25VREF>;
+				label = "pmr735b_vref_1p25";
+				qcom,pre-scaling = <1 1>;
+			};
+
+			pmr735b_die_temp {
+				reg = <PMR735B_ADC7_DIE_TEMP>;
+				label = "pmr735b_die_temp";
+				qcom,pre-scaling = <1 1>;
+			};
 		};
 
-		pmk8350_adc_tm: adc-tm@3400 {
-			compatible = "qcom,spmi-adc-tm5-gen2";
+		pmk8350_adc_tm: adc_tm@3400 {
+			compatible = "qcom,adc-tm7";
 			reg = <0x3400>;
-			interrupts = <PMK8350_SID 0x34 0x0 IRQ_TYPE_EDGE_RISING>;
+			interrupts = <0x0 0x34 0x0 IRQ_TYPE_EDGE_RISING>;
+			interrupt-names = "threshold";
 			#address-cells = <1>;
 			#size-cells = <0>;
 			#thermal-sensor-cells = <1>;
-			status = "disabled";
+		};
+
+		pmk8350_sdam_1: sdam@7000 {
+			compatible = "qcom,spmi-sdam";
+			reg = <0x7000>;
+			#address-cells = <1>;
+			#size-cells = <1>;
+		};
+
+		pmk8350_sdam_2: sdam@7100 {
+			compatible = "qcom,spmi-sdam";
+			reg = <0x7100>;
+			#address-cells = <1>;
+			#size-cells = <1>;
+
+			restart_reason: restart@48 {
+				reg = <0x48 0x1>;
+				bits = <1 7>;
+			};
+		};
+
+		pmk8350_sdam_5: sdam@7400 {
+			compatible = "qcom,spmi-sdam";
+			reg = <0x7400>;
+		};
+
+		pmk8350_sdam_13: sdam@7c00 {
+			compatible = "qcom,spmi-sdam";
+			reg = <0x7c00>;
+		};
+
+		pmk8350_sdam_14: sdam@7d00 {
+			compatible = "qcom,spmi-sdam";
+			reg = <0x7d00>;
+		};
+
+		pmk8350_sdam_21: sdam@8400 {
+			compatible = "qcom,spmi-sdam";
+			reg = <0x8400>;
+		};
+
+		pmk8350_sdam_22: sdam@8500 {
+			compatible = "qcom,spmi-sdam";
+			reg = <0x8500>;
+		};
+
+		pmk8350_sdam_23: sdam@8600 {
+			compatible = "qcom,spmi-sdam";
+			reg = <0x8600>;
+			#address-cells = <1>;
+			#size-cells = <1>;
+		};
+
+		pmk8350_sdam_41: sdam@9800 {
+			compatible = "qcom,spmi-sdam";
+			reg = <0x9800>;
+		};
+
+		pmk8350_sdam_46: sdam@9d00 {
+			compatible = "qcom,spmi-sdam";
+			reg = <0x9d00>;
+		};
+
+		pmk8350_gpios: pinctrl@b000 {
+			compatible = "qcom,pmk8350-gpio";
+			reg = <0xb000>;
+			gpio-controller;
+			#gpio-cells = <2>;
+			interrupt-controller;
+			#interrupt-cells = <2>;
 		};
 
 		pmk8350_rtc: rtc@6100 {
 			compatible = "qcom,pmk8350-rtc";
 			reg = <0x6100>, <0x6200>;
 			reg-names = "rtc", "alarm";
-			interrupts = <PMK8350_SID 0x62 0x1 IRQ_TYPE_EDGE_RISING>;
-			status = "disabled";
-		};
-
-		pmk8350_sdam_1: nvram@7000 {
-			compatible = "qcom,spmi-sdam";
-			reg = <0x7000>;
-			#address-cells = <1>;
-			#size-cells = <1>;
-			ranges = <0 0x7000 0x100>;
-		};
-
-		pmk8350_sdam_2: nvram@7100 {
-			compatible = "qcom,spmi-sdam";
-			reg = <0x7100>;
-			#address-cells = <1>;
-			#size-cells = <1>;
-			ranges = <0 0x7100 0x100>;
-
-			reboot_reason: reboot-reason@48 {
-				reg = <0x48 0x1>;
-				bits = <1 7>;
-			};
-		};
-
-		pmk8350_sdam_5: nvram@7400 {
-			compatible = "qcom,spmi-sdam";
-			reg = <0x7400>;
-			#address-cells = <1>;
-			#size-cells = <1>;
-			ranges = <0 0x7400 0x100>;
-		};
-
-		pmk8350_sdam_13: nvram@7c00 {
-			compatible = "qcom,spmi-sdam";
-			reg = <0x7c00>;
-			#address-cells = <1>;
-			#size-cells = <1>;
-			ranges = <0 0x7c00 0x100>;
-		};
-
-		pmk8350_sdam_14: nvram@7d00 {
-			compatible = "qcom,spmi-sdam";
-			reg = <0x7d00>;
-			#address-cells = <1>;
-			#size-cells = <1>;
-			ranges = <0 0x7d00 0x100>;
-		};
-
-		pmk8350_sdam_21: nvram@8400 {
-			compatible = "qcom,spmi-sdam";
-			reg = <0x8400>;
-			#address-cells = <1>;
-			#size-cells = <1>;
-			ranges = <0 0x8400 0x100>;
-		};
-
-		pmk8350_sdam_22: nvram@8500 {
-			compatible = "qcom,spmi-sdam";
-			reg = <0x8500>;
-			#address-cells = <1>;
-			#size-cells = <1>;
-			ranges = <0 0x8500 0x100>;
-		};
-
-		pmk8350_sdam_23: nvram@8600 {
-			compatible = "qcom,spmi-sdam";
-			reg = <0x8600>;
-			#address-cells = <1>;
-			#size-cells = <1>;
-			ranges = <0 0x8600 0x100>;
-		};
-
-		pmk8350_sdam_41: nvram@9800 {
-			compatible = "qcom,spmi-sdam";
-			reg = <0x9800>;
-			#address-cells = <1>;
-			#size-cells = <1>;
-			ranges = <0 0x9800 0x100>;
-		};
-
-		pmk8350_sdam_46: nvram@9d00 {
-			compatible = "qcom,spmi-sdam";
-			reg = <0x9d00>;
-			#address-cells = <1>;
-			#size-cells = <1>;
-			ranges = <0 0x9d00 0x100>;
-		};
-
-		pmk8350_gpios: gpio@b000 {
-			compatible = "qcom,pmk8350-gpio", "qcom,spmi-gpio";
-			reg = <0xb000>;
-			gpio-controller;
-			gpio-ranges = <&pmk8350_gpios 0 0 4>;
-			#gpio-cells = <2>;
-			interrupt-controller;
-			#interrupt-cells = <2>;
+			interrupts = <0x0 0x62 0x1 IRQ_TYPE_EDGE_RISING>;
 		};
 	};
 };

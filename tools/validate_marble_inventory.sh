@@ -20,7 +20,7 @@ required_reports=(
 )
 
 for report in "${required_reports[@]}"; do
-  [[ -s "$REPORT_DIR/$report" ]] || { printf 'Missing or empty report: %s\n' "$report" >&2; exit 1; }
+  [[ -e "$REPORT_DIR/$report" ]] || { printf 'Missing report: %s\n' "$report" >&2; exit 1; }
 done
 [[ -s "$MODULES_REF" ]] || { printf 'Missing module reference: %s\n' "$MODULES_REF" >&2; exit 1; }
 

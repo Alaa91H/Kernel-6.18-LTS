@@ -8,6 +8,12 @@ LOG="$OUT/marble-dt-build.log"
 BASE_ROUNDTRIP_LOG="$OUT/ukee-dtb-roundtrip.log"
 OVERLAY_ROUNDTRIP_LOG="$OUT/marble-dtbo-roundtrip.log"
 MERGED_ROUNDTRIP_LOG="$OUT/marble-merged-dtb-roundtrip.log"
+# Default budgets are the reviewed baseline, not a waiver. Set all values to
+# zero only after the corresponding source/binding fixes are proven.
+MAX_BUILD_WARNINGS="${MARBLE_DTC_MAX_BUILD_WARNINGS:-129}"
+MAX_BASE_WARNINGS="${MARBLE_DTC_MAX_BASE_WARNINGS:-53}"
+MAX_OVERLAY_WARNINGS="${MARBLE_DTC_MAX_OVERLAY_WARNINGS:-154}"
+MAX_MERGED_WARNINGS="${MARBLE_DTC_MAX_MERGED_WARNINGS:-103}"
 
 "$KERNEL_ROOT/tools/build_marble_dt.sh"
 
@@ -30,5 +36,18 @@ build_warnings=$(grep -c 'Warning (' "$LOG" || true)
 base_roundtrip_warnings=$(grep -c 'Warning (' "$BASE_ROUNDTRIP_LOG" || true)
 overlay_roundtrip_warnings=$(grep -c 'Warning (' "$OVERLAY_ROUNDTRIP_LOG" || true)
 merged_roundtrip_warnings=$(grep -c 'Warning (' "$MERGED_ROUNDTRIP_LOG" || true)
-printf 'Static Device Tree validation passed: artifacts are readable; build=%s base=%s overlay=%s merged=%s warnings.\n' \
-  "$build_warnings" "$base_roundtrip_warnings" "$overlay_roundtrip_warnings" "$merged_roundtrip_warnings"
+for pair in \
+  "build:$build_warnings:$MAX_BUILD_WARNINGS" \
+  "base:$base_roundtrip_warnings:$MAX_BASE_WARNINGS" \
+  "overlay:$overlay_roundtrip_warnings:$MAX_OVERLAY_WARNINGS" \
+  "merged:$merged_roundtrip_warnings:$MAX_MERGED_WARNINGS"; do
+  IFS=: read -r label actual maximum <<<"$pair"
+  [[ "$maximum" =~ ^[0-9]+$ ]] || { printf 'Invalid %s warning budget: %s\n' "$label" "$maximum" >&2; exit 2; }
+  if (( actual > maximum )); then
+    printf 'Device Tree warning budget exceeded: %s=%s > %s\n' "$label" "$actual" "$maximum" >&2
+    exit 1
+  fi
+done
+printf 'Static Device Tree validation passed: artifacts are readable; build=%s/%s base=%s/%s overlay=%s/%s merged=%s/%s warnings.\n' \
+  "$build_warnings" "$MAX_BUILD_WARNINGS" "$base_roundtrip_warnings" "$MAX_BASE_WARNINGS" \
+  "$overlay_roundtrip_warnings" "$MAX_OVERLAY_WARNINGS" "$merged_roundtrip_warnings" "$MAX_MERGED_WARNINGS"

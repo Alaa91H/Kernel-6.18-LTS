@@ -1,0 +1,7 @@
+unique_reference_modules=386
+ack_source_candidate=84
+built_6_18_builtin=8
+built_6_18_module=4
+reference_source_only=235
+unmapped=55
+policy=no binary module reuse; every staged module must be rebuilt against one 6.18 output and KMI baseline

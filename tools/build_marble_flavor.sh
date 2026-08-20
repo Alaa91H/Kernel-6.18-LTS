@@ -6,6 +6,7 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 ARCH=arm64
 JOBS="${JOBS:-$(nproc)}"
+PAHOLE_TOOL="${PAHOLE:-pahole}"
 FLAVOR=aosp
 ROOT_MODE=none
 DIAGNOSTICS=release
@@ -67,6 +68,11 @@ DIAGNOSTIC="$ROOT/arch/arm64/configs/marble_gki_6_18_diagnostic.config"
 for fragment in "$CORE" "$PROTO"; do
   [[ -f "$fragment" ]] || fail "Missing configuration fragment: $fragment"
 done
+if [[ "$PAHOLE_TOOL" == */* ]]; then
+  [[ -x "$PAHOLE_TOOL" ]] || fail "Configured pahole is not executable: $PAHOLE_TOOL"
+else
+  command -v "$PAHOLE_TOOL" >/dev/null || fail "Configured pahole is not in PATH: $PAHOLE_TOOL"
+fi
 if [[ "$DIAGNOSTICS" == diagnostic ]]; then
   [[ -f "$DIAGNOSTIC" ]] || fail "Missing diagnostic fragment: $DIAGNOSTIC"
 fi
@@ -75,17 +81,17 @@ OUT="${OUT_DIR:-$ROOT/out/marble-${FLAVOR}-${DIAGNOSTICS}-${ROOT_MODE}}"
 rm -rf "$OUT"
 mkdir -p "$OUT"
 
-make -C "$ROOT" O="$OUT" ARCH="$ARCH" LLVM=1 LLVM_IAS=1 gki_defconfig
+make -C "$ROOT" O="$OUT" ARCH="$ARCH" LLVM=1 LLVM_IAS=1 PAHOLE="$PAHOLE_TOOL" gki_defconfig
 fragments=("$CORE" "$PROTO")
 if [[ "$DIAGNOSTICS" == diagnostic ]]; then
   fragments+=("$DIAGNOSTIC")
 fi
 "$ROOT/scripts/kconfig/merge_config.sh" -m -O "$OUT" "$OUT/.config" "${fragments[@]}"
-make -C "$ROOT" O="$OUT" ARCH="$ARCH" LLVM=1 LLVM_IAS=1 \
+make -C "$ROOT" O="$OUT" ARCH="$ARCH" LLVM=1 LLVM_IAS=1 PAHOLE="$PAHOLE_TOOL" \
   LOCALVERSION="-marble-${FLAVOR}-${DIAGNOSTICS}" olddefconfig
-make -C "$ROOT" O="$OUT" ARCH="$ARCH" LLVM=1 LLVM_IAS=1 \
+make -C "$ROOT" O="$OUT" ARCH="$ARCH" LLVM=1 LLVM_IAS=1 PAHOLE="$PAHOLE_TOOL" \
   LOCALVERSION="-marble-${FLAVOR}-${DIAGNOSTICS}" -j"$JOBS" Image modules
-make -C "$ROOT" O="$OUT" ARCH="$ARCH" LLVM=1 LLVM_IAS=1 DTC_FLAGS="-@" -j"$JOBS" \
+make -C "$ROOT" O="$OUT" ARCH="$ARCH" LLVM=1 LLVM_IAS=1 PAHOLE="$PAHOLE_TOOL" DTC_FLAGS="-@" -j"$JOBS" \
   qcom/ukee.dtb qcom/marble-sm7475-pm8008-overlay.dtbo
 
 IMAGE="$OUT/arch/arm64/boot/Image"
@@ -98,7 +104,9 @@ IMAGE="$OUT/arch/arm64/boot/Image"
   printf 'root_mode=%s\n' "$ROOT_MODE"
   printf 'diagnostics=%s\n' "$DIAGNOSTICS"
   printf 'package=%s\n' "$PACKAGE"
-  printf 'kernel_release=%s\n' "$(make -s -C "$ROOT" O="$OUT" ARCH="$ARCH" LLVM=1 LLVM_IAS=1 kernelrelease)"
+  printf 'kernel_release=%s\n' "$(make -s -C "$ROOT" O="$OUT" ARCH="$ARCH" LLVM=1 LLVM_IAS=1 PAHOLE="$PAHOLE_TOOL" kernelrelease)"
+  printf 'pahole=%s\n' "$PAHOLE_TOOL"
+  printf 'pahole_version=%s\n' "$("$PAHOLE_TOOL" --version | head -1)"
   printf 'image_sha256=%s\n' "$(sha256sum "$IMAGE" | awk '{print $1}')"
   printf 'modules_present=%s\n' "$(find "$OUT" -type f -name '*.ko' | wc -l)"
   printf 'ukee_dtb_sha256=%s\n' "$(sha256sum "$OUT/arch/arm64/boot/dts/qcom/ukee.dtb" | awk '{print $1}')"

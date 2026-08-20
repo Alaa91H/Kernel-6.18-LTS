@@ -12,6 +12,17 @@
 | `--root ksu-next` أو `--root apatch` | رفض واضح. | غير مدعومين من upstream على Linux 6.18. |
 | `--package boot` | رفض واضح. | محجوب حتى manifest وKMI واختبار جهاز. |
 
+## أداة BTF المطلوبة
+
+يتحقق النص من أداة `pahole` ويُمررها صراحةً إلى نظام البناء عبر متغير `PAHOLE`. لا ينبغي تعطيل BTF في نكهة `diagnostic` لإخفاء عطل أداة البناء. في بيئة العمل الحالية تتطلب النواة أداة أحدث من حزمة النظام التي بلغت حد متغيرات per-CPU؛ المثال الآتي يستخدم الأداة المحلية المعزولة:
+
+```bash
+PAHOLE=/home/ubuntu/tools/dwarves-install/bin/pahole \\
+  JOBS=8 ./tools/build_marble_flavor.sh --flavor aosp --root none --diagnostics diagnostic
+```
+
+يسجل `build-metadata.txt` مسار الأداة وإصدارها مع بصمات المخرجات.
+
 ## templates لمدخلات التغليف
 
 عند اكتمال بوابات القبول، ينسخ المستخدم ملف المثال المناسب إلى موقع خارج Git ويملأ مسارات artefacts التي استخرجت **من الروم المطابق للجهاز والبناء نفسه**. لا تُحمّل الصور أو المفاتيح أو firmware إلى المستودع.

@@ -11,6 +11,7 @@
 #include <linux/bitfield.h>
 #include <linux/iio/adc/qcom-vadc-common.h>
 #include <linux/iio/consumer.h>
+#include <linux/iio/iio.h>
 #include <linux/interrupt.h>
 #include <linux/module.h>
 #include <linux/of.h>
@@ -172,6 +173,7 @@ struct adc_tm5_data {
 	int (*init)(struct adc_tm5_chip *chip);
 	char *irq_name;
 	int gen;
+	bool is_adc_tm7;
 };
 
 /**
@@ -200,6 +202,7 @@ struct adc_tm5_channel {
 	unsigned int		hw_settle_time;
 	unsigned int		decimation;	/* For Gen2 ADC_TM */
 	unsigned int		avg_samples;	/* For Gen2 ADC_TM */
+	unsigned int		thermal_channel;	/* Device Tree thermal-sensor ID */
 	bool			high_thr_en;	/* For Gen2 ADC_TM */
 	bool			low_thr_en;	/* For Gen2 ADC_TM */
 	bool			meas_en;	/* For Gen2 ADC_TM */
@@ -673,18 +676,19 @@ static int adc_tm5_register_tzd(struct adc_tm5_chip *adc_tm)
 	for (i = 0; i < adc_tm->nchannels; i++) {
 		adc_tm->channels[i].chip = adc_tm;
 		tzd = devm_thermal_of_zone_register(adc_tm->dev,
-						    adc_tm->channels[i].channel,
+						    adc_tm->channels[i].thermal_channel,
 						    &adc_tm->channels[i],
 						    &adc_tm5_thermal_ops);
 		if (IS_ERR(tzd)) {
 			if (PTR_ERR(tzd) == -ENODEV) {
 				dev_dbg(adc_tm->dev, "thermal sensor on channel %d is not used\n",
-					 adc_tm->channels[i].channel);
+					adc_tm->channels[i].thermal_channel);
+
 				continue;
 			}
 
 			dev_err(adc_tm->dev, "Error registering TZ zone for channel %d: %ld\n",
-				adc_tm->channels[i].channel, PTR_ERR(tzd));
+				adc_tm->channels[i].thermal_channel, PTR_ERR(tzd));
 			return PTR_ERR(tzd);
 		}
 		adc_tm->channels[i].tzd = tzd;
@@ -778,10 +782,13 @@ static int adc_tm5_gen2_init(struct adc_tm5_chip *chip)
 }
 
 static int adc_tm5_get_dt_channel_data(struct adc_tm5_chip *adc_tm,
-				       struct adc_tm5_channel *channel,
-				       struct device_node *node)
+					       struct adc_tm5_channel *channel,
+					       struct device_node *node,
+					       struct iio_channel *iio_channel,
+					       unsigned int index)
 {
 	const char *name = node->name;
+	const bool is_adc_tm7 = adc_tm->data->is_adc_tm7;
 	u32 chan, value, adc_channel, varr[2];
 	int ret;
 	struct device *dev = adc_tm->dev;
@@ -793,45 +800,64 @@ static int adc_tm5_get_dt_channel_data(struct adc_tm5_chip *adc_tm,
 		return ret;
 	}
 
-	if (chan >= ADC_TM5_NUM_CHANNELS) {
-		dev_err(dev, "%s: channel number too big: %d\n", name, chan);
-		return -EINVAL;
+	if (is_adc_tm7) {
+		if (index >= ADC_TM5_NUM_CHANNELS) {
+			dev_err(dev, "%s: channel index too big: %d\n", name, index);
+			return -EINVAL;
+		}
+		channel->channel = index;
+		channel->thermal_channel = chan;
+		adc_channel = chan & 0xff;
+		channel->adc_channel = chan;
+		channel->iio = iio_channel;
+		if (!channel->iio || !channel->iio->channel ||
+		    channel->iio->channel->channel != adc_channel ||
+		    channel->iio->channel->channel2 != (chan >> 8)) {
+			dev_err(dev, "%s: IIO channel does not match virtual channel %#x\n",
+				name, chan);
+			return -EINVAL;
+		}
+	} else {
+		if (chan >= ADC_TM5_NUM_CHANNELS) {
+			dev_err(dev, "%s: channel number too big: %d\n", name, chan);
+			return -EINVAL;
+		}
+		channel->channel = chan;
+		channel->thermal_channel = chan;
+
+		/*
+		 * We are tied to PMIC's ADC controller, which always uses a single
+		 * argument for the channel number.  Enforce one IIO argument.
+		 */
+		ret = of_parse_phandle_with_fixed_args(node, "io-channels", 1, 0, &args);
+		if (ret < 0) {
+			dev_err(dev, "%s: error parsing ADC channel number %d: %d\n",
+				name, chan, ret);
+			return ret;
+		}
+		of_node_put(args.np);
+
+		if (args.args_count != 1) {
+			dev_err(dev, "%s: invalid args count for ADC channel %d\n", name, chan);
+			return -EINVAL;
+		}
+
+		adc_channel = args.args[0];
+		if (adc_tm->data->gen == ADC_TM5_GEN2)
+			adc_channel &= 0xff;
+
+		if (adc_channel >= ADC5_MAX_CHANNEL) {
+			dev_err(dev, "%s: invalid ADC channel number %d\n", name, chan);
+			return -EINVAL;
+		}
+		channel->adc_channel = args.args[0];
+
+		channel->iio = devm_fwnode_iio_channel_get_by_name(adc_tm->dev,
+								   of_fwnode_handle(node), NULL);
+		if (IS_ERR(channel->iio))
+			return dev_err_probe(dev, PTR_ERR(channel->iio),
+						     "%s: error getting channel\n", name);
 	}
-
-	channel->channel = chan;
-
-	/*
-	 * We are tied to PMIC's ADC controller, which always use single
-	 * argument for channel number.  So don't bother parsing
-	 * #io-channel-cells, just enforce cell_count = 1.
-	 */
-	ret = of_parse_phandle_with_fixed_args(node, "io-channels", 1, 0, &args);
-	if (ret < 0) {
-		dev_err(dev, "%s: error parsing ADC channel number %d: %d\n", name, chan, ret);
-		return ret;
-	}
-	of_node_put(args.np);
-
-	if (args.args_count != 1) {
-		dev_err(dev, "%s: invalid args count for ADC channel %d\n", name, chan);
-		return -EINVAL;
-	}
-
-	adc_channel = args.args[0];
-	if (adc_tm->data->gen == ADC_TM5_GEN2)
-		adc_channel &= 0xff;
-
-	if (adc_channel >= ADC5_MAX_CHANNEL) {
-		dev_err(dev, "%s: invalid ADC channel number %d\n", name, chan);
-		return -EINVAL;
-	}
-	channel->adc_channel = args.args[0];
-
-	channel->iio = devm_fwnode_iio_channel_get_by_name(adc_tm->dev,
-							   of_fwnode_handle(node), NULL);
-	if (IS_ERR(channel->iio))
-		return dev_err_probe(dev, PTR_ERR(channel->iio), "%s: error getting channel\n",
-				     name);
 
 	ret = of_property_read_u32_array(node, "qcom,pre-scaling", varr, 2);
 	if (!ret) {
@@ -847,12 +873,13 @@ static int adc_tm5_get_dt_channel_data(struct adc_tm5_chip *adc_tm,
 		channel->prescale = 0;
 	}
 
-	ret = of_property_read_u32(node, "qcom,hw-settle-time-us", &value);
+	ret = of_property_read_u32(node,
+					 is_adc_tm7 ? "qcom,hw-settle-time" : "qcom,hw-settle-time-us",
+					 &value);
 	if (!ret) {
 		ret = qcom_adc5_hw_settle_time_from_dt(value, adc_tm->data->hw_settle);
 		if (ret < 0) {
-			dev_err(dev, "%s invalid hw-settle-time-us %d us\n",
-				name, value);
+			dev_err(dev, "%s: invalid hw-settle time %d us\n", name, value);
 			return ret;
 		}
 		channel->hw_settle_time = ret;
@@ -935,12 +962,33 @@ static const struct adc_tm5_data adc_tm5_gen2_data_pmic = {
 	.gen = ADC_TM5_GEN2,
 };
 
+static const struct adc_tm5_data adc_tm7_data_pmic = {
+	.full_scale_code_volt = 0x70e4,
+	.decimation = (unsigned int []) { 85, 340, 1360 },
+	.hw_settle = (unsigned int []) { 15, 100, 200, 300, 400, 500, 600, 700,
+					 1000, 2000, 4000, 8000, 16000, 32000,
+					 64000, 128000 },
+	.disable_channel = adc_tm5_gen2_disable_channel,
+	.configure = adc_tm5_gen2_configure,
+	.isr = adc_tm5_gen2_isr,
+	.init = adc_tm5_gen2_init,
+	.irq_name = "pm-adc-tm7",
+	.gen = ADC_TM5_GEN2,
+	.is_adc_tm7 = true,
+};
+
 static int adc_tm5_get_dt_data(struct adc_tm5_chip *adc_tm, struct device_node *node)
 {
 	struct adc_tm5_channel *channels;
+	struct iio_channel *iio_channels = NULL;
 	u32 value;
+	unsigned int index = 0;
 	int ret;
 	struct device *dev = adc_tm->dev;
+
+	adc_tm->data = of_device_get_match_data(dev);
+	if (!adc_tm->data)
+		adc_tm->data = &adc_tm5_data_pmic;
 
 	adc_tm->nchannels = of_get_available_child_count(node);
 	if (!adc_tm->nchannels)
@@ -953,9 +1001,12 @@ static int adc_tm5_get_dt_data(struct adc_tm5_chip *adc_tm, struct device_node *
 
 	channels = adc_tm->channels;
 
-	adc_tm->data = of_device_get_match_data(dev);
-	if (!adc_tm->data)
-		adc_tm->data = &adc_tm5_data_pmic;
+	if (adc_tm->data->is_adc_tm7) {
+		iio_channels = devm_iio_channel_get_all(dev);
+		if (IS_ERR(iio_channels))
+			return dev_err_probe(dev, PTR_ERR(iio_channels),
+					     "error getting ADC_TM7 IIO channels\n");
+	}
 
 	ret = of_property_read_u32(node, "qcom,decimation", &value);
 	if (!ret) {
@@ -982,11 +1033,14 @@ static int adc_tm5_get_dt_data(struct adc_tm5_chip *adc_tm, struct device_node *
 	}
 
 	for_each_available_child_of_node_scoped(node, child) {
-		ret = adc_tm5_get_dt_channel_data(adc_tm, channels, child);
+		ret = adc_tm5_get_dt_channel_data(adc_tm, channels, child,
+						  iio_channels ? &iio_channels[index] : NULL,
+						  index);
 		if (ret)
 			return ret;
 
 		channels++;
+		index++;
 	}
 
 	return 0;
@@ -1053,6 +1107,10 @@ static const struct of_device_id adc_tm5_match_table[] = {
 	{
 		.compatible = "qcom,spmi-adc-tm5-gen2",
 		.data = &adc_tm5_gen2_data_pmic,
+	},
+	{
+		.compatible = "qcom,adc-tm7",
+		.data = &adc_tm7_data_pmic,
 	},
 	{ }
 };

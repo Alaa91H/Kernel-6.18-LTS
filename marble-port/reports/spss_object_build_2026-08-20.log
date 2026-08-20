@@ -1,0 +1,9 @@
+make: Entering directory '/home/ubuntu/work/Kernel-6.18-LTS'
+make[1]: Entering directory '/home/ubuntu/work/Kernel-6.18-LTS/out/spss-port-build'
+  GEN     Makefile
+  DESCEND bpf/resolve_btfids
+  CALL    /home/ubuntu/work/Kernel-6.18-LTS/scripts/checksyscalls.sh
+  INSTALL libsubcmd_headers
+  CC      drivers/rpmsg/qcom_glink_spss.o
+make[1]: Leaving directory '/home/ubuntu/work/Kernel-6.18-LTS/out/spss-port-build'
+make: Leaving directory '/home/ubuntu/work/Kernel-6.18-LTS'

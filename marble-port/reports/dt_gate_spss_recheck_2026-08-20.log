@@ -1,0 +1,142 @@
+make: Entering directory '/home/ubuntu/work/Kernel-6.18-LTS'
+make[1]: Entering directory '/home/ubuntu/work/Kernel-6.18-LTS/out/marble-dt-spss-check'
+  SYNC    include/config/auto.conf.cmd
+  GEN     Makefile
+  HOSTCC  scripts/basic/fixdep
+  UPD     include/config/kernel.release
+  HOSTCC  scripts/dtc/dtc.o
+  HOSTCC  scripts/dtc/flattree.o
+  HOSTCC  scripts/dtc/fstree.o
+  HOSTCC  scripts/dtc/data.o
+  HOSTCC  scripts/dtc/treesource.o
+  HOSTCC  scripts/dtc/livetree.o
+  HOSTCC  scripts/dtc/srcpos.o
+  HOSTCC  scripts/dtc/checks.o
+  HOSTCC  scripts/dtc/util.o
+  LEX     scripts/dtc/dtc-lexer.lex.c
+  YACC    scripts/dtc/dtc-parser.tab.[ch]
+  HOSTCC  scripts/dtc/libfdt/fdt.o
+  HOSTCC  scripts/dtc/libfdt/fdt_ro.o
+  HOSTCC  scripts/dtc/libfdt/fdt_wip.o
+  HOSTCC  scripts/dtc/libfdt/fdt_sw.o
+  HOSTCC  scripts/dtc/libfdt/fdt_rw.o
+  HOSTCC  scripts/dtc/libfdt/fdt_strerror.o
+  HOSTCC  scripts/dtc/libfdt/fdt_empty_tree.o
+  HOSTCC  scripts/dtc/libfdt/fdt_addresses.o
+  HOSTCC  scripts/dtc/libfdt/fdt_overlay.o
+  HOSTCC  scripts/dtc/fdtoverlay.o
+  HOSTCC  scripts/dtc/dtc-lexer.lex.o
+  HOSTCC  scripts/dtc/dtc-parser.tab.o
+  HOSTLD  scripts/dtc/fdtoverlay
+  HOSTLD  scripts/dtc/dtc
+  DTC     arch/arm64/boot/dts/qcom/ukee.dtb
+  DTC     arch/arm64/boot/dts/qcom/marble-sm7475-pm8008-overlay.dtbo
+/home/ubuntu/work/Kernel-6.18-LTS/arch/arm64/boot/dts/qcom/pmk8350.dtsi:60.20-64.6: Warning (unit_address_vs_reg): /fragment@1/__overlay__/qcom,pmk8350@0/vadc@3100/pmk8350_ref_gnd: node has a reg or ranges property, but no unit name
+/home/ubuntu/work/Kernel-6.18-LTS/arch/arm64/boot/dts/qcom/pmk8350.dtsi:66.22-70.6: Warning (unit_address_vs_reg): /fragment@1/__overlay__/qcom,pmk8350@0/vadc@3100/pmk8350_vref_1p25: node has a reg or ranges property, but no unit name
+/home/ubuntu/work/Kernel-6.18-LTS/arch/arm64/boot/dts/qcom/pmk8350.dtsi:72.21-76.6: Warning (unit_address_vs_reg): /fragment@1/__overlay__/qcom,pmk8350@0/vadc@3100/pmk8350_die_temp: node has a reg or ranges property, but no unit name
+/home/ubuntu/work/Kernel-6.18-LTS/arch/arm64/boot/dts/qcom/pmk8350.dtsi:79.19-83.6: Warning (unit_address_vs_reg): /fragment@1/__overlay__/qcom,pmk8350@0/vadc@3100/pm8350_ref_gnd: node has a reg or ranges property, but no unit name
+/home/ubuntu/work/Kernel-6.18-LTS/arch/arm64/boot/dts/qcom/pmk8350.dtsi:85.21-89.6: Warning (unit_address_vs_reg): /fragment@1/__overlay__/qcom,pmk8350@0/vadc@3100/pm8350_vref_1p25: node has a reg or ranges property, but no unit name
+/home/ubuntu/work/Kernel-6.18-LTS/arch/arm64/boot/dts/qcom/pmk8350.dtsi:91.20-95.6: Warning (unit_address_vs_reg): /fragment@1/__overlay__/qcom,pmk8350@0/vadc@3100/pm8350_die_temp: node has a reg or ranges property, but no unit name
+/home/ubuntu/work/Kernel-6.18-LTS/arch/arm64/boot/dts/qcom/pmk8350.dtsi:97.19-101.6: Warning (unit_address_vs_reg): /fragment@1/__overlay__/qcom,pmk8350@0/vadc@3100/pm8350_vph_pwr: node has a reg or ranges property, but no unit name
+/home/ubuntu/work/Kernel-6.18-LTS/arch/arm64/boot/dts/qcom/pmk8350.dtsi:104.20-108.6: Warning (unit_address_vs_reg): /fragment@1/__overlay__/qcom,pmk8350@0/vadc@3100/pm8350b_ref_gnd: node has a reg or ranges property, but no unit name
+/home/ubuntu/work/Kernel-6.18-LTS/arch/arm64/boot/dts/qcom/pmk8350.dtsi:110.22-114.6: Warning (unit_address_vs_reg): /fragment@1/__overlay__/qcom,pmk8350@0/vadc@3100/pm8350b_vref_1p25: node has a reg or ranges property, but no unit name
+/home/ubuntu/work/Kernel-6.18-LTS/arch/arm64/boot/dts/qcom/pmk8350.dtsi:116.21-120.6: Warning (unit_address_vs_reg): /fragment@1/__overlay__/qcom,pmk8350@0/vadc@3100/pm8350b_die_temp: node has a reg or ranges property, but no unit name
+/home/ubuntu/work/Kernel-6.18-LTS/arch/arm64/boot/dts/qcom/pmk8350.dtsi:122.20-126.6: Warning (unit_address_vs_reg): /fragment@1/__overlay__/qcom,pmk8350@0/vadc@3100/pm8350b_vph_pwr: node has a reg or ranges property, but no unit name
+/home/ubuntu/work/Kernel-6.18-LTS/arch/arm64/boot/dts/qcom/pmk8350.dtsi:128.21-132.6: Warning (unit_address_vs_reg): /fragment@1/__overlay__/qcom,pmk8350@0/vadc@3100/pm8350b_vbat_sns: node has a reg or ranges property, but no unit name
+/home/ubuntu/work/Kernel-6.18-LTS/arch/arm64/boot/dts/qcom/pmk8350.dtsi:135.20-139.6: Warning (unit_address_vs_reg): /fragment@1/__overlay__/qcom,pmk8350@0/vadc@3100/pmr735a_ref_gnd: node has a reg or ranges property, but no unit name
+/home/ubuntu/work/Kernel-6.18-LTS/arch/arm64/boot/dts/qcom/pmk8350.dtsi:141.22-145.6: Warning (unit_address_vs_reg): /fragment@1/__overlay__/qcom,pmk8350@0/vadc@3100/pmr735a_vref_1p25: node has a reg or ranges property, but no unit name
+/home/ubuntu/work/Kernel-6.18-LTS/arch/arm64/boot/dts/qcom/pmk8350.dtsi:147.21-151.6: Warning (unit_address_vs_reg): /fragment@1/__overlay__/qcom,pmk8350@0/vadc@3100/pmr735a_die_temp: node has a reg or ranges property, but no unit name
+/home/ubuntu/work/Kernel-6.18-LTS/arch/arm64/boot/dts/qcom/pmk8350.dtsi:154.20-158.6: Warning (unit_address_vs_reg): /fragment@1/__overlay__/qcom,pmk8350@0/vadc@3100/pmr735b_ref_gnd: node has a reg or ranges property, but no unit name
+/home/ubuntu/work/Kernel-6.18-LTS/arch/arm64/boot/dts/qcom/pmk8350.dtsi:160.22-164.6: Warning (unit_address_vs_reg): /fragment@1/__overlay__/qcom,pmk8350@0/vadc@3100/pmr735b_vref_1p25: node has a reg or ranges property, but no unit name
+/home/ubuntu/work/Kernel-6.18-LTS/arch/arm64/boot/dts/qcom/pmk8350.dtsi:166.21-170.6: Warning (unit_address_vs_reg): /fragment@1/__overlay__/qcom,pmk8350@0/vadc@3100/pmr735b_die_temp: node has a reg or ranges property, but no unit name
+/home/ubuntu/work/Kernel-6.18-LTS/arch/arm64/boot/dts/qcom/cape-pmic-overlay.dtsi:142.19-146.4: Warning (unit_address_vs_reg): /fragment@1/__overlay__/qcom,pmk8350@0/vadc@3100/pm8350b_chg_temp: node has a reg or ranges property, but no unit name
+/home/ubuntu/work/Kernel-6.18-LTS/arch/arm64/boot/dts/qcom/cape-pmic-overlay.dtsi:148.17-152.4: Warning (unit_address_vs_reg): /fragment@1/__overlay__/qcom,pmk8350@0/vadc@3100/pm8350b_iin_fb: node has a reg or ranges property, but no unit name
+/home/ubuntu/work/Kernel-6.18-LTS/arch/arm64/boot/dts/qcom/cape-pmic-overlay.dtsi:154.18-158.4: Warning (unit_address_vs_reg): /fragment@1/__overlay__/qcom,pmk8350@0/vadc@3100/pm8350b_ichg_fb: node has a reg or ranges property, but no unit name
+/home/ubuntu/work/Kernel-6.18-LTS/arch/arm64/boot/dts/qcom/cape-pmic-overlay.dtsi:160.21-165.4: Warning (unit_address_vs_reg): /fragment@1/__overlay__/qcom,pmk8350@0/vadc@3100/pm8350b_ichg_fb_2x: node has a reg or ranges property, but no unit name
+/home/ubuntu/work/Kernel-6.18-LTS/arch/arm64/boot/dts/qcom/cape-pmic-overlay.dtsi:167.23-172.4: Warning (unit_address_vs_reg): /fragment@1/__overlay__/qcom,pmk8350@0/vadc@3100/pm8350b_ichg_fb_2p5x: node has a reg or ranges property, but no unit name
+/home/ubuntu/work/Kernel-6.18-LTS/arch/arm64/boot/dts/qcom/cape-pmic-overlay.dtsi:174.26-178.4: Warning (unit_address_vs_reg): /fragment@1/__overlay__/qcom,pmk8350@0/vadc@3100/pm8350b_usb_in_v_div_16: node has a reg or ranges property, but no unit name
+/home/ubuntu/work/Kernel-6.18-LTS/arch/arm64/boot/dts/qcom/cape-pmic-overlay.dtsi:180.21-184.4: Warning (unit_address_vs_reg): /fragment@1/__overlay__/qcom,pmk8350@0/vadc@3100/smb139x_1_smb_temp: node has a reg or ranges property, but no unit name
+/home/ubuntu/work/Kernel-6.18-LTS/arch/arm64/boot/dts/qcom/cape-pmic-overlay.dtsi:186.21-190.4: Warning (unit_address_vs_reg): /fragment@1/__overlay__/qcom,pmk8350@0/vadc@3100/smb139x_1_ichg_smb: node has a reg or ranges property, but no unit name
+/home/ubuntu/work/Kernel-6.18-LTS/arch/arm64/boot/dts/qcom/cape-pmic-overlay.dtsi:192.20-196.4: Warning (unit_address_vs_reg): /fragment@1/__overlay__/qcom,pmk8350@0/vadc@3100/smb139x_1_iin_smb: node has a reg or ranges property, but no unit name
+/home/ubuntu/work/Kernel-6.18-LTS/arch/arm64/boot/dts/qcom/cape-pmic-overlay.dtsi:198.21-202.4: Warning (unit_address_vs_reg): /fragment@1/__overlay__/qcom,pmk8350@0/vadc@3100/smb139x_2_smb_temp: node has a reg or ranges property, but no unit name
+/home/ubuntu/work/Kernel-6.18-LTS/arch/arm64/boot/dts/qcom/cape-pmic-overlay.dtsi:204.21-208.4: Warning (unit_address_vs_reg): /fragment@1/__overlay__/qcom,pmk8350@0/vadc@3100/smb139x_2_ichg_smb: node has a reg or ranges property, but no unit name
+/home/ubuntu/work/Kernel-6.18-LTS/arch/arm64/boot/dts/qcom/cape-pmic-overlay.dtsi:210.20-214.4: Warning (unit_address_vs_reg): /fragment@1/__overlay__/qcom,pmk8350@0/vadc@3100/smb139x_2_iin_smb: node has a reg or ranges property, but no unit name
+/home/ubuntu/work/Kernel-6.18-LTS/arch/arm64/boot/dts/qcom/marble-sm7475.dtsi:298.19-304.4: Warning (unit_address_vs_reg): /fragment@1/__overlay__/qcom,pmk8350@0/vadc@3100/pm8350_msm_therm: node has a reg or ranges property, but no unit name
+/home/ubuntu/work/Kernel-6.18-LTS/arch/arm64/boot/dts/qcom/marble-sm7475.dtsi:306.25-312.4: Warning (unit_address_vs_reg): /fragment@1/__overlay__/qcom,pmk8350@0/vadc@3100/pm8350_cam_flash_therm: node has a reg or ranges property, but no unit name
+/home/ubuntu/work/Kernel-6.18-LTS/arch/arm64/boot/dts/qcom/marble-sm7475.dtsi:314.26-320.4: Warning (unit_address_vs_reg): /fragment@1/__overlay__/qcom,pmk8350@0/vadc@3100/pm8350_hot_pocket_therm: node has a reg or ranges property, but no unit name
+/home/ubuntu/work/Kernel-6.18-LTS/arch/arm64/boot/dts/qcom/marble-sm7475.dtsi:322.24-328.4: Warning (unit_address_vs_reg): /fragment@1/__overlay__/qcom,pmk8350@0/vadc@3100/pm8350_wide_rfc_therm: node has a reg or ranges property, but no unit name
+/home/ubuntu/work/Kernel-6.18-LTS/arch/arm64/boot/dts/qcom/marble-sm7475.dtsi:330.25-336.4: Warning (unit_address_vs_reg): /fragment@1/__overlay__/qcom,pmk8350@0/vadc@3100/pm8350b_rear_tof_therm: node has a reg or ranges property, but no unit name
+/home/ubuntu/work/Kernel-6.18-LTS/arch/arm64/boot/dts/qcom/marble-sm7475.dtsi:338.25-344.4: Warning (unit_address_vs_reg): /fragment@1/__overlay__/qcom,pmk8350@0/vadc@3100/pm8350b_usb_conn_therm: node has a reg or ranges property, but no unit name
+/home/ubuntu/work/Kernel-6.18-LTS/arch/arm64/boot/dts/qcom/marble-sm7475.dtsi:346.23-352.4: Warning (unit_address_vs_reg): /fragment@1/__overlay__/qcom,pmk8350@0/vadc@3100/pm8350b_wl_chg_therm: node has a reg or ranges property, but no unit name
+/home/ubuntu/work/Kernel-6.18-LTS/arch/arm64/boot/dts/qcom/marble-sm7475.dtsi:354.19-360.4: Warning (unit_address_vs_reg): /fragment@1/__overlay__/qcom,pmk8350@0/vadc@3100/pmk8350_xo_therm: node has a reg or ranges property, but no unit name
+/home/ubuntu/work/Kernel-6.18-LTS/arch/arm64/boot/dts/qcom/marble-sm7475.dtsi:373.19-377.4: Warning (unit_address_vs_reg): /fragment@1/__overlay__/qcom,pmk8350@0/adc_tm@3400/pm8350_msm_therm: node has a reg or ranges property, but no unit name
+/home/ubuntu/work/Kernel-6.18-LTS/arch/arm64/boot/dts/qcom/marble-sm7475.dtsi:379.25-383.4: Warning (unit_address_vs_reg): /fragment@1/__overlay__/qcom,pmk8350@0/adc_tm@3400/pm8350_cam_flash_therm: node has a reg or ranges property, but no unit name
+/home/ubuntu/work/Kernel-6.18-LTS/arch/arm64/boot/dts/qcom/marble-sm7475.dtsi:385.26-389.4: Warning (unit_address_vs_reg): /fragment@1/__overlay__/qcom,pmk8350@0/adc_tm@3400/pm8350_hot_pocket_therm: node has a reg or ranges property, but no unit name
+/home/ubuntu/work/Kernel-6.18-LTS/arch/arm64/boot/dts/qcom/marble-sm7475.dtsi:391.24-395.4: Warning (unit_address_vs_reg): /fragment@1/__overlay__/qcom,pmk8350@0/adc_tm@3400/pm8350_wide_rfc_therm: node has a reg or ranges property, but no unit name
+/home/ubuntu/work/Kernel-6.18-LTS/arch/arm64/boot/dts/qcom/marble-sm7475.dtsi:397.25-401.4: Warning (unit_address_vs_reg): /fragment@1/__overlay__/qcom,pmk8350@0/adc_tm@3400/pm8350b_rear_tof_therm: node has a reg or ranges property, but no unit name
+/home/ubuntu/work/Kernel-6.18-LTS/arch/arm64/boot/dts/qcom/marble-sm7475.dtsi:403.25-407.4: Warning (unit_address_vs_reg): /fragment@1/__overlay__/qcom,pmk8350@0/adc_tm@3400/pm8350b_usb_conn_therm: node has a reg or ranges property, but no unit name
+/home/ubuntu/work/Kernel-6.18-LTS/arch/arm64/boot/dts/qcom/marble-sm7475.dtsi:409.23-413.4: Warning (unit_address_vs_reg): /fragment@1/__overlay__/qcom,pmk8350@0/adc_tm@3400/pm8350b_wl_chg_therm: node has a reg or ranges property, but no unit name
+/home/ubuntu/work/Kernel-6.18-LTS/arch/arm64/boot/dts/qcom/marble-sm7475.dtsi:415.19-419.4: Warning (unit_address_vs_reg): /fragment@1/__overlay__/qcom,pmk8350@0/adc_tm@3400/pmk8350_xo_therm: node has a reg or ranges property, but no unit name
+/home/ubuntu/work/Kernel-6.18-LTS/arch/arm64/boot/dts/qcom/pm8350c.dtsi:45.10-52.6: Warning (unit_address_vs_reg): /fragment@4/__overlay__/qcom,pm8350c@2/pwms@e800/lpg@1: node has a unit name, but no reg or ranges property
+/home/ubuntu/work/Kernel-6.18-LTS/arch/arm64/boot/dts/qcom/pm8350c.dtsi:54.10-61.6: Warning (unit_address_vs_reg): /fragment@4/__overlay__/qcom,pm8350c@2/pwms@e800/lpg@2: node has a unit name, but no reg or ranges property
+/home/ubuntu/work/Kernel-6.18-LTS/arch/arm64/boot/dts/qcom/pm8350c.dtsi:63.10-70.6: Warning (unit_address_vs_reg): /fragment@4/__overlay__/qcom,pm8350c@2/pwms@e800/lpg@3: node has a unit name, but no reg or ranges property
+/home/ubuntu/work/Kernel-6.18-LTS/arch/arm64/boot/dts/qcom/waipio-pm8008.dtsi:45.12-126.4: Warning (avoid_unnecessary_addr_size): /fragment@43/__overlay__/pm8008i@9: unnecessary #address-cells/#size-cells without "ranges", "dma-ranges" or child "reg" or "ranges" property
+/home/ubuntu/work/Kernel-6.18-LTS/arch/arm64/boot/dts/qcom/waipio-pm8008.dtsi:152.12-233.4: Warning (avoid_unnecessary_addr_size): /fragment@43/__overlay__/pm8008j@d: unnecessary #address-cells/#size-cells without "ranges", "dma-ranges" or child "reg" or "ranges" property
+/home/ubuntu/work/Kernel-6.18-LTS/arch/arm64/boot/dts/qcom/cape.dtsi:1751.4-1752.26: Warning (reg_format): /soc/remoteproc-spss@1880000/glink-edge:reg: property has invalid length (16 bytes) (#address-cells == 2, #size-cells == 1)
+/home/ubuntu/work/Kernel-6.18-LTS/arch/arm64/boot/dts/qcom/cape.dtsi:1715.3-10: Warning (ranges_format): /soc/remoteproc-spss@1880000:ranges: empty "ranges" property but its #address-cells (2) differs from /soc (1)
+/home/ubuntu/work/Kernel-6.18-LTS/arch/arm64/boot/dts/qcom/cape.dtsi:25.9-54: Warning (unit_address_vs_reg): /memory: node has a reg or ranges property, but no unit name
+/home/ubuntu/work/Kernel-6.18-LTS/arch/arm64/boot/dts/qcom/cape-reserved-memory.dtsi:163.47-166.4: Warning (unit_address_vs_reg): /reserved-memory/trust_ui_vm_region@e0b00000: node has a unit name, but no reg or ranges property
+/home/ubuntu/work/Kernel-6.18-LTS/arch/arm64/boot/dts/qcom/cape.dtsi:299.11-15: Warning (unit_address_vs_reg): /soc: node has a reg or ranges property, but no unit name
+  also defined at /home/ubuntu/work/Kernel-6.18-LTS/arch/arm64/boot/dts/qcom/waipio-clock.dtsi:8.6-451.3
+  also defined at /home/ubuntu/work/Kernel-6.18-LTS/arch/arm64/boot/dts/qcom/cape.dtsi:450.6-3129.3
+  also defined at /home/ubuntu/work/Kernel-6.18-LTS/arch/arm64/boot/dts/qcom/waipio-qupv3.dtsi:3.6-1137.3
+  also defined at /home/ubuntu/work/Kernel-6.18-LTS/arch/arm64/boot/dts/qcom/waipio-coresight.dtsi:1.6-4264.3
+  also defined at /home/ubuntu/work/Kernel-6.18-LTS/arch/arm64/boot/dts/qcom/cape-debug.dtsi:17.6-2698.3
+  also defined at /home/ubuntu/work/Kernel-6.18-LTS/arch/arm64/boot/dts/qcom/msm-arm-smmu-waipio.dtsi:3.6-409.3
+  also defined at /home/ubuntu/work/Kernel-6.18-LTS/arch/arm64/boot/dts/qcom/cape-dma-heaps.dtsi:3.6-78.3
+  also defined at /home/ubuntu/work/Kernel-6.18-LTS/arch/arm64/boot/dts/qcom/cape-gpu.dtsi:4.6-354.3
+  also defined at /home/ubuntu/work/Kernel-6.18-LTS/arch/arm64/boot/dts/qcom/cape-thermal.dtsi:7.6-242.3
+  also defined at /home/ubuntu/work/Kernel-6.18-LTS/arch/arm64/boot/dts/qcom/waipio-thermal-modem.dtsi:3.6-224.3
+  also defined at /home/ubuntu/work/Kernel-6.18-LTS/arch/arm64/boot/dts/qcom/cape-thermal.dtsi:246.6-251.3
+  also defined at /home/ubuntu/work/Kernel-6.18-LTS/arch/arm64/boot/dts/qcom/cape-usb.dtsi:4.6-333.3
+  also defined at /home/ubuntu/work/Kernel-6.18-LTS/arch/arm64/boot/dts/qcom/cape-pcie.dtsi:3.6-566.3
+  also defined at /home/ubuntu/work/Kernel-6.18-LTS/arch/arm64/boot/dts/qcom/msm-rdbg.dtsi:1.6-26.3
+  also defined at /home/ubuntu/work/Kernel-6.18-LTS/arch/arm64/boot/dts/qcom/waipio-eva.dtsi:6.6-110.3
+  also defined at /home/ubuntu/work/Kernel-6.18-LTS/arch/arm64/boot/dts/qcom/ipcc-test.dtsi:3.6-31.3
+  also defined at /home/ubuntu/work/Kernel-6.18-LTS/arch/arm64/boot/dts/qcom/ukee.dtsi:267.6-300.3
+/home/ubuntu/work/Kernel-6.18-LTS/arch/arm64/boot/dts/qcom/waipio-clock.dtsi:116.36-138.4: Warning (unit_address_vs_reg): /soc/clock-controller@0: node has a unit name, but no reg or ranges property
+/home/ubuntu/work/Kernel-6.18-LTS/arch/arm64/boot/dts/qcom/waipio-clock.dtsi:140.30-166.4: Warning (unit_address_vs_reg): /soc/qcom,cpufreq-hw: node has a reg or ranges property, but no unit name
+/home/ubuntu/work/Kernel-6.18-LTS/arch/arm64/boot/dts/qcom/cape.dtsi:536.29-539.6: Warning (unit_address_vs_reg): /soc/slim@3340000/ngd@1/btfmslim-driver: node has a reg or ranges property, but no unit name
+/home/ubuntu/work/Kernel-6.18-LTS/arch/arm64/boot/dts/qcom/cape.dtsi:738.23-750.5: Warning (unit_address_vs_reg): /soc/qcom,dcvs/l3: node has a reg or ranges property, but no unit name
+/home/ubuntu/work/Kernel-6.18-LTS/arch/arm64/boot/dts/qcom/cape.dtsi:1042.24-1046.4: Warning (unit_address_vs_reg): /soc/qcom,virtio_backend@0: node has a unit name, but no reg or ranges property
+/home/ubuntu/work/Kernel-6.18-LTS/arch/arm64/boot/dts/qcom/cape.dtsi:1126.33-1140.4: Warning (unit_address_vs_reg): /soc/qseecom@c1700000: node has a unit name, but no reg or ranges property
+/home/ubuntu/work/Kernel-6.18-LTS/arch/arm64/boot/dts/qcom/cape.dtsi:1741.14-1758.5: Warning (unit_address_vs_reg): /soc/remoteproc-spss@1880000/glink-edge: node has a reg or ranges property, but no unit name
+/home/ubuntu/work/Kernel-6.18-LTS/arch/arm64/boot/dts/qcom/cape.dtsi:2046.27-2051.4: Warning (unit_address_vs_reg): /soc/interconnect@0: node has a unit name, but no reg or ranges property
+/home/ubuntu/work/Kernel-6.18-LTS/arch/arm64/boot/dts/qcom/cape.dtsi:2053.26-2058.4: Warning (unit_address_vs_reg): /soc/interconnect@1: node has a unit name, but no reg or ranges property
+/home/ubuntu/work/Kernel-6.18-LTS/arch/arm64/boot/dts/qcom/cape.dtsi:2741.33-2747.4: Warning (unit_address_vs_reg): /soc/qcom,gh_vm_loader_sec@e0b00000: node has a unit name, but no reg or ranges property
+/home/ubuntu/work/Kernel-6.18-LTS/arch/arm64/boot/dts/qcom/cape.dtsi:2749.33-2756.4: Warning (unit_address_vs_reg): /soc/qcom,gh_vm_loader_sec@e0600000: node has a unit name, but no reg or ranges property
+/home/ubuntu/work/Kernel-6.18-LTS/arch/arm64/boot/dts/qcom/cape.dtsi:2764.31-2773.4: Warning (unit_address_vs_reg): /soc/qcom,guestvm_loader@e0b00000: node has a unit name, but no reg or ranges property
+/home/ubuntu/work/Kernel-6.18-LTS/arch/arm64/boot/dts/qcom/cape.dtsi:2775.31-2781.4: Warning (unit_address_vs_reg): /soc/qcom,guestvm_loader@e0600000: node has a unit name, but no reg or ranges property
+/home/ubuntu/work/Kernel-6.18-LTS/arch/arm64/boot/dts/qcom/waipio-coresight.dtsi:1184.30-1218.4: Warning (unit_address_vs_reg): /soc/funnel@10b24000: node has a unit name, but no reg or ranges property
+/home/ubuntu/work/Kernel-6.18-LTS/arch/arm64/boot/dts/qcom/waipio-coresight.dtsi:1220.36-1263.4: Warning (unit_address_vs_reg): /soc/funnel@10b44000: node has a unit name, but no reg or ranges property
+/home/ubuntu/work/Kernel-6.18-LTS/arch/arm64/boot/dts/qcom/waipio-coresight.dtsi:3184.11-3189.6: Warning (unit_address_vs_reg): /soc/replicator@10b06000/out-ports/port@0: node has a unit name, but no reg or ranges property
+/home/ubuntu/work/Kernel-6.18-LTS/arch/arm64/boot/dts/qcom/waipio-coresight.dtsi:3225.11-3230.6: Warning (unit_address_vs_reg): /soc/replicator@10046000/out-ports/port@0: node has a unit name, but no reg or ranges property
+/home/ubuntu/work/Kernel-6.18-LTS/arch/arm64/boot/dts/qcom/msm-arm-smmu-waipio.dtsi:360.14-363.4: Warning (unit_address_vs_reg): /soc/dma_dev@0x0: node has a unit name, but no reg or ranges property
+/home/ubuntu/work/Kernel-6.18-LTS/arch/arm64/boot/dts/qcom/cape-pcie.dtsi:229.22-231.5: Warning (unit_address_vs_reg): /soc/qcom,pcie@1c00000/pcie0_rp: node has a reg or ranges property, but no unit name
+  also defined at /home/ubuntu/work/Kernel-6.18-LTS/arch/arm64/boot/dts/qcom/cape.dtsi:3182.11-3203.3
+/home/ubuntu/work/Kernel-6.18-LTS/arch/arm64/boot/dts/qcom/cape.dtsi:3186.21-3202.4: Warning (unit_address_vs_reg): /soc/qcom,pcie@1c00000/pcie0_rp/cnss_pci: node has a reg or ranges property, but no unit name
+/home/ubuntu/work/Kernel-6.18-LTS/arch/arm64/boot/dts/qcom/cape-pcie.dtsi:522.22-524.5: Warning (unit_address_vs_reg): /soc/qcom,pcie@1c08000/pcie1_rp: node has a reg or ranges property, but no unit name
+/home/ubuntu/work/Kernel-6.18-LTS/arch/arm64/boot/dts/qcom/ukee.dtsi:297.23-299.4: Warning (unit_address_vs_reg): /soc/qfprom@0: node has a unit name, but no reg or ranges property
+arch/arm64/boot/dts/qcom/ukee.dtb: Warning (pci_device_reg): Failed prerequisite 'reg_format'
+arch/arm64/boot/dts/qcom/ukee.dtb: Warning (pci_device_bus_num): Failed prerequisite 'reg_format'
+arch/arm64/boot/dts/qcom/ukee.dtb: Warning (simple_bus_reg): Failed prerequisite 'reg_format'
+arch/arm64/boot/dts/qcom/ukee.dtb: Warning (i2c_bus_reg): Failed prerequisite 'reg_format'
+arch/arm64/boot/dts/qcom/ukee.dtb: Warning (spi_bus_reg): Failed prerequisite 'reg_format'
+/home/ubuntu/work/Kernel-6.18-LTS/arch/arm64/boot/dts/qcom/cape.dtsi:1741.14-1758.5: Warning (avoid_default_addr_size): /soc/remoteproc-spss@1880000/glink-edge: Relying on default #address-cells value
+/home/ubuntu/work/Kernel-6.18-LTS/arch/arm64/boot/dts/qcom/cape.dtsi:1741.14-1758.5: Warning (avoid_default_addr_size): /soc/remoteproc-spss@1880000/glink-edge: Relying on default #size-cells value
+arch/arm64/boot/dts/qcom/ukee.dtb: Warning (avoid_unnecessary_addr_size): Failed prerequisite 'avoid_default_addr_size'
+arch/arm64/boot/dts/qcom/ukee.dtb: Warning (unique_unit_address): Failed prerequisite 'avoid_default_addr_size'
+make[1]: Leaving directory '/home/ubuntu/work/Kernel-6.18-LTS/out/marble-dt-spss-check'
+make: Leaving directory '/home/ubuntu/work/Kernel-6.18-LTS'
+Built marble Device Tree artifacts. warnings=87 manifest=/home/ubuntu/work/Kernel-6.18-LTS/out/marble-dt-spss-check/marble-dt-artifacts.tsv
+Static Device Tree validation passed: artifacts are readable; build=87/87 base=36/36 overlay=128/128 merged=85/85 warnings.

@@ -234,6 +234,20 @@ config QCOM_Q6V5_PAS
 	  subsystems such as ADSP (Audio DSP), CDSP (Compute DSP), MPSS (Modem
 	  Peripheral SubSystem), and SLPI (Sensor Low Power Island).
 
+config QCOM_SPSS
+	tristate "Qualcomm Secure Processor Subsystem support"
+	depends on OF && (ARCH_QCOM || COMPILE_TEST)
+	depends on QCOM_SMEM
+	depends on MAILBOX
+	select QCOM_MDT_LOADER
+	select QCOM_RPROC_COMMON
+	select QCOM_SCM
+	select RPMSG_QCOM_GLINK_SPSS
+	help
+	  Say y here to build the remoteproc loader for Qualcomm Secure Processor
+	  Subsystem (SPSS). The driver uses the SPSS-specific GLINK transport and
+	  remains inert until a matching Device Tree node is enabled.
+
 config QCOM_Q6V5_WCSS
 	tristate "Qualcomm Hexagon based WCSS Peripheral Image Loader"
 	depends on OF && ARCH_QCOM

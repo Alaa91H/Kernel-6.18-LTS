@@ -59,6 +59,18 @@
 
 > **قرار الجاهزية:** البناء وBTF وP0 static-success، لكن معيار «0 تحذير و0 خطأ» لم يتحقق: توجد 129 رسالة DTC في build محدد، و386 وحدة مرجعية من Evolution X 17 لا يمكن إعادة استخدامها. لا تُنتج صورة إقلاع ولا يُفعل DLKM أو تفليش حتى نقل bindings/drivers vendor المتبقية وإنشاء KMI baseline واختبار POCO F5 فعلياً.
 
+## إعادة التحقق بعد موجة P1
+
+أضيف `CONFIG_SPMI_MSM_PMIC_ARB=y` بعد إثبات أن عقدتي `spmi0_bus` و`spmi1_bus` في `cape.dtsi` تستعملان `qcom,spmi-pmic-arb` المطابق مباشرةً لجدول ACK 6.18. بُنيت النكهات الثلاث من الشجرة النظيفة عند الالتزام `85ee72eaa3b3`، وتأكدت كل نكهة من الرمز في `.config` ومن المسار المضمن `kernel/drivers/spmi/spmi-pmic-arb.ko` في `modules.builtin`. لا يثبت ذلك probe عتادياً؛ فاختبار PMIC وADC ما زال يتطلب POCO F5 حقيقياً.
+
+| النكهة | Image SHA-256 | الوحدات | BTF | المصدر |
+|---|---|---:|---|---|
+| `aosp` / `diagnostic` | `4c5f8dd5c8c223a5478511d1fd1dcb3d5040194c58e6d56fa81b62b50f111c0f` | 104 | صالح عبر `pahole v1.31` | `85ee72eaa3b3` نظيف |
+| `xiaomi` / `release` | `7779d62e5fca1b8cd6ef46dbf1e8c71f5c9b1f9e9fbcd2dbee2440850b6125f0` | 104 | غير مطلوب في release | `85ee72eaa3b3` نظيف |
+| `evolutionx-17` / `diagnostic` | `bb9d43c0ecd10aaffd5e4710e44933489ea5ebbe5159741d142d1500a4111b80` | 104 | صالح عبر `pahole v1.31` | `85ee72eaa3b3` نظيف |
+
+نجح فحص ABI/DLKM الثابت مجدداً: المرجع يحوي 390 وحدة فريدة، منها 386 غير مبنية بالاسم في المخرج، و97 فجوة تحميل مرحلة أولى، و285 فجوة تحميل vendor. بقي verdict الأداة صريحاً: وحدات Evolution X 17 ذات `5.10.256-gki` غير متوافقة ABI مع Image 6.18 ولا تُحمّل أو تُغلف.
+
 ## معالجة BTF
 
 فشل بناء BTF أولاً مع `pahole v1.25` لأن الأداة بلغت حد متغيرات per-CPU البالغ `4096`، ثم فشل `resolve_btfids` في قراءة BTF الناتج. بُني `pahole v1.31` محلياً من مصدر مشروع [dwarves الرسمي][1]، وثبت اختبار مستقل قدرته على ترميز BTF وسيط النواة بحجم `6,969,029` بايت. يمرر `tools/build_marble_flavor.sh` الآن قيمة `PAHOLE` كمتغير Make صريح، وسجل البناء الناجح يستخدم `/home/ubuntu/tools/dwarves-install/bin/pahole` بالإصدار `v1.31`.
@@ -71,12 +83,12 @@
 
 | نطاق التحذير | العدد |
 |---|---:|
-| بناء marble المحدد | 129 |
-| فك ترميز `ukee.dtb` | 53 |
+| بناء marble المحدد | 126 |
+| فك ترميز `ukee.dtb` | 50 |
 | فك ترميز DTBO منفرداً | 153 |
-| فك ترميز DTB بعد دمج DTBO | 102 |
+| فك ترميز DTB بعد دمج DTBO | 99 |
 
-يحمل [`DT_WARNING_CLASSIFICATION.md`](DT_WARNING_CLASSIFICATION.md) سبب كل فئة وحدود الإصلاح الآمن. لم يُنفذ أي تغيير دلالي لتصفير هذه التحذيرات من دون binding أو اختبار عتادي.
+يحمل [`DT_WARNING_CLASSIFICATION.md`](DT_WARNING_CLASSIFICATION.md) سبب كل فئة وحدود الإصلاح الآمن. خفضت رقعة CoreSight أحادية المنفذ التحذيرات إلى `126/50/153/99`، وشُددت الميزانية في أداة التحقق بهذه القيم؛ لم يُنفذ أي تغيير دلالي لتصفير المتبقي من دون binding أو اختبار عتادي.
 
 ## حالة KMI والقبول
 

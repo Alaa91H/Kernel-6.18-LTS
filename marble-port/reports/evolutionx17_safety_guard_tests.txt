@@ -1,0 +1,11 @@
+[ksu_next]
+exit=2
+ERROR: KernelSU Next upstream support ends at Linux 6.6; it is not integrated into this 6.18 build.
+
+[apatch]
+exit=2
+ERROR: APatch upstream support ends at Linux 6.12; it is not integrated into this 6.18 build.
+
+[boot_package]
+exit=2
+ERROR: boot packaging is blocked: provide a reviewed ROM manifest and pass KMI and device acceptance first.

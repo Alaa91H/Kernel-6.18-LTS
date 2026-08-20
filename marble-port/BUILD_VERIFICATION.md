@@ -27,6 +27,24 @@
 | طبقة root | `none`؛ لا توجد طبقة KernelSU Next أو APatch مدمجة. |
 | BTF/التشخيص | هذه نكهة release؛ لا تفعل ملف التشخيص ولا تستخدمها كبديل عن تحقق BTF التشخيصي أعلاه. |
 
+## تحقق نكهة Evolution X 17 التشخيصية
+
+نجح بناء نكهة `evolutionx-17` من شجرة Git نظيفة عند الالتزام `292a8b56c6f0264741ba551a58bdf5c614b323c7`، باستخدام `PAHOLE=/home/ubuntu/tools/dwarves-install/bin/pahole` بالإصدار `v1.31`. النكهة تغير وسم المنشأ فقط؛ لا تستورد binaries من ROM ولا تنشئ `boot.img` أو `vendor_boot.img`.
+
+| بند التحقق | النتيجة |
+|---|---|
+| Image ARM64 | ناجح؛ الحجم `45,885,952` بايت؛ SHA-256 `cb6646c0ceba72426fd04ee74a09a78fd71d9047832112deb93b9a6f4d6cfa9a`. |
+| kernel release | `6.18.32-4k-g292a8b56c6f0`. |
+| الوحدات | ناجح؛ `104` ملفات `.ko`. |
+| ukee.dtb | ناجح؛ الحجم `379,047` بايت؛ SHA-256 `1d07d5ad9da131569901f3a5656bcf06e643fb1c664d826c65414bb5cbf1f5a8`. |
+| marble DTBO | ناجح؛ الحجم `68,799` بايت؛ SHA-256 `8644bb0525008aa3ffe94394c17d6c1b95a1155b86ec73986feeeb4f93cd6ce9`. |
+| BTF | ناجح؛ قبل `pahole -F btf` ملف `vmlinux`. |
+| فحص config | ناجح؛ 11 رمز أساس و12 رمزاً تشخيصياً. |
+| `package=none` و`root=none` | مفروضان؛ لم يُنتج أي artefact تفليش. |
+| اختبارات حواجز الأمان | رفض `ksu-next` و`apatch` و`--package boot` صراحةً مع exit code `2`؛ السجل في `reports/evolutionx17_safety_guard_tests.txt`. |
+
+> لا يفتح هذا النجاح بوابة التغليف: ROM Evolution X 17 المستخرج يستخدم kernel `5.10.256-gki` ووحدات `vendor_dlkm` و`vendor_boot` غير المتوافقة ABI مع 6.18. تراجع [`EVOLUTIONX17_COMPATIBILITY_ANALYSIS.md`](EVOLUTIONX17_COMPATIBILITY_ANALYSIS.md) قبل أي خطوة تخص صورة إقلاع.
+
 ## معالجة BTF
 
 فشل بناء BTF أولاً مع `pahole v1.25` لأن الأداة بلغت حد متغيرات per-CPU البالغ `4096`، ثم فشل `resolve_btfids` في قراءة BTF الناتج. بُني `pahole v1.31` محلياً من مصدر مشروع [dwarves الرسمي][1]، وثبت اختبار مستقل قدرته على ترميز BTF وسيط النواة بحجم `6,969,029` بايت. يمرر `tools/build_marble_flavor.sh` الآن قيمة `PAHOLE` كمتغير Make صريح، وسجل البناء الناجح يستخدم `/home/ubuntu/tools/dwarves-install/bin/pahole` بالإصدار `v1.31`.
@@ -48,6 +66,6 @@
 
 ## حالة KMI والقبول
 
-لا تضم الشجرة الحالية قائمة ABI/KMI مرجعية لـmarble أو ROM مستهدفاً، ولذلك لم يُنفذ تحقق KMI مقارن ولم يُدّعَ نجاحه. يلزم توفير قائمة ABI المتطابقة وصور vendor/module المتطابقة مع الروم المستهدف قبل فتح بوابة تغليف `boot.img` أو التفليش. اختبار جهاز فعلي وسجل إقلاع ونتائج مسارات UFS/USB/الشاشة والاتصال ما زالت مطلوبة.
+لا تضم الشجرة الحالية قائمة ABI/KMI مرجعية لـmarble أو ROM مستهدفاً. أصبح ROM Evolution X 17 الفعلي مجروداً الآن، ويثبت `EVOLUTIONX17_COMPATIBILITY_ANALYSIS.md` اختلاف kernel `5.10.256-gki` ووحدات vendor عن مرشح 6.18؛ لكن لا يزال لا توجد قائمة KMI معتمدة يمكن أن تحول ذلك إلى قبول. يلزم نقل drivers والوحدات أو بدائل upstream، وبناء vendor ramdisk وDTBO ملائمين، ثم اختبار جهاز فعلي وسجل إقلاع ونتائج UFS/USB/الشاشة والاتصال قبل فتح بوابة `boot.img` أو التفليش.
 
 [1]: https://github.com/acmel/dwarves "dwarves / pahole"

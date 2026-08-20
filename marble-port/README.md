@@ -1,29 +1,29 @@
-# جرد نقل marble
+# marble port inventory
 
-ينظم هذا المجلد نتائج الجرد القابلة لإعادة الإنتاج لنقل POCO F5 (`marble` / SM7475) من مرجع Xiaomi 5.10 إلى Android/GKI 6.18. تُنشأ النتائج بواسطة الأداتين التاليتين:
+This directory organizes the reproducible inventory results for porting the POCO F5 (`marble` / SM7475) from the Xiaomi 5.10 reference to Android/GKI 6.18. The results are produced by the following two tools:
 
 ```bash
 ./tools/marble_port_inventory.sh
 ./tools/marble_dt_closure.sh
 ```
 
-## لقطة الجرد الحالية
+## Current inventory snapshot
 
-| العنصر | النتيجة | الدلالة |
+| Item | Result | Meaning |
 |---|---:|---|
-| طلبات Kconfig في `marble_GKI.config` | 429 | نطاق التهيئة المرجعية المنشورة من Xiaomi. |
-| رموز موجودة اسمياً في ACK 6.18 | 124 | مرشحة للمراجعة، لا للتمكين التلقائي. |
-| رموز مفقودة اسمياً في ACK 6.18 | 305 | فجوات نقل يجب أن تعالج برقم قضية أو رقعة أو بديل upstream. |
-| وحدات `modules.list.msm.marble` | 111 | نطاق وحدات vendor المرجعية. |
-| ملفات DTS مباشرة مرتبطة بـ marble/SM7475 | 4 | نقطة البداية لتعريف اللوحة. |
-| إغلاق تضمينات DTS المحلي | 36 | يشمل قاعدة `ukee.dtb` الرسمية للـoverlay وملفات منصة cape/Qualcomm اللازمة. |
-| تضمينات DTS الخارجية | 30 | bindings يفترض وجودها أو تكييفها في ACK. |
+| Kconfig requests in `marble_GKI.config` | 429 | The scope of the reference configuration published by Xiaomi. |
+| Symbols present nominally in ACK 6.18 | 124 | Candidate for review, not for automatic enabling. |
+| Symbols nominally missing in ACK 6.18 | 305 | Porting gaps that should be addressed by an issue, patch, or upstream alternative. |
+| Modules `modules.list.msm.marble` | 111 | The scope of reference vendor modules. |
+| DTS files directly associated with marble/SM7475 | 4 | The starting point for the board definition. |
+| Local DTS include closure | 36 | Includes the official `ukee.dtb` overlay base and necessary cape/Qualcomm platform files. |
+| External DTS includes | 30 | bindings assumed to exist or be adapted in ACK. |
 
-## ترتيب القراءة
+## Reading order
 
-1. راجع `reports/marble_gki_missing_categories.tsv` لتحديد فجوات Kconfig حسب الطبقة.
-2. راجع `reports/marble_module_categories.tsv` لفصل الوحدات الأساسية عن وحدات التشخيص وvendor hooks.
-3. ابدأ Device Tree من `reports/marble_dt_include_closure.txt`، ولا تنقل ملف overlay قبل تحليل شجرة تضميناته.
-4. راجع `PORT_ACCEPTANCE.md` قبل إعلان أي مستوى نجاح أو إنشاء مخرجات تفليش.
+1. Review `reports/marble_gki_missing_categories.tsv` to identify Kconfig gaps by layer.
+2. Review `reports/marble_module_categories.tsv` to separate core modules from diagnostic modules and vendor hooks.
+3. Start the Device Tree from `reports/marble_dt_include_closure.txt`, and do not port the overlay file before analyzing its include tree.
+4. Review `PORT_ACCEPTANCE.md` before declaring any level of success or creating flashing artifacts.
 
-> الجرد ليس رقعة نقل. إنه يمنع الاستنتاج الخاطئ بأن بناء GKI عام وحده يجعل تعريفات Xiaomi 5.10 متوافقة مع 6.18.
+> The inventory is not a port patch. It prevents the incorrect inference that building a generic GKI alone makes Xiaomi 5.10 definitions compatible with 6.18.

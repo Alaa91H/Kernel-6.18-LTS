@@ -1,19 +1,19 @@
-# جرد marble — مصدر Xiaomi 5.10 مقابل ACK 6.18
+# marble inventory — Xiaomi 5.10 source vs ACK 6.18
 
-هذا التقرير مُنشأ آلياً. يقارن رموز `marble_GKI.config` في مصدر Xiaomi مع رموز Kconfig المتاحة في شجرة ACK الحالية، ويثبت مراجع Device Tree وقائمة وحدات vendor.
+This report is generated automatically. It compares the Kconfig symbols in `marble_GKI.config` from the Xiaomi source with the Kconfig symbols available in the current ACK tree, and records Device Tree references and the vendor modules list.
 
-| المجال | النتيجة | التفسير |
+| Domain | Result | Explanation |
 |---|---:|---|
-| طلبات إعداد Xiaomi marble | 429 | رموز Kconfig المذكورة في `marble_GKI.config`. |
-| رموز موجودة اسمياً في ACK | 124 | قابلة للمراجعة يدوياً من حيث التبعيات والمعنى. |
-| رموز غائبة اسمياً من ACK | 305 | لا يجوز تمريرها تلقائياً؛ تتطلب نقلاً أو بديلاً. |
-| ملفات DTS/DTSI/DTBO المرتبطة بـ marble أو SM7475 | 4 | مستخرجة من مستودع Xiaomi المنفصل للـDevice Tree. |
-| وحدات قائمة marble | 111 | وحدات مرجعية من `modules.list.msm.marble`. |
+| Xiaomi marble config entries | 429 | Kconfig symbols listed in `marble_GKI.config`. |
+| Symbols nominally present in ACK | 124 | Manually-reviewable with respect to dependencies and meaning. |
+| Symbols nominally absent from ACK | 305 | Cannot be passed automatically; require transplantation or replacement. |
+| DTS/DTSI/DTBO files associated with marble or SM7475 | 4 | Extracted from Xiaomi's separate Device Tree repository. |
+| marble listed modules | 111 | Reference modules from `modules.list.msm.marble`. |
 
 
-## توزيع فجوات Kconfig حسب الطبقة
+## Distribution of Kconfig gaps by layer
 
-| الطبقة | عدد الرموز الغائبة |
+| Layer | Number of missing symbols |
 |---|---:|
 | `audio` | 1 |
 | `camera` | 2 |
@@ -27,16 +27,16 @@
 | `storage` | 4 |
 | `wireless-and-peripherals` | 11 |
 
-## ملفات Device Tree المرجعية
+## Device Tree reference files
 
 - `qcom/marble-pinctrl.dtsi`
 - `qcom/marble-sm7475-pm8008-overlay.dts`
 - `qcom/marble-sm7475.dtsi`
 - `qcom/xiaomi-sm7475-common.dtsi`
 
-## توزيع الوحدات حسب الطبقة الوظيفية
+## Distribution of modules by functional layer
 
-| الطبقة | عدد الوحدات المرجعية |
+| Layer | Number of referenced modules |
 |---|---:|
 | `clocks-and-pinctrl` | 10 |
 | `diagnostics-and-vendor-hooks` | 10 |
@@ -47,9 +47,9 @@
 | `power-and-scheduling` | 24 |
 | `storage-and-crypto` | 10 |
 
-## توزيع الوحدات حسب البادئة الاسمية
+## Distribution of modules by name prefix
 
-| البادئة | عدد الوحدات |
+| Prefix | Number of modules |
 |---|---:|
 | `arm` | 1 |
 | `bcl` | 1 |
@@ -109,15 +109,15 @@
 | `ufs` | 1 |
 | `ufshcd` | 1 |
 
-## الملفات الناتجة
+## Generated files
 
-| الملف | الغرض |
+| File | Purpose |
 |---|---|
-| `marble_gki_config_present.tsv` | رموز إعداد مرجعية ما زالت موجودة اسمياً في ACK. |
-| `marble_gki_config_missing.tsv` | رموز مفقودة؛ تمثل فجوات نقل لا تُفعّل تلقائياً. |
-| `marble_gki_missing_categories.tsv` | توزيع فجوات Kconfig حسب الطبقة العتادية. |
-| `marble_dts_references.txt` | ملفات DTS/DTSI/DTBO المرجعية. |
-| `marble_module_categories.tsv` | توزيع أولي لوحدات vendor حسب الطبقة الوظيفية. |
-| `marble_module_prefixes.tsv` | توزيع أولي لوحدات vendor حسب البادئة الاسمية. |
+| `marble_gki_config_present.tsv` | Reference config symbols that are still nominally present in ACK. |
+| `marble_gki_config_missing.tsv` | Missing symbols; represent transfer gaps that are not automatically enabled. |
+| `marble_gki_missing_categories.tsv` | Distribution of Kconfig gaps by hardware layer. |
+| `marble_dts_references.txt` | Reference DTS/DTSI/DTBO files. |
+| `marble_module_categories.tsv` | Initial distribution of vendor modules by functional layer. |
+| `marble_module_prefixes.tsv` | Initial distribution of vendor modules by name prefix. |
 
-> الوجود الاسمي للرمز لا يثبت أن التعريف أو التبعية توافق 6.18. والغِياب لا يثبت استحالة النقل؛ إنه فقط يمنع النقل الآلي غير المراجع.
+> The nominal presence of a symbol does not prove that its definition or dependencies are compatible with 6.18. Absence does not prove that porting is impossible; it only prevents automated, unreviewed transfer.

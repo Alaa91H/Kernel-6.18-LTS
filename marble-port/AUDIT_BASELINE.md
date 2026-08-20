@@ -1,19 +1,19 @@
-# خط أساس تدقيق marble على Android/GKI 6.18
+# Audit baseline for marble on Android/GKI 6.18
 
-## حالة المصدر
+## Source state
 
-يبدأ هذا التدقيق من الالتزام `ccab6030dd7afc528fffd40d7ce2c1a0f8223669` على الفرع `marble-6.18-full-port`، وكان الفرع متزامناً مع `origin/marble-6.18-full-port` وشجرة العمل نظيفة عند الفحص. قاعدة النواة المعلنة في `Makefile` هي Linux `6.18.32` ضمن Android Common Kernel.
+This audit starts from commit `ccab6030dd7afc528fffd40d7ce2c1a0f8223669` on the `marble-6.18-full-port` branch, and the branch was synchronized with `origin/marble-6.18-full-port` and the working tree was clean at inspection. The declared kernel base in the `Makefile` is Linux `6.18.32` within the Android Common Kernel.
 
-| بند | الحالة | الدليل أو الأثر |
+| Item | Status | Evidence or impact |
 |---|---|---|
-| أداة BTF المحلية | `pahole v1.25` | الأداة موجودة، لكن قبول BTF/KMI يتطلب بناءاً ناجحاً وتحققاً صريحاً وليس وجود الأداة وحده. |
-| BTF في جزء النموذج | معطّل صراحة | `CONFIG_DEBUG_INFO_BTF` و`CONFIG_DEBUG_INFO_BTF_MODULES` غير مفعّلين في `marble_gki_6_18_proto.config`. |
-| مخرج Image/الوحدات الحالي | غير متاح | أزيلت مخرجات البناء الكامل أثناء محاولة إعادة بناء نظيفة لم تكتمل؛ لا يجوز تقديمها كقطعة قابلة للنشر. |
-| فحص DT الثابت | متاح وناجح سابقاً | مخرجات `out/marble-dt-6.18` قابلة للقراءة والدمج، مع التحذيرات الموثقة. |
-| إثبات إقلاع جهاز | غير متاح | لا يوجد serial log أو `dmesg` أو اختبار استرداد من POCO F5. |
+| Local BTF tool | `pahole v1.25` | The tool is present, but acceptance of BTF/KMI requires a successful build and explicit verification, not the mere presence of the tool. |
+| BTF in the prototype partition | explicitly disabled | `CONFIG_DEBUG_INFO_BTF` and `CONFIG_DEBUG_INFO_BTF_MODULES` are not enabled in `marble_gki_6_18_proto.config`. |
+| Current Image/modules output | not available | Full-build outputs were removed during an attempted clean rebuild that did not complete; they must not be submitted as a publishable artifact. |
+| Static DT check | available and previously successful | The outputs in `out/marble-dt-6.18` are readable and mergeable, with documented warnings. |
+| Device boot proof | not available | There is no serial log or `dmesg` or recovery test from the POCO F5. |
 
-## قاعدة النزاهة
+## Integrity baseline
 
-> لا تعني عبارة «100% جاهزة» بناءً ناجحاً أو انعدام تحذيرات DTC فقط. لا تصبح النواة جاهزة للتفليش إلا إذا اجتازت بناءاً نظيفاً موثقاً مع BTF/KMI، وتحققاً من مكونات vendor المطلوبة، وسجل إقلاع واسترداد حقيقيين على marble.
+> The phrase “100% ready” does not mean only a successful build or absence of DTC warnings. The kernel only becomes ready to flash if it passes a documented clean build with BTF/KMI, verification of required vendor components, and an actual boot and recovery log on marble.
 
-لا تزال المخرجات السابقة التي وثقت نجاح بناء Image والوحدات دليلاً تاريخياً على قابلية التجميع، لكنها ليست حالياً artifact قابل لإعادة التسليم؛ لذلك ستعاد عملية البناء بعد تثبيت الإصلاحات وتفعيل وضع التحقق المناسب.
+The previous outputs that documented a successful build of Image and modules remain historical evidence of buildability, but are not currently a deliverable artifact; therefore the build will be redone after fixes are applied and verification mode is enabled.

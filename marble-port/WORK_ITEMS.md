@@ -1,42 +1,42 @@
-# سجل عمل نقل marble إلى GKI 6.18
+# Work Log of Porting marble to GKI 6.18
 
-## حالات العمل
+## Statuses
 
-| الحالة | المعنى |
+| Status | Meaning |
 |---|---|
-| `blocked` | لا يمكن البدء تقنياً قبل إغلاق اعتماد محدد. |
-| `researched` | المرجع والاعتمادات موثقة، لكن لا توجد رقعة نقل. |
-| `in-progress` | توجد رقعة صغيرة قيد البناء أو المراجعة. |
-| `static-validated` | اجتازت الرقعة البناء والفحوص الثابتة فقط. |
-| `hardware-validated` | ثبتت على POCO F5 بسجل إقلاع أو اختبار وظيفي. |
+| `blocked` | Cannot technically start until a specific dependency is closed. |
+| `researched` | The reference and dependencies are documented, but there is no port patch. |
+| `in-progress` | A small patch is under development or review. |
+| `static-validated` | The patch has passed build and static checks only. |
+| `hardware-validated` | Proven on POCO F5 with a boot log or functional test. |
 
-## بنية Device Tree والمنصة
+## Device Tree and Platform Layout
 
-| المعرّف | المهمة الذرية | الحالة | الاعتمادات | معيار القبول |
+| Identifier | Atomic task | Status | Dependencies | Acceptance criterion |
 |---|---|---|---|---|
-| DT-001 | تكييف 15 binding مفقوداً في ACK أو تحديد بدائل upstream لها. | `static-validated` | headers منقولة من Xiaomi وسجل `marble_dt_bindings_imported.tsv`. | 30 تضميناً خارجياً موجودة نصياً؛ تحقق providers يؤجل إلى DT-002/DT-003. |
-| DT-002 | نقل قاعدة `ukee.dtb` و`ukee.dtsi` وطبقة SoC cape/SM7475. | `static-validated` | DT-001 وطبقة Qualcomm L1. | يبني `ukee.dtb` ويدعم تطبيق overlay ثابتاً؛ تحذيرات DTC موثقة. |
-| DT-003 | نقل reserved-memory وIOMMU وinterconnect وclocks للمنصة. | `in-progress` | DT-002. | تحقق `dtbs_check` الخاص بالرقع ووجود العقد المرجعية. |
-| DT-004 | نقل `marble-sm7475.dtsi` و`marble-pinctrl.dtsi`. | `static-validated` | DT-002 وDT-003. | يندمج اللوح ثابتاً فوق قاعدة ukee؛ ما زال تحقق العتاد مطلوباً. |
-| DT-005 | نقل overlay `marble-sm7475-pm8008-overlay.dtso`. | `static-validated` | DT-004 وPMIC/regulator. | يبني DTBO ويطبّق عبر `fdtoverlay` على `ukee.dtb`؛ تحذيرات DTC موثقة. |
+| DT-001 | Adapt 15 missing bindings in ACK or identify upstream alternatives for them. | `static-validated` | headers imported from Xiaomi and record `marble_dt_bindings_imported.tsv`. | 30 external includes textually present; providers verification deferred to DT-002/DT-003. |
+| DT-002 | Port base `ukee.dtb` and `ukee.dtsi` and SoC cape/SM7475 layer. | `static-validated` | DT-001 and Qualcomm L1 layer. | Builds `ukee.dtb` and supports applying the overlay statically; DTC warnings documented. |
+| DT-003 | Port reserved-memory, IOMMU, interconnect, and clocks for the platform. | `in-progress` | DT-002. | Patch-specific `dtbs_check` verification and presence of reference nodes. |
+| DT-004 | Port `marble-sm7475.dtsi` and `marble-pinctrl.dtsi`. | `static-validated` | DT-002 and DT-003. | The board integrates statically over the ukee base; hardware verification still required. |
+| DT-005 | Port overlay `marble-sm7475-pm8008-overlay.dtso`. | `static-validated` | DT-004 and PMIC/regulator. | Builds DTBO and applies via `fdtoverlay` on `ukee.dtb`; DTC warnings documented. |
 
-## إعدادات النواة والوحدات
+## Kernel Configs and Modules
 
-| المعرّف | المهمة الذرية | الحالة | الاعتمادات | معيار القبول |
+| Identifier | Atomic task | Status | Dependencies | Acceptance criterion |
 |---|---|---|---|---|
-| KC-001 | مراجعة 124 رمز Kconfig موجوداً اسمياً في ACK. | `researched` | `marble_gki_config_present.tsv`. | لكل رمز قرار تمكين أو تعطيل مع سبب. |
-| KC-002 | تصنيف 305 رموز مفقودة إلى بديل upstream أو رقعة نقل أو غير مدعوم. | `researched` | `marble_gki_config_missing_categories.tsv`. | لا تبقى رموز مفعلة من دون قرار موثق. |
-| MOD-001 | فصل 111 وحدة مرجعية إلى أساس إقلاع، vendor، وتشخيص. | `researched` | `marble_module_categories.tsv`. | قائمة وحدات دنيا قابلة للبناء دون vendor-only APIs. |
-| MOD-002 | إعادة بناء وحدات المنصة الأساسية وفق KMI/BTF النهائي. | `blocked` | KC-001 وKC-002 وDT-002. | تحميل الوحدات على جهاز الاختبار بلا رموز غير محلولة. |
+| KC-001 | Review 124 Kconfig symbols nominally present in ACK. | `researched` | `marble_gki_config_present.tsv`. | For each symbol, a decision to enable or disable with rationale. |
+| KC-002 | Categorize 305 missing symbols into upstream alternative, port patch, or unsupported. | `researched` | `marble_gki_config_missing_categories.tsv`. | No enabled symbols remain without a documented decision. |
+| MOD-001 | Classify 111 reference modules into boot, vendor, and diagnostic. | `researched` | `marble_module_categories.tsv`. | A minimal list of modules buildable without vendor-only APIs. |
+| MOD-002 | Rebuild core platform modules according to final KMI/BTF. | `blocked` | KC-001 and KC-002 and DT-002. | Modules load on the test device with no unresolved symbols. |
 
-## المسارات الوظيفية
+## Functional Paths
 
-| المعرّف | المسار | الحالة | الاعتمادات الدنيا | دليل القبول |
+| Identifier | Path | Status | Minimal dependencies | Acceptance criteria |
 |---|---|---|---|---|
-| BOOT-001 | UFS وUSB وserial وreboot reason | `blocked` | DT-002، DT-003، MOD-001. | سجل إقلاع واسترداد فعلي. |
-| PWR-001 | PMIC وregulator وRPMh وthermal | `blocked` | DT-002، DT-005، KC-002. | تعليق/استئناف وشحن بلا kernel panic. |
-| NET-001 | Wi-Fi/BT/CNSS وQRTR/modem | `blocked` | BOOT-001، وحدات vendor، firmware. | اختبار اتصال وسجل modem. |
-| UI-001 | display وtouch وGPU | `researched` | PWR-001، DT-004، تعريفات العرض/Adreno. | فجوات ACK موثقة في `MEDIA_VENDOR_GAPS.md`؛ لا تزال شاشة ورسوميات الجهاز غير متحققة. |
-| MEDIA-001 | audio وDSP والكاميرا | `researched` | NET-001 وUI-001 وتعريفات vendor. | فجوات ACK وغياب المصدر الكامل موثقة؛ لا يزال الاختبار الوظيفي محجوباً. |
+| BOOT-001 | UFS, USB, serial, and reboot reason | `blocked` | DT-002, DT-003, MOD-001. | Actual boot and recovery log. |
+| PWR-001 | PMIC, regulator, RPMh, and thermal | `blocked` | DT-002, DT-005, KC-002. | Suspend/resume and charging without kernel panic. |
+| NET-001 | Wi-Fi/BT/CNSS and QRTR/modem | `blocked` | BOOT-001, vendor modules, firmware. | Connectivity test and modem log. |
+| UI-001 | display, touch, and GPU | `researched` | PWR-001, DT-004, display/Adreno drivers. | ACK gaps documented in `MEDIA_VENDOR_GAPS.md`; device display and graphics remain unverified. |
+| MEDIA-001 | audio, DSP, and camera | `researched` | NET-001 and UI-001 and vendor drivers. | ACK gaps and missing full source documented; functional testing still blocked. |
 
-> عناصر `blocked` ليست مهملة: تعني أن ترتيب الاعتماد يمنع إنتاج رقعة مضللة قبل أن يصبح أساس المنصة قابلاً للبناء والتحقق.
+> Items marked `blocked` are not abandoned: they mean that dependency ordering prevents producing a misleading patch until the platform base is buildable and verifiable.

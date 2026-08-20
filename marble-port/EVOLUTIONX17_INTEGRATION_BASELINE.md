@@ -1,70 +1,70 @@
-# خط أساس تكامل Evolution X 17 لجهاز marble
+# Evolution X 17 Integration Baseline for marble
 
-**الحالة:** أدلة مصدر ثابتة مكتملة؛ جرد ملف ROM الرسمي الثنائي ما زال قيد الاستلام، ولذلك فإن إنشاء `boot.img` أو `vendor_boot.img` أو تفليش أي مخرج **محظور**. هذا المستند ليس اعتماد توافق إقلاع.
+**Status:** Device source trees fixed and complete; official ROM binary artifact intake is still pending, therefore creation of `boot.img` or `vendor_boot.img` or flashing any output is **prohibited**. This document is not a boot compatibility approval.
 
-## نطاق الدليل
+## Scope of the baseline
 
-يستهدف هذا الخط الأساس جهاز **POCO F5 / Redmi Note 12 Turbo (`marble`)** وإصدار Evolution X 12.1 المبني على Android 17. صفحة الجهاز الرسمية تسجل `marble` ضمن أجهزة Android 17، ويُعامل رابط ROM الرسمي المسجل في تقرير الاكتشاف كمدخل غير منفذ حتى يكتمل التحقق من البصمة والمحتويات.[1]
+This baseline targets the POCO F5 / Redmi Note 12 Turbo (`marble`) device and the Evolution X 12.1 release built on Android 17. The official device page lists `marble` among Android 17 devices, and the official ROM link recorded in the discovery report is treated as an unprocessed intake until fingerprint and contents verification are completed.[1]
 
-| عنصر الدليل | المصدر المثبت | الالتزام / النسخة | الغرض |
+| Baseline item | Anchored source | Commit / version | Purpose |
 |---|---|---:|---|
-| شجرة جهاز Evolution X | `Evolution-X-Devices/device_xiaomi_marble` | `a8d866758688862bcff9c5d9b2ff3ba00fc9b549`، 2026-06-25 | تعريف الجهاز وخصائص `marble`. |
-| الشجرة المشتركة | `Evolution-X-Devices/device_xiaomi_sm8450-common` | `b73b209ae0ec6858a03117e89b4705174bd1fcac`، 2026-06-29 | عقد صور الإقلاع، DLKM وVINTF. |
-| مصدر kernel المرجعي | `Evolution-X-Devices/kernel_xiaomi_sm8450` | `e8fcf25587112c854814dbe399a99110d18c82de`، 2026-07-03 | مرجع تهيئة vendor 5.10 وقوائم الوحدات، لا مصدر قابل للخلط مع 6.18. |
-| artefacts 5.10 القديمة المنشورة | `Evolution-X-Devices/device_xiaomi_marble-kernel` | `03dda81f521cf7ab016ef8558b3f9d67d0fdaf79`، 2024-03-19 | مرجع تاريخي لبنية DLKM فقط؛ ليس مرجع ABI لـEvolution X 17. |
-| مرشح 6.18 المحلي | `android17-6.18-lts` عند `4e44babe3f67` | Linux 6.18.32 | النواة العامة محل الاختبار. |
+| Evolution X device tree | `Evolution-X-Devices/device_xiaomi_marble` | `a8d866758688862bcff9c5d9b2ff3ba00fc9b549`, 2026-06-25 | Device definition and `marble` properties. |
+| Common tree | `Evolution-X-Devices/device_xiaomi_sm8450-common` | `b73b209ae0ec6858a03117e89b4705174bd1fcac`, 2026-06-29 | Hosts boot images, DLKM and VINTF. |
+| Reference kernel source | `Evolution-X-Devices/kernel_xiaomi_sm8450` | `e8fcf25587112c854814dbe399a99110d18c82de`, 2026-07-03 | Reference vendor 5.10 configuration and module lists; not a source to mix with 6.18. |
+| Published legacy 5.10 artefacts | `Evolution-X-Devices/device_xiaomi_marble-kernel` | `03dda81f521cf7ab016ef8558b3f9d67d0fdaf79`, 2024-03-19 | Historical reference for DLKM builds only; not an ABI reference for Evolution X 17. |
+| Local 6.18 candidate | `android17-6.18-lts` at `4e44babe3f67` | Linux 6.18.32 | Public kernel under test. |
 
-> **قاعدة ABI:** وحدات 5.10 الثنائية لا تُحمّل، ولا تُنسخ، ولا تُوقّع، ولا تُغلف مع نواة 6.18. تطابق الاسم لا يثبت توافق ABI أو KMI.
+> ABI rule: 5.10 vendor binaries must not be loaded, copied, signed, or packaged with the 6.18 kernel. Name matching does not prove ABI or KMI compatibility.
 
-## عقد Evolution X المستخرج من المصدر
+## Extracted Evolution X vendor contracts
 
-تستورد شجرة `marble` شجرة `sm8450-common`. ينص تكوينها على `TARGET_KERNEL_SOURCE := kernel/xiaomi/sm8450` مع `gki_defconfig` وأجزاء `waipio_GKI.config` و`xiaomi_GKI.config` و`marble_GKI.config` و`debugfs.config`.[2] يوضح ذلك أن هدف Evolution X الحالي مبني حول مجموعة تعريفات Qualcomm/Xiaomi vendor 5.10، وليس حول Android Common Kernel 6.18.
+The `marble` tree imports the `sm8450-common` tree. Its configuration sets `TARGET_KERNEL_SOURCE := kernel/xiaomi/sm8450` with `gki_defconfig` and fragments `waipio_GKI.config`, `xiaomi_GKI.config`, `marble_GKI.config` and `debugfs.config`.[2] This indicates the current Evolution X target is centered on the Qualcomm/Xiaomi vendor 5.10 definition set, not on the Android Common Kernel 6.18.
 
-| مجال | عقد Evolution X المعلن | أثره على 6.18 العامة |
+| Area | Declared Evolution X contracts | Impact on the public 6.18 |
 |---|---|---|
-| الإقلاع | Boot header v4، `Image`، وDTB مضمّن في boot. | يجب استخراج `boot.img` الفعلي للتحقق من page size، ramdisk وcmdline؛ لا يجوز تخمينها. |
-| Device Tree | GKI مفعّل، دمج DTBs لـQCOM، و`TARGET_NEEDS_DTBOIMAGE := true`. | يلزم مقارنة `dtbo.img` الحقيقي مع DTBO المبني لـmarble بعد استلام ROM. |
-| A/B | تتضمن قائمة OTA: `boot` و`dtbo` و`vendor_boot` و`vendor_dlkm` إضافة إلى الأقسام الديناميكية. | يفرض جرد صور متسق من **البناء نفسه** قبل أي تغليف. |
-| vendor ramdisk | fragment باسم `dlkm`؛ قوائم تحميل مرحلتين. | وحدات المرحلة الأولى ضرورية للإقلاع، ولا يمكن تبديلها بوحدات 5.10 عند اختبار 6.18. |
-| vendor DLKM | `vendor_dlkm` ext4 وقائمة وحدات خاصة. | يتطلب بدائل 6.18 مبنية من المصدر أو تجميد استخدام النواة العامة حتى تتوفر طبقة vendor ملائمة. |
-| AVB | AVB مفعّل وvbmeta system منفصل. | لا توجد مفاتيح أو سياسة قبول مكتملة؛ لذلك يبقى التغليف مرفوضاً. |
+| Boot | Boot header v4, `Image`, and DTB embedded in boot. | The actual `boot.img` must be extracted to verify page size, ramdisk and cmdline; guessing is not permitted. |
+| Device Tree | GKI enabled, QCOM DTBs merged, and `TARGET_NEEDS_DTBOIMAGE := true`. | The real `dtbo.img` must be compared with the DTBO built for marble after ROM intake. |
+| A/B | OTA list includes: `boot` and `dtbo` and `vendor_boot` and `vendor_dlkm` in addition to dynamic partitions. | Requires a consistent image inventory from the **same build** before any packaging. |
+| vendor ramdisk | fragment named `dlkm`; two-stage loading lists. | First-stage modules are required for boot and cannot be swapped with 5.10 modules when testing 6.18. |
+| vendor DLKM | `vendor_dlkm` ext4 and a private module list. | 6.18 alternatives require source-built replacements or freezing the public kernel until a compatible vendor layer is available. |
+| AVB | AVB enabled and separate vbmeta system. | No keys or complete acceptance policy available; packaging remains rejected. |
 
-## نتيجة التدقيق الثابت
+## Static audit result
 
-شُغلت `tools/audit_evolutionx17_kernel_contract.sh` على مخرج `marble-aosp-diagnostic-none` ونفّذت مقارنة تهيئة وأسماء فقط. استُخدمت التهيئتان `marble_GKI.config` و`waipio_GKI.config` من مرجع Evolution X 5.10.256، ثم قورنتا مع `.config` المرشح 6.18. لا يحول هذا التدقيق الاختلافات إلى طلبات تفعيل تلقائية لأن رموز vendor قد لا تكون موجودة أصلاً في Android Common Kernel 6.18.
+`tools/audit_evolutionx17_kernel_contract.sh` was run against the `marble-aosp-diagnostic-none` output and performed a configuration/name-only comparison. The `marble_GKI.config` and `waipio_GKI.config` configurations from the Evolution X 5.10.256 reference were used, then compared to the candidate 6.18 `.config`. This audit does not translate differences into automatic enable requests because vendor symbols may not exist at all in the Android Common Kernel 6.18.
 
-| مقياس | النتيجة | القراءة الصحيحة |
+| Metric | Result | Correct interpretation |
 |---|---:|---|
-| رموز مرجع 5.10 الفعالة | 344 | عقد قدرات vendor تاريخي/مرجعي. |
-| رموز ظاهرة كـ enabled في مرشح 6.18 | 9 | ليست دليلاً على تكافؤ العتاد. |
-| رموز مفقودة أو معطلة في المقارنة الاسمية | 335 | فجوات متوقعة بين شجرة Qualcomm/Xiaomi 5.10 وACK 6.18؛ تحتاج porting حقيقياً أو بدائل upstream. |
-| وحدات مرحلة أولى فريدة في المرجع | 97 | تعتمد على ABI وواجهات 5.10 الخاصة بالمورّد. |
-| ملفات `.ko` فريدة مبنية في مرشح 6.18 | 104 | مخرجات ACK عامة وليست بديلاً اسميّاً للوحدات المرجعية. |
-| تداخل أسماء وحدات المرحلة الأولى | 0 | **ليس** دليلاً على عيب تغليف؛ بل تأكيد أن الاستبدال الثنائي غير صالح. |
+| Active 5.10 reference symbols | 344 | Historical / reference vendor capability contracts. |
+| Symbols appearing enabled in the 6.18 candidate | 9 | Not evidence of hardware parity. |
+| Missing or disabled symbols in nominal comparison | 335 | Expected gaps between the Qualcomm/Xiaomi 5.10 tree and ACK 6.18; real porting or upstream alternatives required. |
+| Unique first-stage modules in the reference | 97 | Depend on 5.10 vendor ABI and interfaces. |
+| Unique `.ko` files built in the 6.18 candidate | 104 | ACK public outputs and not a nominal replacement for the reference modules. |
+| First-stage module name collisions | 0 | Not evidence of a packaging bug; rather confirmation that binary substitution is invalid. |
 
-أبرز عائلات الفجوات هي Qualcomm clocks/interconnect/RPMh، UFS وUSB PHY، CNSS/WLAN، display/KGSL/camera/audio، DSP/ADSP وIPA/MHI، الطاقة والحرارة وإدخال اللمس. هذه النتيجة تتسق مع تدقيق فجوات vendor العام في `MEDIA_VENDOR_GAPS.md`، وتحوّل بوابة الاختبار من «بناء Image» إلى «نقل تفرعات vendor أو التحقق من دعم upstream الفعلي».
+The prominent families of gaps are Qualcomm clocks/interconnect/RPMh, UFS and USB PHY, CNSS/WLAN, display/KGSL/camera/audio, DSP/ADSP and IPA/MHI, power and thermal and touch input. This result aligns with the general vendor-gap audit in `MEDIA_VENDOR_GAPS.md`, and shifts the test gate from “Image build” to “vendor branch porting or upstream support verification”.
 
-## artefact ROM الرسمي وحالته
+## Official ROM artefact and its intake state
 
-تم تعريف مدخل ROM الرسمي في `manifests/evolutionx-17.env.example` وفي `reports/evolutionx17_source_discovery.md`. لا يحفظ المستودع ROM أو الصور المستخرجة أو firmware أو مفاتيح AVB. بعد اكتمال التنزيل، تكون خطوات الاستلام حصراً كما يلي:
+The official ROM intake is defined in `manifests/evolutionx-17.env.example` and in `reports/evolutionx17_source_discovery.md`. The repository does not store the ROM, extracted images, firmware, or AVB keys. After download completes, the intake steps are strictly as follows:
 
-| بوابة | الدليل المطلوب | قرار الأهلية |
+| Gate | Required evidence | Eligibility decision |
 |---|---|---|
-| I0 — سلامة ZIP | حجم متوقع، SHA-256 محلي و`unzip -t`. | الفشل يوقف التحليل. |
-| I1 — جرد الصور | أسماء وأحجام وبصمات `boot` و`vendor_boot` و`dtbo` و`vendor_dlkm` و`system_dlkm` إن وجدت. | لا تغليف قبل اكتمالها. |
-| I2 — الهوية | fingerprint وbuild ID وتاريخ البناء وAVB من البناء نفسه. | يملأ manifest خارج Git. |
-| I3 — ABI/DT | إصدار kernel، vermagic، قوائم modules، overlay وDTB/DTBO. | لا يُعتمد أي تطابق اسمي بدلاً من ABI. |
-| I4 — الجهاز | إثبات recovery والإقلاع والسجل والاسترداد من POCO F5 حقيقي. | وحده يسمح بتحديث حالة قبول الجهاز. |
+| I0 — ZIP integrity | Expected size, local SHA-256 and `unzip -t`. | Failure stops analysis. |
+| I1 — image inventory | Names, sizes and fingerprints of `boot`, `vendor_boot`, `dtbo`, `vendor_dlkm` and `system_dlkm` if present. | No packaging before completion. |
+| I2 — identity | fingerprint and build ID and build date and AVB from the build itself. | Populates a manifest outside Git. |
+| I3 — ABI/DT | kernel version, vermagic, modules lists, overlays and DTB/DTBO. | No name-only match is accepted instead of ABI. |
+| I4 — device | Recovery and boot and logging and recovery proof from a real POCO F5. | The only gate that allows updating the device acceptance state. |
 
-## قرار التكامل الحالي
+## Current integration decision
 
-**لا توافق ثنائي مثبت بين Evolution X 17 المرجعي 5.10.256 والنواة العامة 6.18.32.** النواة 6.18 تبقى نواة بحث/porting عامة صالحة للبناء الثابت، بينما يحتاج هدف Evolution X إما نقل تعريفات المورّد ومصادرها إلى 6.18 مع KMI/DT/firmware متطابقة، أو بديل upstream موثق لكل مسار عتادي حرج. لن يتم تضمين وحدات المرجع 5.10 في أي مخرج 6.18.
+There is no established binary compatibility between the reference Evolution X 17 5.10.256 and the public kernel 6.18.32. The 6.18 kernel remains a research/porting public kernel suitable for reproducible builds, while the Evolution X target either needs vendor definitions and sources ported to 6.18 with matching KMI/DT/firmware, or documented upstream alternatives for every critical hardware path. Reference 5.10 modules will not be included in any 6.18 output.
 
-توجد فجوة اتساق صغيرة يجب حلها في مرحلة إعداد النكهة: نموذج manifest يحمل `ROM_FLAVOR=evolutionx-17`، في حين أن قائمة قبول `--flavor` في نص البناء الحالي تقتصر على `aosp|xiaomi`. تعديل القبول إلى `evolutionx-17` هو تعديل metadata فقط، وسيتم تنفيذه مع اختبار بناء مستقل بعد اكتمال بوابات الاستلام والتحليل، من دون أن يرفع الحظر عن التغليف.
+There is a small consistency gap to be addressed at flavor setup time: the manifest template carries `ROM_FLAVOR=evolutionx-17`, while the `--flavor` accept list in the current build script is limited to `aosp|xiaomi`. Changing the acceptance to include `evolutionx-17` is a metadata-only modification and will be implemented with an independent build test after intake and analysis gates are completed, without lifting the packaging prohibition.
 
-## المراجع
+## References
 
-[1]: https://evolution-x.org/devices/marble "صفحة Evolution X الرسمية لجهاز marble"
+[1]: https://evolution-x.org/devices/marble "Evolution X official page for marble"
 [2]: https://github.com/Evolution-X-Devices/device_xiaomi_sm8450-common/blob/main/BoardConfigCommon.mk "Evolution X sm8450-common BoardConfigCommon.mk"
 [3]: https://github.com/Evolution-X-Devices/device_xiaomi_marble "Evolution X marble device tree"
 [4]: https://github.com/Evolution-X-Devices/kernel_xiaomi_sm8450 "Evolution X Xiaomi SM8450 kernel source"

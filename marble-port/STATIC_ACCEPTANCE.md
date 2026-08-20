@@ -1,29 +1,29 @@
-# سجل القبول الثابت لـ POCO F5 (marble) على Android/GKI 6.18
+# Static Acceptance Record for POCO F5 (marble) on Android/GKI 6.18
 
-## نطاق هذا السجل
+## Scope of this record
 
-يوثق هذا الملف نتائج فحوصات المصدر وDevice Tree فقط. لا يعني أي بند ناجح أن الجهاز أقلع، ولا يجيز إنشاء `boot.img` أو تفليشه. تعد نتيجة الفحص صالحة للمراجعة على الالتزام `02012bbe2e1edd14d49c32ef56ff5e94de8ce1e1` الذي كانت شجرته نظيفة عند إجراء فحص Device Tree.
+This document records the results of source and Device Tree checks only. No successful entry implies the device booted, nor does it authorize creating or flashing a `boot.img`. The inspection result is valid for review against commit `02012bbe2e1edd14d49c32ef56ff5e94de8ce1e1`, whose tree was clean at the time the Device Tree check was performed.
 
-| بوابة القبول | النتيجة | الدليل | الأثر |
+| Acceptance Gate | Result | Evidence | Impact |
 |---|---|---|---|
-| تهيئة المسارات الأساسية | ناجحة ثابتاً | `validate_marble_core_config.sh` فعّل 11 رمزاً. | UFS وRPMh وUSB/PHY وADC و`OF_OVERLAY` محددة في التهيئة. |
-| DTB أساسي | ناجح ثابتاً | `ukee.dtb` قابل للقراءة عبر `dtc`. | لا يثبت توفر clock أوregulator أوdriver وقت التشغيل. |
-| DTBO marble | ناجح ثابتاً | `marble-sm7475-pm8008-overlay.dtbo` قابل للقراءة عبر `dtc`. | لا يثبت صحة كل phandle أو توفّر التعريفات vendor. |
-| دمج overlay | ناجح ثابتاً | ناتج `fdtoverlay` قابل للقراءة عبر `dtc`. | يحصر النتيجة في قابلية بناء/دمج البنية؛ لا يثبت التفعيل العتادي. |
-| Image والوحدات | نجح سابقاً من شجرة عمل تحتوي التغييرات نفسها قبل التزام نص البناء | 104 وحدات وImage مسجّلة في `DT_BUILD_STATUS.md`. | لا تُعامل كبصمة إصدار نظيف؛ إعادة بناء نظيفة مع BTF شرط لاحق. |
-| KMI/BTF | غير مقبول | BTF معطّل مؤقتاً في `marble_gki_6_18_proto.config`. | يمنع ادعاء توافق KMI أو إتاحة حزمة تفليش. |
-| إقلاع على marble | غير منفذ | لا يوجد سجل serial أو `dmesg` أو اختبار جهاز. | يمنع S3 فما بعده. |
+| Core path configuration | Statically successful | `validate_marble_core_config.sh` enabled 11 symbols. | UFS, RPMh, USB/PHY, ADC and `OF_OVERLAY` are set in the configuration. |
+| Base DTB | Statically successful | `ukee.dtb` is readable via `dtc`. | Does not prove runtime availability of clocks, regulators, or drivers. |
+| marble DTBO | Statically successful | `marble-sm7475-pm8008-overlay.dtbo` is readable via `dtc`. | Does not prove correctness of every phandle or availability of vendor definitions. |
+| Overlay merge | Statically successful | Output of `fdtoverlay` is readable via `dtc`. | Constrains the result to build/merge capability; does not prove hardware activation. |
+| Image and modules | Previously succeeded from a working tree containing the same changes before the build commit | 104 modules and Image recorded in `DT_BUILD_STATUS.md`. | Not to be treated as a clean-release fingerprint; a clean rebuild with BTF is a later condition. |
+| KMI/BTF | Not acceptable | BTF temporarily disabled in `marble_gki_6_18_proto.config`. | Prevents claiming KMI compatibility or availability of a flashing package. |
+| Booting on marble | Not executed | No serial log or `dmesg` or device test. | Prevents S3 and beyond. |
 
-## بصمات فحص Device Tree
+## Device Tree inspection fingerprints
 
-| المخرج | الحجم بالبايت | SHA-256 |
+| Output | Size (bytes) | SHA-256 |
 |---|---:|---|
 | `ukee.dtb` | 379,047 | `1d07d5ad9da131569901f3a5656bcf06e643fb1c664d826c65414bb5cbf1f5a8` |
 | `marble-sm7475-pm8008-overlay.dtbo` | 68,799 | `5c73e0d1f6ee5ee5fbb5ba4cf9ac61a77c494bdfcd02d31c3170c3e956fd3e62` |
 | `ukee-marble-merged.dtb` | 427,762 | `2b7970d274d6f61131f1a32e49ca7d366d67cc84310580be33ee48d7986a7d67` |
 
-## حواجز الحظر قبل التفليش
+## Blocking gates before flashing
 
-لا يجوز إنتاج أو اقتراح استخدام `boot.img`، ولا تمرير نتيجة هذا المصدر كنواة صالحة للجهاز، قبل إغلاق الحواجز التالية. يجب أولاً تكييف مسارات UFS وRPMh/منظمات الطاقة وUSB glue بصورة زمن تشغيل فعلية. ويجب ثانياً إغلاق فجوات GPU والعرض والكاميرا والصوت والـDSP والمودم أو عزلها بتهيئة يثبت أنها لا تمنع الإقلاع. ويجب ثالثاً إعادة تمكين BTF وإجراء فحص KMI، ثم بناء صورة نظيفة من التزام مسجل، وأخيراً جمع سجل إقلاع واسترداد من جهاز marble حقيقي.
+You may not produce or propose using a `boot.img`, nor pass this source result as a valid kernel for the device, until the following gates are closed. First, UFS and RPMh/power regulators and USB glue paths must be adapted to a true runtime configuration. Second, gaps in GPU, display, camera, audio, DSP, and modem must be closed or isolated via configuration proven not to prevent boot. Third, BTF must be re-enabled and a KMI test performed, then build a clean image from a recorded commit, and finally collect a boot and recovery log from a real marble device.
 
-> الفحص الحالي هو **S1–S2: static-validated**. تحذيرات DTC المتبقية في سجل البناء البالغ عددها 129، بما فيها تحذيرات phandle في فحص القراءة بعد الدمج، تعامل كفجوات يجب حلها أو تبريرها قبل التحقق العتادي.
+> The current inspection is **S1–S2: static-validated**. The remaining 129 DTC warnings in the build log, including phandle warnings in the post-merge read check, are treated as gaps that must be resolved or justified before hardware validation.

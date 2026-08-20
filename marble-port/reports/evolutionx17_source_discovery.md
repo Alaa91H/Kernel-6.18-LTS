@@ -1,40 +1,40 @@
-# اكتشاف مصدر Evolution X 17 لـmarble
+# Discovery of Evolution X 17 source for marble
 
-## المصدر الرسمي
+## Official source
 
-- صفحة الجهاز: <https://evolution-x.org/devices/marble>
-- تاريخ الفحص: 2026-08-20
-- الجهاز المعروض: Xiaomi Poco F5 / Redmi Note 12 Turbo (`marble`).
-- إصدار Android المعروض: 17.
-- إصدار Evolution X المعروض: 12.1.
-- تاريخ الإصدار المعروض: 2026-08-12.
-- النوع المعروض: `user`.
-- الحجم المعروض: 3.29 GB.
-- حالة الصيانة المعروضة: currently maintained = yes.
-- المشرف المعروض: Joey.
-- رابط XDA الظاهر في الصفحة: <https://xdaforums.com/t/rom-17-marble-official-evolution-x-07-20-26.4709959/>.
+- Device page: <https://evolution-x.org/devices/marble>
+- Date of inspection: 2026-08-20
+- Device displayed: Xiaomi Poco F5 / Redmi Note 12 Turbo (`marble`).
+- Android version displayed: 17.
+- Evolution X version displayed: 12.1.
+- Release date displayed: 2026-08-12.
+- Build type displayed: `user`.
+- Size displayed: 3.29 GB.
+- Maintenance status displayed: currently maintained = yes.
+- Maintainer displayed: Joey.
+- XDA link shown on the page: <https://xdaforums.com/t/rom-17-marble-official-evolution-x-07-20-26.4709959/>.
 
-## ملاحظات التحقق
+## Verification notes
 
-تعرض الصفحة الرسمية زر `Download ROM`، لكن المستخرج النصي لا يكشف رابط الملف النهائي. يلزم استخراج `href` من DOM أو فتح مسار التنزيل ثم التحقق من اسم الملف وSHA-256 وأية ملفات مرافقه قبل تنزيل أو تحليل ROM. لا تعد هذه البيانات وحدها دليلاً على تطابق صور `boot` و`vendor_boot` و`dtbo` و`vendor_dlkm` و`system_dlkm` مع نواة GKI.
+The official page shows a `Download ROM` button, but the text extractor does not reveal the final file link. You must extract the `href` from the DOM or open the download path and then verify the filename and SHA-256 and any accompanying files before downloading or analyzing the ROM. These data alone are not evidence that the `boot`, `vendor_boot`, `dtbo`, `vendor_dlkm`, and `system_dlkm` images match the GKI kernel.
 
-## مراجع
+## References
 
-[1] <https://evolution-x.org/devices/marble> — صفحة Evolution X الرسمية لجهاز marble.
-[2] <https://sourceforge.net/projects/evolution-x/files/marble/> — فهرس ملفات عام ظهر في البحث، ولم يُعتمد بعد كمصدر للـAndroid 17 بسبب عدم كفاية البيانات المستخرجة.
+[1] <https://evolution-x.org/devices/marble> — Official Evolution X page for the marble device.
+[2] <https://sourceforge.net/projects/evolution-x/files/marble/> — A general file index that appeared in the search, and has not yet been accepted as a source for Android 17 due to insufficient extracted data.
 
-## فحص رابط التنزيل الديناميكي
+## Dynamic download link inspection
 
-أظهر فحص DOM في 2026-08-20 أن عناصر `How to install` و`Changelog` و`Download ROM` هي أزرار بلا `href` ظاهر. البيانات تحملها صفحة Next.js ديناميكياً، وتحتوي على bundle لمسار `app/devices/[codename]/page`. يلزم استخراج بيانات RSC أو مراقبة تنفيذ الزر لمعرفة رابط artifact؛ لا ينبغي تحويل زر الواجهة إلى عنوان مصدر مفترض.
+A DOM inspection on 2026-08-20 showed that the `How to install`, `Changelog`, and `Download ROM` elements are buttons without a visible `href`. The data is dynamically loaded by a Next.js page, and contains a bundle for the path `app/devices/[codename]/page`. You must extract RSC data or observe the button's execution to learn the artifact link; the UI button should not be converted into an assumed source URL.
 
-تمت هذه الخطوة بلا تنزيل ROM وبلا تنفيذ أي إجراء تفليش.
+This step was performed without downloading the ROM and without performing any flashing actions.
 
-## رابط Android 17 المكتشف
+## Discovered Android 17 link
 
-استخرجت حمولة الصفحة الرسمية رابط ROM الحالي التالي:
+The official page payload yielded the following current ROM link:
 
 <https://cdn.evolution-x.org/marble/17/EvolutionX-17.0-20260812-marble-12.1-Official.zip/download>
 
-الاسم يحمل الجهاز `marble` وAndroid `17` وتاريخ `20260812` وإصدار Evolution X `12.1`، وهي متوافقة مع البيانات المعروضة في صفحة الجهاز. كما ظهرت روابط Android 16 و15 و14 ومراجع root تاريخية؛ تُعامل هذه كبيانات تاريخية ولا تدخل في تكامل Android 17.
+The name contains the device `marble` and Android `17` and date `20260812` and Evolution X version `12.1`, which is consistent with the data shown on the device page. Links for Android 16, 15, 14 and historical root references also appeared; these are treated as historical data and are not part of the Android 17 integration.
 
-لا يزال يلزم التحقق من استجابة رابط التنزيل، والحصول على البصمة المنشورة أو حسابها بعد تنزيل الملف، ثم جرد محتويات ZIP من دون استخراج أو تنفيذ أي ملفات غير موثوقة.
+It is still necessary to verify the download link's response, obtain the published fingerprint or compute it after downloading the file, then inventory the ZIP contents without extracting or executing any untrusted files.

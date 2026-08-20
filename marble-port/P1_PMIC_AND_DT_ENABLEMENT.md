@@ -1,48 +1,48 @@
-# موجة P1 — PMIC وDevice Tree لـ marble 6.18
+# P1 Wave — PMIC and Device Tree for marble 6.18
 
-## القرار والنطاق
+## Decision and Scope
 
-تضيف هذه الموجة المسار الأول للتحكم في PMIC يمكن إثباته مباشرةً في Android Common Kernel 6.18. لا تنقل أي binary أو وحدة من Evolution X 17/5.10، ولا تنتج `boot.img` أو `vendor_boot.img` أو `vendor_dlkm.img`.
+This wave adds the first provable PMIC control path directly into the Android Common Kernel 6.18. It does not carry over any binary or module from Evolution X 17/5.10, nor does it produce `boot.img` or `vendor_boot.img` or `vendor_dlkm.img`.
 
-> **قاعدة القبول:** لا يُفعل driver لأن اسمه يشبه وحدة مرجعية. يلزم وجود عقدة Device Tree مستخدمة فعلياً، و`compatible` مطابق في جدول `of_match` الخاص بـACK 6.18، وتبعيات Kconfig محلولة إلى `y`، ثم بناء واختبار جهاز قبل إعلان نجاح التشغيل.
+> **Acceptance criteria:** A driver is not enabled just because its name matches a reference module. There must be a Device Tree node actually in use, a `compatible` that matches an `of_match` entry in ACK 6.18, Kconfig dependencies resolved to `y`, and then building and testing a device before declaring success.
 
-| العنصر | دليل marble | دليل ACK 6.18 | القرار |
+| Item | marble evidence | ACK 6.18 evidence | Decision |
 |---|---|---|---|
-| SPMI PMIC Arbiter | `spmi0_bus` و`spmi1_bus` في `cape.dtsi`، وكلاهما `qcom,spmi-pmic-arb` | `drivers/spmi/spmi-pmic-arb.c` يطابق `qcom,spmi-pmic-arb`؛ الرمز `SPMI_MSM_PMIC_ARB` | مفعّل كـ`y` في fragment الأساسي. |
-| UFS/QMP | عقد UFS في marble تستخدم المسار العام؛ `SCSI_UFS_QCOM` و`PHY_QCOM_QMP_UFS` مفعّلان مسبقاً | driver موجود ومفعّل مسبقاً | لا تغيير؛ يلزم اختبار جهاز. |
-| RPMh/SCM | عقد RPMh ومصادرها متاحة في ACK | `QCOM_RPMH` و`QCOM_RPMHPD` و`REGULATOR_QCOM_RPMH` و`QCOM_SCM` مفعلة مسبقاً | لا تغيير؛ يلزم اختبار جهاز. |
-| LLCC/AOSS/TSENS waipio | compatibles الخاصة باللوحة موجودة في DT | لا يوجد `of_match` مباشر في ACK 6.18 للـcompatibles الموجودة | محجوبة؛ لا تفعيل تجريبي. |
-| Watchdog | لا توجد عقدة marble مطابقة لجدول `qcom-wdt.c` | `QCOM_WDT` موجود لكن لا يملك عقدة مستهدفة مثبتة | محجوب؛ لا تفعيل تجريبي. |
+| SPMI PMIC Arbiter | `spmi0_bus` and `spmi1_bus` in `cape.dtsi`, both `qcom,spmi-pmic-arb` | `drivers/spmi/spmi-pmic-arb.c` matches `qcom,spmi-pmic-arb`; symbol `SPMI_MSM_PMIC_ARB` | Enabled as `y` in the base fragment. |
+| UFS/QMP | marble's UFS nodes use the common path; `SCSI_UFS_QCOM` and `PHY_QCOM_QMP_UFS` enabled by default | driver present and enabled by default | No change; device testing required. |
+| RPMh/SCM | RPMh nodes and sources available in ACK | `QCOM_RPMH` and `QCOM_RPMHPD` and `REGULATOR_QCOM_RPMH` and `QCOM_SCM` enabled by default | No change; device testing required. |
+| LLCC/AOSS/TSENS waipio | board-specific compatibles present in the DT | no direct `of_match` in ACK 6.18 for the existing compatibles | Blocked; no experimental enablement. |
+| Watchdog | no marble node matching the `qcom-wdt.c` table | `QCOM_WDT` present but has no installed target node | Blocked; no experimental enablement. |
 
-## تغيرات التهيئة والبناء
+## Configuration and build changes
 
-يضيف `marble_gki_6_18_core.config` الرمز `CONFIG_SPMI_MSM_PMIC_ARB=y`. يتحقق `tools/validate_marble_core_config.sh` من هذا الرمز ضمن 16 رمزاً أساسياً، ويستبدل assignments السابقة عند دمج fragments كي لا تنتج بيئة التحقق أو البناء تحذيرات `override: reassigning` اصطناعية. يحافظ الدمج المرتب على أسبقية `diagnostic` فوق `proto`، ومنها إعادة تفعيل BTF في النكهات التشخيصية.
+`marble_gki_6_18_core.config` adds the symbol `CONFIG_SPMI_MSM_PMIC_ARB=y`. `tools/validate_marble_core_config.sh` checks this symbol among 16 core symbols, and replaces previous assignments when fragments are merged so the validation/build environment does not produce artificial `override: reassigning` warnings. Ordered merging preserves `diagnostic` precedence over `proto`, including re-enabling BTF in diagnostic flavors.
 
-## إصلاح Device Tree المتحقق
+## Validated Device Tree fixes
 
-أزيلت خلايا العنوان/الحجم و`reg` غير اللازمة من ثلاث حاويات CoreSight أحادية المنفذ، وحُول `port@0` إلى `port`. بقيت labels الخاصة بالـendpoints ومراجع `remote-endpoint` بلا تغيير، ولا توجد مراجع لمسارات العقد المتغيرة. نجح بناء DTB وDTBO وفك ترميزهما وتطبيق overlay بعد التغيير.
+Address/size cells and unnecessary `reg` were removed from three single-port CoreSight containers, and `port@0` was changed to `port`. Endpoint labels and `remote-endpoint` references remain unchanged, and there are no references to moved node paths. Building DTB and DTBO and decoding them and applying overlays succeeded after the change.
 
-| قياس DTC | قبل الرقعة | بعد الرقعة | التغير |
-|---|---:|---:|---:|
-| سجل البناء | 129 | 126 | -3 |
-| فك ترميز `ukee.dtb` | 53 | 50 | -3 |
-| فك ترميز DTBO | 154 | 153 | -1 |
-| فك ترميز DTB المدمج | 103 | 99 | -4 |
+| DTC metric | before patch | after patch | delta |
+|---|---:|---:|---|
+| build log | 129 | 126 | -3 |
+| decode `ukee.dtb` | 53 | 50 | -3 |
+| decode DTBO | 154 | 153 | -1 |
+| decode merged DTB | 103 | 99 | -4 |
 
-شدّد `tools/validate_marble_dt_build.sh` ميزانياته الافتراضية إلى `126/50/153/99`، ولذلك ستفشل أي عودة لهذه التحذيرات أو أي تراجع جديد. لا يعني ذلك أن شرط الصفر تحقق؛ التحذيرات المتبقية تتطلب bindings أو drivers vendor أو اختبار عتادي.
+`tools/validate_marble_dt_build.sh` tightens its default budgets to `126/50/153/99`, therefore any regression to these warnings or any new regression will fail. This does not mean the zero-condition is met; remaining warnings require bindings or vendor drivers or hardware testing.
 
-## بوابات الانتقال
+## Transition gates
 
-| البوابة | الحالة | الدليل المطلوب للانتقال |
+| Gate | Status | Evidence required to pass |
 |---|---|---|
-| P1-C0 — تهيئة | ناجحة | `olddefconfig` و`modpost` مع `SPMI_MSM_PMIC_ARB=y`. |
-| P1-C1 — static DT | ناجحة | DTB/DTBO/merged-DTB قابلة للقراءة وتلتزم بالميزانية المشددة. |
-| P1-C2 — KMI/DLKM | محجوبة | KMI baseline لـmarble و`Module.symvers` hermetic ووحدات 6.18 معاد بناؤها. |
-| P1-B1 — PMIC probe | محجوبة | سجل POCO F5 فعلي: تعداد SPMI، PMIC children، ADC، وغياب panic أو deferred probe غير منتهٍ. |
+| P1-C0 — configuration | Passed | `olddefconfig` and `modpost` with `SPMI_MSM_PMIC_ARB=y`. |
+| P1-C1 — static DT | Passed | DTB/DTBO/merged-DTB readable and conform to the tightened budget. |
+| P1-C2 — KMI/DLKM | Blocked | KMI baseline for marble and `Module.symvers` hermetic and 6.18 modules rebuilt. |
+| P1-B1 — PMIC probe | Blocked | actual POCO F5 log: SPMI count, PMIC children, ADC, and absence of panic or never-ending deferred probe. |
 
-لا يفتح نجاح P1-C0/P1-C1 بوابة تغليف أو تفليش. تبقى وحدات Evolution X 17 ذات ABI 5.10 غير قابلة للاستخدام مع هذا المخرج 6.18.
+Passing P1-C0/P1-C1 does not open packaging or flashing gates. Evolution X 17 modules with ABI 5.10 remain unusable with this 6.18 output.
 
-## المراجع
+## References
 
 [1]: https://source.android.com/docs/core/architecture/kernel/stable-kmi "AOSP — Maintain a stable kernel module interface"
 [2]: https://docs.kernel.org/devicetree/usage-model.html "Linux and the Devicetree"

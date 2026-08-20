@@ -1,31 +1,31 @@
-# قواعد خارجية مرجعية لإصلاح DTC
+# Out-of-tree Reference Rules for Fixing DTC
 
-## قواعد التسمية و`reg`
+## Naming and `reg` rules
 
-تنص مواصفة Devicetree على أن جزء عنوان الوحدة في اسم العقدة يجب أن يطابق أول عنوان في خاصية `reg`، وأنه يجب حذف `@unit-address` عندما لا توجد `reg`.[1] كما تحدد أن ترميز `reg` يعتمد على `#address-cells` و`#size-cells` لدى **العقدة الأب**، ولا يُورث من الأسلاف؛ ويجب تعريف الخلايا صراحةً للعقد الحاوية للأبناء.[1]
+The Devicetree specification states that the unit-address portion of a node name must match the first address in the node's `reg` property, and that `@unit-address` must be omitted when there is no `reg`.[1] It also specifies that the encoding of `reg` depends on the parent's `#address-cells` and `#size-cells`, is not inherited from ancestors; cells must be explicitly defined for nodes that contain children.[1]
 
-## قواعد `ranges`
+## Rules for `ranges`
 
-توضح المواصفة أن `ranges` الفارغ يعلن تطابق فضاء عناوين الطفل والأب، بينما ترميز `ranges` غير الفارغ يعتمد على خلايا العناوين والحجم للعقدة والأب.[1] لذلك لا يجوز إضافة أو حذف الخلايا أو `ranges` لتسكين تحذير إلا إذا بقيت دلالة فضاء العناوين والعقدة المستهدفة صحيحة.
+The specification explains that an empty `ranges` declares that the child's and parent's address spaces match, whereas the encoding of a non-empty `ranges` depends on the address- and size-cells of the node and the parent.[1] Therefore cells or `ranges` must not be added or removed solely to silence a warning unless the meaning of the address space and the target node remain correct.
 
-## معيار أسلوب Linux
+## Linux coding style guideline
 
-يوصي دليل Linux بأن تستعمل عناوين الوحدة أرقاماً سداسية صغيرة من دون أصفار بادئة، وأن تُرتب خصائص `compatible` ثم `reg` ثم `ranges`، لكنه لا يجيز التضحية بعقدة binding أو مورد عتاد من أجل النظافة الشكلية.[2]
+The Linux guide recommends using unit addresses as lowercase hexadecimal numbers without leading zeros, and ordering properties as `compatible` then `reg` then `ranges`, but it does not allow sacrificing a binding node or a hardware resource for cosmetic cleanliness.[2]
 
-## قنوات Qualcomm ADC
+## Qualcomm ADC channels
 
-يبين binding `qcom,spmi-vadc.yaml` في ACK 6.18 أن عقد ADC channels يجب أن تتبع نمط `channel@[0-9a-f]+` وأن `reg` يمثل رقم القناة.[3] ويبين binding ADC thermal monitor أن أسماء حساسات ADC_TM تتضمن عنوان القناة وأن `reg` يحدد قناة الحساس.[4] لذلك تعد إعادة تسمية القنوات القديمة إلى أسماء متوافقة مرشحة فقط بعد إثبات عدم وجود مستهلك لمسار الاسم، مع إبقاء `label` و`reg` والـphandles دون تغيير.
+The `qcom,spmi-vadc.yaml` binding in ACK 6.18 shows that ADC channel nodes should follow the pattern `channel@[0-9a-f]+` and that `reg` represents the channel number.[3] The ADC thermal monitor binding shows that ADC_TM sensor names include the channel address and that `reg` specifies the sensor's channel.[4] Therefore renaming old channels to compliant names is only a candidate after proving there are no consumers of the name path, while keeping `label`, `reg`, and phandles unchanged.
 
-## المراجع
+## References
 
 [1]: https://devicetree-specification.readthedocs.io/en/latest/chapter2-devicetree-basics.html "Devicetree Specification — node names, address cells, reg and ranges"
 [2]: https://docs.kernel.org/devicetree/bindings/dts-coding-style.html "Linux Devicetree Sources Coding Style"
 [3]: https://github.com/torvalds/linux/blob/master/Documentation/devicetree/bindings/iio/adc/qcom%2Cspmi-vadc.yaml "Qualcomm SPMI PMIC ADC binding"
 [4]: https://github.com/torvalds/linux/blob/master/Documentation/devicetree/bindings/thermal/qcom%2Cadc-tm5.yaml "Qualcomm ADC thermal monitor binding"
 
-## GICv3 وITS وPCIe
+## GICv3, ITS, and PCIe
 
-يُلزم binding GICv3 عقدة GIC الحاوية لـITS بتعريف `#address-cells` و`#size-cells` و`ranges` المناسبين لترميز `reg` في ITS، كما يعرّف ITS كعقدة `msi-controller` مع `#msi-cells = <1>`.[5] لذلك فإن تحذيرات MSI تحت GIC ليست مرشحة لإضافة خلايا عشوائية: يجب أن تتبع بنية GICv3/ITS المحددة في binding وأن تعاد مراجعة خرائط MSI الخاصة بـPCIe مع مصدر Qualcomm أحدث.[6]
+The GICv3 binding requires that the GIC node containing the ITS define appropriate `#address-cells`, `#size-cells`, and `ranges` to encode the `reg` in the ITS, and it defines the ITS as an `msi-controller` node with `#msi-cells = <1>`.[5] Therefore MSI warnings under the GIC are not candidates for adding arbitrary cells: they must follow the GICv3/ITS structure specified in the binding and the PCIe MSI mappings should be re-reviewed against a newer Qualcomm source.[6]
 
 [5]: https://www.kernel.org/doc/Documentation/devicetree/bindings/interrupt-controller/arm%2Cgic-v3.txt "ARM GICv3 Device Tree binding"
 [6]: https://lkml.iu.edu/hypermail/linux/kernel/2301.0/00391.html "Qcom: Add GIC-ITS support to SM8450 PCIe controllers"

@@ -1,22 +1,22 @@
-# تقييم وحدات العرض والوسائط والاتصال عالي المستوى
+# Assessment of High-Level Display, Media, and Connectivity Modules
 
-## نتيجة المطابقة الثابتة
+## Static Match Result
 
-تمت مطابقة التوافقات الموجودة في Device Tree الخاص بـ marble مع ملفات drivers وbindings الموجودة في ACK 6.18. يعني `no-exact-match` غياب تطابق نصي لتعريف العقدة في الشجرة الحالية؛ ولا يثبت غياب كل بديل ممكن، لكنه يمنع الادعاء بأن العقدة ستعمل بلا نقل أو تكييف.
+The compat strings in marble's Device Tree were matched against the drivers and bindings present in ACK 6.18. `no-exact-match` means the absence of a textual match for the node's definition in the current tree; it does not prove the absence of every possible alternative, but it prevents claiming that the node will work without porting or adaptation.
 
-| المسار | توافق marble | نتيجة مطابقة ACK 6.18 | حالة النقل |
+| Path | marble compatible | ACK 6.18 match result | Porting status |
 |---|---|---|---|
-| GPU/Adreno | `qcom,adreno-gpu-gen7-4-0` | `no-exact-match` | محجوب على تكييف DRM/Adreno أو منفذ KGSL؛ لا يفعّل في نواة الاختبار. |
-| معالج العرض | `qcom,cape-gpucc` وملفات display المرتبطة | `no-exact-match` | محجوب على clock/display driver خاص بالمنصة. |
-| الكاميرا | `qcom,cape-camcc` | `no-exact-match` | محجوب على سلسلة camera/ISP وuserspace vendor المطابق. |
-| ADSP | `qcom,cape-adsp-pas` | `no-exact-match` | محجوب على مسار remoteproc/firmware ومطابقة الذاكرة المحجوزة. |
-| CDSP | `qcom,cape-cdsp-pas`، `qcom,cdsp-loader`، `qcom,msm-cdsp-rm` | `no-exact-match` | محجوب على تعريفات DSP vendor وfirmware. |
-| المودم/QRTR | `qcom,cape-modem-pas`، `qcom,qrtr-mhi`، `qcom,qrtr-gunyah` | `no-exact-match` | محجوب على تعريفات مودم وfirmware واتفاقية vendor. |
-| الصوت عبر Slimbus | `qcom,slim-ngd-v1.5.0` | `upstream-present` في `drivers/slimbus/qcom-ngd-ctrl.c` | يتطلب تكييفاً لاحقاً للعقد والـcodec/DSP؛ لا يعد جاهزاً وظيفياً. |
-| USB audio QMI | `qcom,usb-audio-qmi-dev` | `no-exact-match` | مؤجل حتى نقل مسار QMI/USB audio vendor. |
+| GPU/Adreno | `qcom,adreno-gpu-gen7-4-0` | `no-exact-match` | Blocked on DRM/Adreno adaptation or KGSL port; not enabled in the test kernel. |
+| Display controller | `qcom,cape-gpucc` and associated display files | `no-exact-match` | Blocked on a platform-specific clock/display driver. |
+| Camera | `qcom,cape-camcc` | `no-exact-match` | Blocked on the camera/ISP driver series and matching vendor userspace. |
+| ADSP | `qcom,cape-adsp-pas` | `no-exact-match` | Blocked on remoteproc/firmware path and reserved-memory matching. |
+| CDSP | `qcom,cape-cdsp-pas`, `qcom,cdsp-loader`, `qcom,msm-cdsp-rm` | `no-exact-match` | Blocked on vendor DSP definitions and firmware. |
+| Modem/QRTR | `qcom,cape-modem-pas`, `qcom,qrtr-mhi`, `qcom,qrtr-gunyah` | `no-exact-match` | Blocked on modem definitions, firmware, and vendor agreement. |
+| Audio over Slimbus | `qcom,slim-ngd-v1.5.0` | `upstream-present` in `drivers/slimbus/qcom-ngd-ctrl.c` | Requires further adaptation of the nodes and the codec/DSP; not functionally ready. |
+| USB audio QMI | `qcom,usb-audio-qmi-dev` | `no-exact-match` | Deferred until porting of the vendor QMI/USB audio path. |
 
-## حدود المصدر المرجعي
+## Limits of the reference source
 
-مرجع Xiaomi يحتوي شجرة `drivers/gpu/msm` خاصة، بينما ACK يحتوي `drivers/gpu/drm/msm`، وهذا اختلاف معماري لا تسمح معه عملية نسخ الملفات. كما أن مجلدات camera/audio/display المستقلة ليست حاضرة في مرجع kernel المتاح؛ لذلك لا توجد قاعدة مصدر مكتملة لادعاء نقل تلك الوظائف إلى 6.18.
+The Xiaomi reference contains a private `drivers/gpu/msm` tree, while ACK contains `drivers/gpu/drm/msm`; this architectural difference does not allow a straight file copy. Also, the separate camera/audio/display folders are not present in the available kernel reference; therefore there is no complete source base to claim porting of those functions to 6.18.
 
-> لا تُفعّل GPU أو الشاشة أو الكاميرا أو الصوت أو المودم لمجرد أن Device Tree يُبنى. قبول هذه المسارات يستلزم تعريفات متوافقة وfirmware ووحدات vendor واختبارات جهاز فعلية.
+> Do not enable GPU, display, camera, audio, or modem just because the Device Tree builds. Acceptance of these paths requires compatible drivers, firmware, vendor modules, and actual device testing.

@@ -1,46 +1,46 @@
-# مصفوفة توافق العقود ذات الأولوية — marble
+# Priority Contract Compatibility Matrix — marble
 
-**التاريخ:** 20 أغسطس 2026
-**شجرة التحليل:** `marble-6.18-full-port` عند `32ffe3adde922d2b927c4849af186317d9dd8643`
-**مرجع Xiaomi Kernel:** `marble-s-oss` عند `48952ed36228217531482b39d5bef13e7fd808ec` [1]
-**مرجع Xiaomi Device Tree:** `marble-s-oss` عند `4e89193c78ea0ca0e8134a0b8d5cf0457e015df0` [2]
+**Date:** 20 August 2026
+**Analysis tree:** `marble-6.18-full-port` at `32ffe3adde922d2b927c4849af186317d9dd8643`
+**Xiaomi Kernel reference:** `marble-s-oss` at `48952ed36228217531482b39d5bef13e7fd808ec` [1]
+**Xiaomi Device Tree reference:** `marble-s-oss` at `4e89193c78ea0ca0e8134a0b8d5cf0457e015df0` [2]
 
-## الحكم التنفيذي
+## Executive Summary
 
-توضح هذه المصفوفة العقود الثلاثة التي تجمع بين عقد Device Tree فعلية وفجوات Kconfig/وحدات في مرجع Xiaomi. لا تساوي مطابقة `compatible` وحدها جهوزية الجهاز؛ يلزم أيضاً driver مناسب، وإعداد مفعّل، وسلامة ABI/firmware، ثم اختبار على العتاد.
+This matrix documents the three contracts that combine a real Device Tree node and Kconfig/module gaps in the Xiaomi reference. A `compatible` match alone does not equal device readiness; a proper driver, an enabled configuration, ABI/firmware integrity, and hardware testing are also required.
 
-| العقد/المسار | دليل DT المنقول | driver أو binding في 6.18 | حالة إعداد AOSP المبني | الحكم | الإجراء في هذه الجولة |
+| Contract/Path | Ported DT node | driver or binding in 6.18 | Built AOSP config state | Verdict | Action this round |
 |---|---|---|---|---|---|
-| SPSS + `glink-edge` | `qcom,cape-spss-pas` وطفل `glink-edge`؛ الحالة النهائية لـSPSS هي `disabled`. | `qcom_common.c` يكتشف طفلاً باسم `glink-edge` ويشغله عبر GLINK-SMEM؛ لكن لا يوجد driver مطابق لـ`qcom,cape-spss-pas` في الشجرة الحالية. | `RPMSG_QCOM_GLINK` غائب من إعداد AOSP؛ الرمز vendor `QCOM_SPSS` غائب من ACK. | **محجوب.** | لا تغيير لـ`reg` أو `ranges` أو `reg-names` ولا تفعيل config. |
-| GLINK-SMEM القياسي | العقدة تتضمن `qcom,remote-pid` وIRQ وmailbox. | `qcom_glink_smem_register()` يقرأ `qcom,remote-pid` ثم IRQ وmailbox؛ لا يثبت دلالة `qcom,spss-addr`/`qcom,spss-size`. | `RPMSG_QCOM_GLINK_RPM` و`RPMSG_QCOM_GLINK_SMEM` غير مفعّلين. | **لا بديل تلقائي.** | يلزم port لمشغل SPSS/GLINK المتطابق ثم اختبار جهاز. |
-| VADC7 | عقد PMIC تستخدم `compatible = "qcom,spmi-adc7"`. | `qcom-spmi-adc5.c` في 6.18 يطابق `qcom,spmi-adc7`. | `CONFIG_QCOM_SPMI_ADC5=y`. | **مدعوم ساكناً.** | لا تعديل؛ يبقى تحقق IIO على الجهاز مطلوباً. |
-| ADC_TM7 | عقد PMIC تستخدم `compatible = "qcom,adc-tm7"`. | binding الحالي يدرجه بوصفه «غير مكتمل/قابل للتغيير»، بينما driver 6.18 لا يضم match لـ`qcom,adc-tm7`. | `CONFIG_QCOM_SPMI_ADC_TM5=y`، أما رمز Xiaomi `QTI_ADC_TM` فغائب. | **محجوب.** | لا إعادة تسمية إلى TM5 ولا إضافة خصائص لتجاوز الفحص. |
-| UFS controller | `ufshc@1d84000` مع `compatible = "qcom,ufshc"`. | `ufs-qcom.c` يطابق `qcom,ufshc`. | `SCSI_UFSHCD=y` و`SCSI_UFSHCD_PLATFORM=y` و`SCSI_UFS_QCOM=y` و`SCSI_UFS_CRYPTO=y`. | **مدعوم ساكناً.** | لا تعديل؛ يلزم تحقق UFS/ICE وABI vendor على الجهاز. |
-| UFS QMP PHY | عقدة UFS تشير إلى `ufsphy_mem`. | driver QMP-UFS يضم توافقات SM8450/SM8475، وإعداد `PHY_QCOM_QMP_UFS=y`. | مفعّل ضمن بناء AOSP. | **مدعوم ساكناً، لكن غير مختبر عتادياً.** | لا استبدال للـPHY أو قيم tune. |
+| SPSS + `glink-edge` | `qcom,cape-spss-pas` and child `glink-edge`; the final state of SPSS is `disabled`. | `qcom_common.c` discovers a child named `glink-edge` and runs it via GLINK-SMEM; but there is no driver matching `qcom,cape-spss-pas` in the current tree. | `RPMSG_QCOM_GLINK` is missing from AOSP config; vendor symbol `QCOM_SPSS` is missing from ACK. | **Blocked.** | No change to `reg` or `ranges` or `reg-names` and do not enable the config. |
+| Standard GLINK-SMEM | node includes `qcom,remote-pid` and IRQ and mailbox. | `qcom_glink_smem_register()` reads `qcom,remote-pid` then IRQ and mailbox; it does not establish the meaning of `qcom,spss-addr`/`qcom,spss-size`. | `RPMSG_QCOM_GLINK_RPM` and `RPMSG_QCOM_GLINK_SMEM` are not enabled. | **No automatic alternative.** | A port of the matching SPSS/GLINK driver and then device testing are required. |
+| VADC7 | PMIC node uses `compatible = "qcom,spmi-adc7"`. | `qcom-spmi-adc5.c` in 6.18 matches `qcom,spmi-adc7`. | `CONFIG_QCOM_SPMI_ADC5=y`. | **Statically supported.** | No change; IIO verification on the device remains required. |
+| ADC_TM7 | PMIC node uses `compatible = "qcom,adc-tm7"`. | The current binding lists it as 'incomplete/subject to change', while the 6.18 driver does not include a match for `qcom,adc-tm7`. | `CONFIG_QCOM_SPMI_ADC_TM5=y`, while Xiaomi symbol `QTI_ADC_TM` is missing. | **Blocked.** | Do not rename to TM5 nor add properties to bypass the check. |
+| UFS controller | `ufshc@1d84000` with `compatible = "qcom,ufshc"`. | `ufs-qcom.c` matches `qcom,ufshc`. | `SCSI_UFSHCD=y` and `SCSI_UFSHCD_PLATFORM=y` and `SCSI_UFS_QCOM=y` and `SCSI_UFS_CRYPTO=y`. | **Statically supported.** | No change; UFS/ICE and vendor ABI verification on the device are required. |
+| UFS QMP PHY | UFS node refers to `ufsphy_mem`. | The QMP-UFS driver includes matches for SM8450/SM8475, and `PHY_QCOM_QMP_UFS=y` is set. | Enabled in the AOSP build. | **Statically supported, but not hardware-tested.** | Do not replace the PHY or tune values. |
 
-## أدلة التوافق والحواجز
+## Compatibility evidence and blockers
 
-### SPSS وGLINK
+### SPSS and GLINK
 
-المسار الحالي في `qcom_common.c` يبحث حرفياً عن طفل يسمى `glink-edge`، ثم يمرره إلى `qcom_glink_smem_register()`. يقرأ هذا المسار `qcom,remote-pid` وIRQ وقناة mailbox، ولذلك يفسر لماذا لا يجوز استخدامه دليلاً على صحة زوجي `reg` المسمّيين `qcom,spss-addr` و`qcom,spss-size`. لا يزال `compatible = "qcom,cape-spss-pas"` بلا driver مطابق في الشجرة، كما أن مرجع Xiaomi 5.10 يطلب `CONFIG_QCOM_SPSS` و`CONFIG_RPMSG_QCOM_GLINK_SPSS`، وكلاهما غير متاح بالاسم في ACK.
+The current path in `qcom_common.c` literally looks for a child named `glink-edge`, then passes it to `qcom_glink_smem_register()`. This path reads `qcom,remote-pid` and IRQ and mailbox, and therefore explains why it is not acceptable to use it as evidence for the paired `reg` properties named `qcom,spss-addr` and `qcom,spss-size`. `compatible = "qcom,cape-spss-pas"` remains without a matching driver in the tree, and the Xiaomi 5.10 reference requires `CONFIG_QCOM_SPSS` and `CONFIG_RPMSG_QCOM_GLINK_SPSS`, both of which are not available by those names in ACK.
 
-> النتيجة: إن تفعيل GLINK القياسي أو حذف خصائص SPSS لإسكات تحذير DTC سيغيّر عقدة vendor قبل إثبات أن remoteproc وfirmware المتوافقين موجودان. لذا يُمنع ذلك في هذه المرحلة.
+> Conclusion: Enabling standard GLINK or removing SPSS properties to silence the DTC warning will change a vendor node before proving that matching remoteproc and firmware exist. Therefore this is forbidden at this stage.
 
-### ADC7 وADC_TM7
+### ADC7 and ADC_TM7
 
-يدعم driver ADC الحالي `qcom,spmi-adc7` ضمن `CONFIG_QCOM_SPMI_ADC5=y`، وهي مطابقة ساكنة مباشرة. على النقيض، يستخدم DT المنقول `qcom,adc-tm7` بينما مصدر Xiaomi 5.10 يوفّر مسار `CONFIG_QTI_ADC_TM` وملفات `adc-tm7.o`، أما شجرة 6.18 فتضم binding تحذر صراحة من أن توافق `qcom,adc-tm7` غير مكتمل وقابل للتغيير. لا توجد مطابقة driver مقابلة في 6.18.
+The current ADC driver supports `qcom,spmi-adc7` under `CONFIG_QCOM_SPMI_ADC5=y`, which is a direct static match. In contrast, the ported DT uses `qcom,adc-tm7` while the Xiaomi 5.10 source provides path `CONFIG_QTI_ADC_TM` and files `adc-tm7.o`, whereas the 6.18 tree includes a binding that explicitly warns that the `qcom,adc-tm7` compatibility is incomplete and subject to change. There is no corresponding driver match in 6.18.
 
-> النتيجة: لا يجوز تغيير `qcom,adc-tm7` إلى `qcom,spmi-adc-tm5` أو `qcom,spmi-adc-tm5-gen2`؛ فذلك يستبدل عقد hardware/driver بلا إثبات للمعايرة أو الـthresholds.
+> Result: It is not permitted to change `qcom,adc-tm7` to `qcom,spmi-adc-tm5` or `qcom,spmi-adc-tm5-gen2`; this would replace a hardware/driver contract without proof of calibration or thresholds.
 
 ### UFS
 
-يملك controller توافقاً مباشراً مع `ufs-qcom.c` وتكون إعدادات UFS الأساسية وQMP PHY مفعلة في ناتج AOSP. ومع ذلك، يحتوي مرجع Xiaomi على وحدات إضافية مثل `ufshcd-crypto-qti.ko` و`phy-qcom-ufs-qmp-v4-cape.ko` لا يصح استنتاج تكافؤ ABI/ICE لها من نجاح بناء النواة. لا بد من manifest لروم واحد ووحدات vendor متوافقة قبل أي إقلاع تجريبي.
+The controller has a direct match with `ufs-qcom.c` and the basic UFS settings and QMP PHY are enabled in the AOSP output. However, the Xiaomi reference contains additional modules such as `ufshcd-crypto-qti.ko` and `phy-qcom-ufs-qmp-v4-cape.ko` — ABI/ICE equivalence for those cannot be inferred from a successful kernel build. A single ROM manifest and compatible vendor modules are required before any experimental boot.
 
-## النتيجة والتغيير المنفذ
+## Result and change implemented
 
-لم تُضف هذه المرحلة أي تعديل لمصدر C أو Kconfig أو DTS. التغيير المنفذ هو **تثبيت مصفوفة القرار** لمنع نقل إعدادات vendor أو إعادة تسمية عقد Device Tree بصورة آلية. العقود الآمنة للتحقق الساكن لاحقاً هي UFS وVADC7؛ أما SPSS/GLINK وADC_TM7 فتحتاج مصدر driver/firmware مطابق واختبار عتادي.
+No C, Kconfig or DTS source modifications were added in this stage. The implemented change is the installation of the decision matrix to prevent automatic porting of vendor settings or renaming of Device Tree nodes. The contracts safe for static verification later are UFS and VADC7; SPSS/GLINK and ADC_TM7 require a matching driver/firmware source and hardware testing.
 
-## المراجع
+## References
 
 [1]: https://github.com/MiCode/Xiaomi_Kernel_OpenSource/tree/marble-s-oss "MiCode Xiaomi Kernel OpenSource — marble-s-oss"
 [2]: https://github.com/MiCode/kernel_devicetree/tree/marble-s-oss "MiCode kernel_devicetree — marble-s-oss"

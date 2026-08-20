@@ -1,31 +1,31 @@
-# تصميم نكهات بناء marble
+# Design of marble build flavors
 
-## الهدف والنطاق
+## Purpose and scope
 
-ينتج المشروع نواة Android/GKI عامة، لا `boot.img` خاصاً بروم بعينه. لذلك تفصل واجهة البناء بين نكهة ROM التي تحدد **مدخلات التغليف والـvendor المتطابقة**، وطبقة root الاختيارية، وملف التشخيص. لا تُبنى أو تُوقّع أو تُفلش حزمة إقلاع قبل توفير مكونات ROM الفعلية واجتياز بوابات KMI والجهاز.
+The project produces a generic Android/GKI kernel, not a ROM-specific boot.img. Therefore the build interface separates the ROM flavor that determines **packaging inputs and matching vendor**, an optional root layer, and the diagnostics file. A boot package is not built, signed, or flashed before the actual ROM components are provided and KMI and device gates are passed.
 
-| خيار الواجهة | القيم المخططة | الأثر |
+| Interface option | Planned values | Impact |
 |---|---|---|
-| `--flavor` | `aosp`، `xiaomi` | يختار manifest للمدخلات المتطابقة فقط؛ لا يغيّر Device Tree أو يزعم توافق vendor modules. |
-| `--root` | `none`، `ksu-next`، `apatch` | يحدد سياسة المصدر وحالة الدعم؛ الافتراضي والوحيد المقبول حالياً هو `none`. |
-| `--diagnostics` | `release`، `diagnostic` | يحدد جزء Kconfig الخاص بالمراقبة بعد اجتياز اختبارات البناء. |
-| `--package` | `none`، `boot` | يمنع `boot` إلا عند وجود manifest صحيح واكتمال بوابات القبول. |
+| `--flavor` | `aosp`, `xiaomi` | Selects the manifest for matching inputs only; does not change the Device Tree or claim vendor modules compatibility. |
+| `--root` | `none`, `ksu-next`, `apatch` | Specifies source policy and support status; the default and currently only accepted value is `none`. |
+| `--diagnostics` | `release`, `diagnostic` | Specifies the Kconfig portion for monitoring after passing build tests. |
+| `--package` | `none`, `boot` | Disallows `boot` unless a valid manifest is present and acceptance gates are complete. |
 
-## حالة طبقات root على 6.18
+## Status of root layers on 6.18
 
-| الطبقة | حالة الدعم المنشورة من المشروع | القرار على Android/GKI 6.18 |
+| Layer | Published project support status | Decision on Android/GKI 6.18 |
 |---|---|---|
-| KernelSU Next | يعلن دعماً للنوى من 4.4 حتى 6.6 فقط، مع وضع GKI 5.10–6.6.[1] | **غير مدعوم**؛ نص البناء يجب أن يرفض الطلب ولا يجلب أو يطبق patch تلقائياً. |
-| APatch | يعلن دعماً لـARM64 مع إصدارات kernel 3.18–6.12، ويتطلب `CONFIG_KALLSYMS=y`.[2] | **غير مدعوم** على 6.18؛ يرفض نص البناء الطلب ولا ينشئ مفتاح SuperKey أو patch. |
-| بلا root | لا يضيف patch خارج ACK. | النكهة المدعومة حالياً، وتبقى خاضعة لفجوات marble وKMI والجهاز. |
+| KernelSU Next | Declares support for kernels from 4.4 to 6.6 only, with GKI mode 5.10–6.6.[1] | **Not supported**; the build script must reject the request and must not fetch or apply the patch automatically. |
+| APatch | Declares support for ARM64 with kernel versions 3.18–6.12, and requires `CONFIG_KALLSYMS=y`.[2] | **Not supported** on 6.18; the build script rejects the request and does not create a SuperKey or patch. |
+| No root | Adds no patches outside ACK. | The currently supported flavor, and remains subject to marble, KMI, and device gaps. |
 
-> إضافة root framework غير مدعوم إلى 6.18 ليست «نكهة بناء»، بل عملية نقل kernel مستقلة عالية المخاطر. لا يُنفذ هذا المشروع نسخاً أعمى من patch أو تجاوزاً لفحوص الإصدار، لأن ذلك قد ينتج kernel panic أو يخرق KMI.
+> Adding an unsupported root framework to 6.18 is not a "build flavor", but a high-risk independent kernel port. This project does not perform blind copies of patches or bypass release checks, because that may produce kernel panic or violate KMI.
 
-## مدخلات التغليف المطلوبة لكل ROM
+## Packaging inputs required per ROM
 
-لا تُستنتج مكونات التغليف من اسم الروم. يحتاج manifest النكهة إلى المصدر، و`boot` أو `vendor_boot` المطابق، و`dtbo` إن استُخدم، ووحدات `vendor_dlkm`/`system_dlkm` المتوافقة، وسياسة AVB/التوقيع المتفق عليها. تضمن KMI في GKI التوافق ضمن الفرع المدعوم فقط؛ ولا تحافظ تلقائياً على التوافق بين نوى GKI مختلفة أو وحدات vendor مبنية لنسخة أخرى.[3]
+Packaging components are not inferred from the ROM name. The flavor manifest needs the source, the matching `boot` or `vendor_boot`, `dtbo` if used, compatible `vendor_dlkm`/`system_dlkm` modules, and the agreed AVB/signing policy. KMI in GKI guarantees compatibility only within the supported branch; it does not automatically maintain compatibility between different GKI kernels or vendor modules built for a different release.[3]
 
-## المراجع
+## References
 
 [1]: https://github.com/KernelSU-Next/KernelSU-Next "KernelSU Next — support matrix"
 [2]: https://github.com/bmax121/APatch "APatch — supported kernels and configuration requirements"

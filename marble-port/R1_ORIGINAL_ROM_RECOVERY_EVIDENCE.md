@@ -1,61 +1,61 @@
-# قالب دليل R1 — استرداد ROM الحالي لـPOCO F5 / `marble`
+# R1 Guide Template — Current ROM Recovery for POCO F5 / `marble`
 
-**الحالة:** قالب إثبات فقط. لا يتضمن أوامر تنزيل أو تفليش أو تغليف، ولا يصرح بتجربة Kernel 6.18.
+**Status:** Proof-only template. Does not include download, flashing, or packaging commands, and does not authorize testing Kernel 6.18.
 
-## الغرض
+## Purpose
 
-R1 لا يختبر ADC_TM7 أو SPSS ولا مرشح 6.18. هدفه الوحيد هو إثبات أن POCO F5 نفسه يمكن إعادته إلى **نفس Evolution X 12.1 العامل حالياً** عبر مسار recovery معروف، ثم يعود النظام إلى حالة سليمة قابلة للرصد. لا تفتح B0 أو B1 تلقائياً بعد R1؛ فالتوافق مع 6.18 ووحدات vendor والـfirmware يظل حاجزاً مستقلاً. [1] [2]
+R1 does not test ADC_TM7 or SPSS nor the 6.18 filter. Its sole purpose is to prove that the POCO F5 itself can be restored to the **same Evolution X 12.1 currently running** via a known recovery path, and that the system returns to an observable healthy state. B0 or B1 are not opened automatically after R1; compatibility with 6.18, vendor modules, and firmware remains an independent barrier. [1] [2]
 
-> لا تبدأ R1 ما لم يكن مالك الجهاز مستعداً لاستعادة ROM الحالي بنفسه، ولديه مساحة تخزين مستقلة للنسخ وأدلة الاسترداد. أي غموض في recovery أو artifact أو مصدره يعني **STOP**.
+> Do not start R1 unless the device owner is prepared to restore the current ROM themselves, and has independent storage for copies and recovery evidence. Any ambiguity in the recovery, artifacts, or their origin means **STOP**.
 
-## هوية الهدف الموثقة قبل R1
+## Documented target identity before R1
 
-| الحقل | القيمة المتاحة | الحالة |
+| Field | Available value | Status |
 |---|---|---|
-| الجهاز | `Xiaomi POCO F5 / marble` | مثبت من لقطة About phone. |
-| ROM الجاري | Evolution X 12.1، Android 17 | مثبت من لقطة About phone. |
-| Build date | `Wed Aug 12 00:34:51 UTC 2026` | مثبت من لقطة About phone. |
-| Build number | `CP2A.260605.016` | مثبت من لقطة About phone. |
-| Kernel الجاري | `5.10.256-Alchemist-LTO` | مثبت من لقطة About phone. |
-| ZIP المرجعي | `EvolutionX-17.0-20260812-marble-12.1-Official.zip` | الاسم متسق مع الرابط؛ SHA-256 لم يُحسب بعد. |
-| recovery المبلغ عنه | `OFRP-R11.1_7_RECOVERY-Beta-marble.img` | أفاد المالك أنه يعمل وأن مطور marble يوصي به؛ بصمة النسخة ونص التوصية لم تحفظ بعد. |
+| Device | `Xiaomi POCO F5 / marble` | Verified from About phone screenshot. |
+| Current ROM | Evolution X 12.1, Android 17 | Verified from About phone screenshot. |
+| Build date | `Wed Aug 12 00:34:51 UTC 2026` | Verified from About phone screenshot. |
+| Build number | `CP2A.260605.016` | Verified from About phone screenshot. |
+| Current Kernel | `5.10.256-Alchemist-LTO` | Verified from About phone screenshot. |
+| Reference ZIP | `EvolutionX-17.0-20260812-marble-12.1-Official.zip` | Name consistent with link; SHA-256 not calculated yet. |
+| Reported recovery | `OFRP-R11.1_7_RECOVERY-Beta-marble.img` | Owner reported it works and marble maintainer recommends it; the version fingerprint and recommendation text have not been saved yet. |
 
-## أدلة إلزامية قبل بروفة R1
+## Required evidence before the R1 dry-run
 
-لا ينبغي ملء «ناجح» بالذاكرة أو بالقول فقط. يحفظ كل دليل خارج Git، مع حذف serial وIMEI والمعلومات الخاصة.
+Do not mark "pass" based on memory or verbal claim only. Store each piece of evidence outside Git, with serial, IMEI, and personal information redacted.
 
-| دليل مطلوب | معيار القبول | الحالة الآن |
+| Required evidence | Acceptance criterion | Current status |
 |---|---|---|
-| مصدر recovery | رابط أو رسالة من مطور marble تثبت أن OFRP المحدد هو المسار الموصى به للروم الحالي | غير مكتمل. |
-| هوية recovery | صورة شاشة من صفحة About داخل recovery أو اسم/إصدار ظاهر، مع اسم الملف المصدر | غير مكتمل. |
-| بصمة recovery | SHA-256 أو MD5 محسوب لنسخة محلية ومطابق للمرجع المنشور إن كان المصدر نفسه | غير مكتمل. |
-| ZIP ROM | نسخة قابلة للوصول من الملف المذكور، ويفضل SHA-256؛ لا ترسل الأرشيف إلى Git | الاسم موجود؛ البصمة متجاوزة مؤقتاً. |
-| مساحة استرداد مستقلة | مسار خاص قابل للقراءة يحفظ artefacts والسجلات بعيداً عن الهاتف | غير مكتمل. |
-| اتصال USB | إثبات اتصال ثابت في النظام وداخل recovery، إذا كان مسار الاسترداد يعتمد عليه | غير مكتمل. |
-| استرداد معتمد | خطوات مطابقة للإصدار من maintainer أو مصدر موثوق، راجعها شخص ثانٍ | غير مكتمل. |
+| recovery source | Link or message from the marble maintainer proving the specified OFRP is the recommended path for the current ROM | Incomplete. |
+| recovery identity | Screenshot from About page inside recovery or visible name/version, with the source filename | Incomplete. |
+| recovery fingerprint | SHA-256 or MD5 computed for a local copy and matching the published reference if the source is the same | Incomplete. |
+| ZIP ROM | Accessible copy of the named file, preferably with SHA-256; do not upload the archive to Git | Name present; fingerprint deferred temporarily. |
+| independent recovery storage | A readable dedicated path that preserves artifacts and logs off-device | Incomplete. |
+| USB connection | Proof of stable connection on the system and within recovery, if the recovery path depends on it | Incomplete. |
+| supported recovery | Version-matching steps from the maintainer or a trusted source, reviewed by a second person | Incomplete. |
 
-## تعريف نجاح R1
+## Definition of R1 success
 
-لا يسجل R1 ناجحاً إلا إذا أثبت مالك الجهاز، بعد استخدام مسار الاسترداد المعتمد على **ROM الحالي فقط**، العناصر التالية:
+R1 is only recorded as successful if the device owner demonstrates, after using the approved recovery path on the **current ROM only**, the following items:
 
-| دليل ما بعد الاسترداد | معيار النجاح |
+| Post-recovery evidence | Success criterion |
 |---|---|
-| عودة النظام | يقلع الهاتف إلى Evolution X 12.1 نفسه، ويعرض `marble` وAndroid 17 وbuild number `CP2A.260605.016` أو build fingerprint المطابق الموثق. |
-| سلامة الإقلاع | لا kernel panic ولا reboot غير مفسر أثناء أول إقلاع. |
-| سجل التشخيص | kernel log وlogcat وpstore إن وجد، محفوظة خارج Git مع وقت العملية وبصمة artefacts. |
-| تخزين أساس | لا أخطاء UFS أو mount أو I/O ظاهرة في السجل الأولي. |
-| USB | يعود الاتصال الطبيعي في النظام، ويسجل أي استثناء بوضوح. |
-| سجل العملية | وقت البداية والنهاية، نوع recovery، ROM المستخدم، النتيجة، وأي خطأ أو خطوة استعادة. |
+| System return | Phone boots into the same Evolution X 12.1, showing `marble` and Android 17 and build number `CP2A.260605.016` or the documented matching build fingerprint. |
+| Boot integrity | No kernel panic or unexplained reboot during the initial boot. |
+| Diagnostic logs | kernel log, logcat, and pstore if present, saved outside Git with the operation timestamp and artifact fingerprint. |
+| Underlying storage | No UFS, mount, or I/O errors visible in the initial log. |
+| USB | Normal USB connectivity is restored in the system, and any exception is clearly recorded. |
+| Operation log | Start and end time, recovery type, ROM used, result, and any error or recovery step. |
 
-## حالات STOP
+## STOP conditions
 
-توقف ولا تنتقل إلى B0 أو B1 إذا ظهرت أي حالة من هذه الحالات: ملف recovery غير معروف المصدر، عدم تطابق ROM أو recovery، فقدان مسار الاسترداد، عيب تخزين أو إقلاع غير مفهوم، عدم توفر سجل بعد المحاولة، أو الاعتماد على artefacts من Android 13–15 من دون دليل قبول صريح من مطور ROM الحالي. لا تجعل نجاح compile أو توصية عامة بملف recovery بديلاً عن دليل الاسترداد على الجهاز.
+Stop and do not proceed to B0 or B1 if any of these conditions occur: recovery file of unknown origin, mismatch of ROM or recovery, loss of the recovery path, an unclear storage or boot defect, absence of logs after the attempt, or reliance on artifacts from Android 13–15 without explicit acceptance from the current ROM maintainer. Do not let a successful compile or a general recommendation of a recovery file substitute for on-device recovery evidence.
 
-## بعد R1
+## After R1
 
-عند اكتمال كل أدلة R1، يبقى القرار **STOP بالنسبة لـKernel 6.18** حتى إعداد تقرير B0 يثبت KMI/ABI ووحدات vendor والـfirmware والـDTBO المتوافقة. لا يُنشأ `boot.img` ولا `vendor_boot.img` ولا يبدأ اختبار ADC_TM7 أو SPSS بمجرد نجاح R1. [1] [2]
+After all R1 evidence is complete, the decision remains **STOP regarding Kernel 6.18** until a B0 report is prepared demonstrating KMI/ABI and vendor modules and firmware and DTBO compatibility. Do not create `boot.img` or `vendor_boot.img` nor begin ADC_TM7 or SPSS testing solely because R1 succeeded. [1] [2]
 
-## المراجع
+## References
 
-[1]: [مسودة R0 الخاصة بـEvolution X](R0_EVOLUTIONX17_20260812_MANIFEST_DRAFT.md)
-[2]: [خطة قبول الجهاز والاسترداد](DEVICE_ACCEPTANCE_PLAN.md)
+[1]: [R0 draft for Evolution X](R0_EVOLUTIONX17_20260812_MANIFEST_DRAFT.md)
+[2]: [Device and recovery acceptance plan](DEVICE_ACCEPTANCE_PLAN.md)

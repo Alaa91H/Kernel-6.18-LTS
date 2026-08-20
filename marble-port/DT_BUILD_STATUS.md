@@ -1,50 +1,50 @@
-# حالة بناء Device Tree لـ marble
+# Device Tree Build Status for marble
 
-## نتيجة البناء الثابت
+## Deterministic Build Result
 
-نجح بناء أهداف Device Tree التالية باستخدام LLVM وإعداد GKI arm64 مع `CONFIG_OF_OVERLAY=y`:
+The following Device Tree targets were successfully built using LLVM and the GKI arm64 configuration with `CONFIG_OF_OVERLAY=y`:
 
-| المخرج | الحجم | SHA-256 | الحالة |
+| Output | Size | SHA-256 | Status |
 |---|---:|---|---|
-| `ukee.dtb` | 379,047 بايت | `1d07d5ad9da131569901f3a5656bcf06e643fb1c664d826c65414bb5cbf1f5a8` | بُني برموز `-@` اللازمة للـoverlay. |
-| `marble-sm7475-pm8008-overlay.dtbo` | 68,799 بايت | `5c73e0d1f6ee5ee5fbb5ba4cf9ac61a77c494bdfcd02d31c3170c3e956fd3e62` | بُني بنجاح. |
-| `ukee-marble-merged.dtb` | 427,762 بايت | `2b7970d274d6f61131f1a32e49ca7d366d67cc84310580be33ee48d7986a7d67` | ناتج تطبيق الـDTBO بنجاح عبر `fdtoverlay`. |
+| `ukee.dtb` | 379,047 bytes | `1d07d5ad9da131569901f3a5656bcf06e643fb1c664d826c65414bb5cbf1f5a8` | Built with the `-@` symbols required for overlay. |
+| `marble-sm7475-pm8008-overlay.dtbo` | 68,799 bytes | `5c73e0d1f6ee5ee5fbb5ba4cf9ac61a77c494bdfcd02d31c3170c3e956fd3e62` | Built successfully. |
+| `ukee-marble-merged.dtb` | 427,762 bytes | `2b7970d274d6f61131f1a32e49ca7d366d67cc84310580be33ee48d7986a7d67` | Result of successfully applying the DTBO via `fdtoverlay`. |
 
-يمكن إعادة إنتاج النتيجة عبر:
+The result can be reproduced via:
 
 ```bash
 ./tools/build_marble_dt.sh
 ```
 
-## تحذيرات DTC المتبقية
+## Remaining DTC Warnings
 
-نجح البناء مع **130 تحذيراً**. هذه التحذيرات ليست أخطاء تجميع، لكنها تمنع رفع الحالة إلى `hardware-validated` أو إنشاء حزمة تفليش.
+The build succeeded with **130 warnings**. These warnings are not compile errors, but they prevent promoting the status to `hardware-validated` or creating a flash package.
 
-| فئة التحذير | العدد | ملاحظة المعالجة |
+| Warning category | Count | Remediation note |
 |---|---:|---|
-| `unit_address_vs_reg` | 75 | يلزم تطبيع عناوين عقد المنصة المنقولة مع قيمة `reg`. |
-| `avoid_default_addr_size` | 16 | يلزم ضبط خلايا العنوان/الحجم صراحة في العقد المنقولة. |
-| `interrupt_map` | 10 | يلزم مراجعة خلايا العنوان لعقد GIC/PCIe المنقولة. |
-| `reg_format` | 7 | يلزم مراجعة تنسيق `reg` بعد تكييف خلايا العنوان للمنصة. |
-| `ranges_format` و`simple_bus_reg` | 5 | ناتجة عن إعدادات الناقل والعناوين في cape. |
-| `graph_child_address` | 3 | يلزم تطبيع عقد graph ذات الطفل المفرد. |
-| `pci_device_reg` و`pci_device_bus_num` و`i2c_bus_reg` و`spi_bus_reg` | 8 | تحذيرات تابعة لمشكلات `reg_format`. |
-| `avoid_unnecessary_addr_size` و`unique_unit_address` و`unit_address_format` | 6 | يلزم تطبيع تعريفات العقد والعناوين. |
+| `unit_address_vs_reg` | 75 | Platform node unit-addresses in overlays must be normalized to the `reg` value. |
+| `avoid_default_addr_size` | 16 | Address/size cells must be explicitly set in overlay nodes. |
+| `interrupt_map` | 10 | Address cells for moved GIC/PCIe nodes need to be reviewed. |
+| `reg_format` | 7 | The `reg` format needs review after adapting platform address cells. |
+| `ranges_format` and `simple_bus_reg` | 5 | Caused by bus and address settings in the cape. |
+| `graph_child_address` | 3 | Graph nodes with a single child must be normalized. |
+| `pci_device_reg` and `pci_device_bus_num` and `i2c_bus_reg` and `spi_bus_reg` | 8 | Warnings secondary to `reg_format` issues. |
+| `avoid_unnecessary_addr_size` and `unique_unit_address` and `unit_address_format` | 6 | Node definitions and addresses need normalization. |
 
-## الاستنتاج
+## Conclusion
 
-هذه المرحلة تحقق **بناءً ثابتاً** للـDTB والـDTBO ولعملية دمجهما، لا تحقق إقلاعاً. استُوردت 29 ملفاً غير متعارض من الإغلاق المرجعي، وتكيّفت 7 ملفات PMIC متعارضة من مرجع Xiaomi لأن رموز overlay المطلوبة لا توجد في ACK. تبقى معالجة التحذيرات، ومطابقة drivers وclock providers، وسجل الإقلاع الفعلي شروطاً لازمة قبل أي تفليش.
+This stage achieves a **deterministic build** of the DTB and the DTBO and their merge process; it does not achieve booting. 29 non-conflicting files were imported from the reference closure, and 7 conflicting PMIC files from the Xiaomi reference were adapted because the overlay symbols required do not exist in ACK. Addressing the warnings, matching drivers and clock providers, and an actual boot log remain necessary preconditions before any flashing.
 
-## إعادة البناء الموحّد للنواة
+## Unified Kernel Rebuild
 
-بتاريخ البناء الحالي، نجح `build_marble_gki_6_18_proto.sh` بعد دمج `marble_gki_6_18_core.config` و`marble_gki_6_18_proto.config`. بُنيت أهداف `Image` و`modules` وقطعتا marble المحددتان فقط (`qcom/ukee.dtb` و`qcom/marble-sm7475-pm8008-overlay.dtbo`)؛ لا يستخدم النص هدف `dtbs` الشامل لأن بعض لوحات QCM6490 غير ذات الصلة تفشل في هذه الشجرة المعدلة.
+As of the current build date, `build_marble_gki_6_18_proto.sh` succeeded after merging `marble_gki_6_18_core.config` and `marble_gki_6_18_proto.config`. The `Image` and `modules` targets and only the two specified marble DT artifacts (`qcom/ukee.dtb` and `qcom/marble-sm7475-pm8008-overlay.dtbo`) were built; the script does not use the aggregate `dtbs` target because some unrelated QCM6490 boards fail in this modified tree.
 
-| بند التحقق | النتيجة |
+| Verification item | Result |
 |---|---|
 | kernel release | `6.18.32-4k-g338cadfa614d-dirty` |
 | Image SHA-256 | `b9779fc07a0887ed05f5cf208ae20a2e6dbc67f541890a051e847dfd31488f7c` |
-| الوحدات المبنية | 104 ملفات `.ko` |
-| قطع DT الناتجة | 2 (`ukee.dtb` و`marble-sm7475-pm8008-overlay.dtbo`) |
-| BTF | معطّل مؤقتاً في جزء النموذج الأولي؛ لا يُقبل تحقق KMI قبل إعادة تمكينه. |
+| Built modules | 104 `.ko` files |
+| Resulting DT artifacts | 2 (`ukee.dtb` and `marble-sm7475-pm8008-overlay.dtbo`) |
+| BTF | Temporarily disabled in the proto stage; KMI validation is not accepted until it is re-enabled. |
 
-> وسم `dirty` في اسم الإصدار يعكس أن التزام نص البناء لم يكن قد أُنشئ عند وقت البناء. تعاد عملية البناء بعد الالتزام في الفحص اللاحق للحصول على بصمة من مصدر نظيف.
+> The `dirty` tag in the release name reflects that the build script's commit had not been created at build time. The build is repeated after the commit in a subsequent check to obtain a fingerprint from a clean source.

@@ -1,75 +1,75 @@
-# تقرير تنفيذ جولة جاهزية التجربة — POCO F5 (`marble`)
+# Execution Report for Experiment Readiness Round — POCO F5 (`marble`)
 
-**تاريخ الجولة:** 20 أغسطس 2026
+**Round date:** 20 August 2026
 
-**فرع العمل:** `marble-6.18-full-port`
+**Working branch:** `marble-6.18-full-port`
 
-**الالتزام المفحوص:** `32ffe3add`
-**قرار الجولة:** **لا تغييرات Device Tree ولا تغليف ولا تفليش.**
+**Commit inspected:** `32ffe3add`
+**Round decision:** **No Device Tree changes, no packaging, no flashing.**
 
-> طبقت هذه الجولة قاعدة الدخول في خطة الجاهزية قبل أي تعديل مصدر. الشجرة الصحيحة التي تحمل النقل الكامل وسجل الإصلاحات هي `marble-6.18-full-port`، وليست الفرع العام `main`. أثبت الفحص أن آخر تحقق ثابت موثق للفرع اجتاز بوابات DTC الأربع عند `87/36/128/85`، لكن إعادة التحقق في هذا المضيف توقفت قبل مرحلة DTC لغياب سلسلة LLVM. وعليه، لا توجد قيمة «بعد هذه الجولة» يمكن ادعاؤها، ولا يوجد أساس مشروع لتغيير عقدة ADC أو SPSS أو عقد vendor.
+> This round applied the entry rule in the readiness plan before any source modification. The authoritative tree carrying the full port and the patch history is `marble-6.18-full-port`, not the public `main` branch. Verification showed that the last documented stable check of the branch passed the four DTC gates at `87/36/128/85`, but re-verification on this host stopped before the DTC stage due to a missing LLVM toolchain. Therefore, there is no “after this round” value that can be claimed, and there is no reasonable basis to change ADC or SPSS or vendor nodes.
 
-## نطاق التنفيذ والضمانات
+## Scope of execution and assurances
 
-راجعت سجل فرع النقل الكامل، ومصادر `marble` وCape، وسجلات تصنيف التحذيرات، وأدوات البناء والتحقق، وخطة قبول الجهاز. لم تُعطَّل أي فئة تشخيص DTC، ولم تُعدَّل خصائص `reg` أو `phandle` أو IRQ أو I²C/SPI/MSI أو أسماء العقد. كما لم تُنشأ أي صور `boot.img` أو `vendor_boot.img` أو `dtbo.img` قابلة للتفليش.
+I reviewed the full-port branch history, the `marble` and Cape sources, the warning classification logs, the build and verification tools, and the device acceptance plan. No DTC diagnostic class was disabled, and no `reg` or `phandle` or IRQ or I²C/SPI/MSI or node-name properties were modified. No flashiable `boot.img` or `vendor_boot.img` or `dtbo.img` images were produced.
 
-تحتفظ أداة التحقق بميزانيات صريحة غير صفرية بوصفها سقوف منع تراجع، وتبني DTB وDTBO ثم تدمجهما بـ`fdtoverlay` وتفكّ جميع المخرجات بـDTC. هذا يطابق المبدأ القائل بأن نجاح البوابة لا يأتي من حجب التحذيرات.[1] [2]
+The verifier enforces explicit non-zero budgets as rollback prevention ceilings, builds DTB and DTBO and then merges them with `fdtoverlay`, and decompiles all outputs with DTC. This matches the principle that gate success does not come from silencing warnings.[1] [2]
 
-## جدول البوابات الأربع
+## Four-gate table
 
-| نطاق القياس | قبل هذه الجولة: آخر تحقق ثابت موثق | بعد هذه الجولة | حالة النتيجة |
+| Scope of measurement | Before this round: last documented stable verification | After this round | Result status |
 |---|---:|---:|---|
-| سجل بناء DTS/DTBO المحدد | 87 | غير مقاس | **محجوب في bootstrap**: لا يوجد `clang` في المضيف، فتوقف `make` عند بناء `fixdep` قبل إنشاء أي DTB. |
-| فك `ukee.dtb` | 36 | غير مقاس | **محجوب**: لم يُبنَ DTB جديد في هذه البيئة. |
-| فك DTBO المفرد | 128 | غير مقاس | **محجوب**: لم يُبنَ DTBO جديد، و`dtc`/`fdtoverlay` غير متاحين. |
-| فك DTB بعد الدمج | 85 | غير مقاس | **محجوب**: لا مخرجات base/overlay جديدة يمكن دمجها. |
+| Specified DTS/DTBO build record | 87 | Not measured | **Blocked in bootstrap**: no `clang` on the host, so `make` stopped at building `fixdep` before creating any DTB. |
+| Unpack `ukee.dtb` | 36 | Not measured | **Blocked**: no new DTB was built in this environment. |
+| Single DTBO unpack | 128 | Not measured | **Blocked**: no new DTBO was built, and `dtc`/`fdtoverlay` are unavailable. |
+| DTB unpack after merge | 85 | Not measured | **Blocked**: no new base/overlay outputs exist to merge. |
 
-الخط الأساس أعلاه هو نتيجة التحقق الثابت الموثق بعد رقعة عقود DTC، لا نتيجة هذا المضيف. انخفض من `126/50/153/99` إلى `87/36/128/85` بعد إصلاحات GICv3/ITS وخرائط مقاطعات PCIe وسياق حافلات QUP وUSB و`reserved-memory`، من دون تعطيل DTC.[1] [3]
+The baseline above is the result of the documented stable verification after patching DTC bindings, not the result of this host. It decreased from `126/50/153/99` to `87/36/128/85` after GICv3/ITS fixes and PCIe interrupt maps and QUP/USB bus context and `reserved-memory` fixes, without disabling DTC.[1] [3]
 
-## جدول الإصلاحات الجديدة
+## Table of new fixes
 
-لم تنفذ هذه الجولة أي رقعة مصدرية. هذا **إغلاق مشروع للجولة** لا تقصير: معايير المهمة تمنع معالجة عقد لا يثبت binding أو driver أو اختبار عتادي سلوكها.
+No source patches were applied in this round. This is a project-level round closure, not a shortcut: the task criteria prohibit touching nodes that do not have a proven binding or driver or tested hardware behavior.
 
-| المجموعة | المشكلة الأصلية | الإصلاح المصدري في هذه الجولة | التحقق الدلالي |
+| Group | Original issue | Source fix in this round | Semantic verification |
 |---|---|---|---|
-| قنوات ADC/ADC_TM | تحذيرات `unit_address_vs_reg` موزعة على قنوات vendor/PMIC متعددة. | لا تعديل. | لا يكفي تغيير الاسم؛ تتطلب كل قناة binding PMIC مناسباً ومراجعة `reg` واختبار IIO/thermal على الجهاز.[3] |
-| SPSS/GLINK | `reg_format` و`ranges_format` في `glink-edge` مع تحذيرات prerequisites تابعة. | لا تعديل. | لا يوجد في بيئة هذه الجولة مصدر Qualcomm أو binding يثبت parser وملكية `qcom,spss-addr`/`qcom,spss-size`؛ سيجعل تحويل الخلايا تخميناً.[3] |
-| عقد vendor وPCIe/CoreSight/guest VM | عقد تسميتها أو موردها جزء من اتفاق driver أو firmware. | لا تعديل. | لا تضاف خصائص `reg` صورية ولا تُحذف `@` بلا binding أو مصدر driver واختبار وظيفي.[3] |
-| مراجع DTBO الخارجية | الفحص المنفرد للـplugin يختلف عن شجرة الدمج. | لا تعديل. | لا يعالج إلا العيب الباقي بعد الدمج أو سياق حافلة يطابق القاعدة حرفياً.[3] |
+| ADC/ADC_TM channels | `unit_address_vs_reg` warnings distributed across multiple vendor/PMIC channels. | No modification. | Renaming alone is insufficient; each channel requires an appropriate PMIC binding and review of `reg` and IIO/thermal testing on the device.[3] |
+| SPSS/GLINK | `reg_format` and `ranges_format` in `glink-edge` with dependent prerequisites warnings. | No modification. | There is no Qualcomm source or binding in this round’s environment that proves the parser and ownership of `qcom,spss-addr`/`qcom,spss-size`; converting cells would be a guess.[3] |
+| vendor nodes and PCIe/CoreSight/guest VM | Node naming or resource is part of a driver or firmware agreement. | No modification. | Do not add fabricated `reg` properties or remove `@` without a binding or driver source and functional testing.[3] |
+| external DTBO references | The plugin’s standalone check differs from the merge tree. | No modification. | Only addressed after the remaining defect post-merge or in a bus context that matches the rule literally.[3] |
 
-## المتبقي المحدّث
+## Updated remaining items
 
-| الوضع | سبب عدم التعديل الآلي | شرط الإغلاق الصحيح |
+| Status | Reason for not modifying automatically | Proper closure condition |
 |---|---|---|
-| **مؤجل: إعادة بناء البوابات الأربع** | مضيف الجولة يفتقد `clang` و`ld.lld` و`llvm-ar` و`pahole` و`dtc` و`fdtoverlay` وPython `dtschema`. فشلت بوابة التحقق عند أول استدعاء لـ`clang`. | سلسلة أدوات Android/LLVM المطابقة للشجرة، و`pahole` مثبت قابل للقراءة، وDTC يحوي `fdtoverlay`، و`dt-schema`؛ ثم تشغيل `tools/validate_marble_dt_build.sh` من شجرة نظيفة. |
-| **مؤجل: include closure لمصدر Xiaomi** | أداة اكتمال DT تتوقع `../reference/xiaomi-marble-devicetree/qcom`، وهذه الشجرة المرجعية غير موجودة في بيئة الجولة. | مصدر Xiaomi/Qualcomm المطابق للروم الهدف في المسار المصرح به أو تمريره صراحة، ثم إعادة توليد تقرير include closure. |
-| **مؤجل: ADC/ADC_TM** | التحذيرات المتبقية لا تثبت أن إعادة التسمية وحدها تحافظ على القنوات والمعايرة. | binding مطابق لكل PMIC، مراجعة مدى VADC، ثم IIO/thermal من إقلاع حقيقي.[3] |
-| **مؤجل: SPSS/GLINK** | لا دليل parser أو مصدر vendor في حزمة الجولة يبرر تحويل الخلايا. | binding/driver Qualcomm المطابق واختبار تحميل `remoteproc-spss` وGLINK على الجهاز.[3] |
-| **مؤجل: التوافق وDLKM** | سجلات الفرع تثبت عدم توافق ABI المعروف بين مرشح 6.18 وROM Evolution X 17 ذي 5.10؛ لا يكفي DTB لتجاوزه. | ROM هدف واحد مع KMI مرجعي، drivers/firmware ووحدات vendor متوافقة أو بدائل منقولة ومتحقق منها.[1] [4] |
-| **خارج نطاق Devicetree** | الشاشة وGPU والكاميرا والصوت وDSP والمودم تعتمد على drivers وfirmware وطبقات vendor. | قبول وظيفي خاص بكل مسار بعد اجتياز بوابات الإقلاع والتخزين والطاقة؛ لا يعدّ إسكات DTC إغلاقاً.[4] |
-| **محظور: التفليش أو التغليف** | لا يوجد جهاز POCO F5/UART متاح هنا، ولا صور استرجاع أصلية مع نتيجة استرداد عملية، كما أن B0 محجوب بسبب ABI. | استكمال R1 ثم B0–B2 حسب خطة القبول: استرداد مثبت، توافق artefacts، UART/ADB/pstore، وثلاث دورات إقلاع مستقرة.[4] |
+| **Deferred: rebuild the four gates** | The round host lacks `clang` and `ld.lld` and `llvm-ar` and `pahole` and `dtc` and `fdtoverlay` and Python `dtschema`. The verification gate failed at the first `clang` call. | Android/LLVM toolchain matching the tree, a readable installed `pahole`, DTC including `fdtoverlay`, and `dt-schema`; then run `tools/validate_marble_dt_build.sh` from a clean tree. |
+| **Deferred: include closure for Xiaomi sources** | The DT completion tool expects `../reference/xiaomi-marble-devicetree/qcom`, and that reference tree is not present in the round environment. | The Xiaomi/Qualcomm source matching the target ROM at the expected path, or passing it explicitly, then regenerate the include closure report. |
+| **Deferred: ADC/ADC_TM** | Remaining warnings do not prove that renaming alone preserves channels and calibration. | Matching binding for each PMIC, review of VADC range, then IIO/thermal from a real boot.[3] |
+| **Deferred: SPSS/GLINK** | No proof of a parser or vendor source in the round package justifies converting cells. | Matching Qualcomm binding/driver and testing loading `remoteproc-spss` and GLINK on the device.[3] |
+| **Deferred: compatibility and DLKM** | Branch history proves a known ABI incompatibility between the 6.18 filter and the Evolution X 17 ROM with 5.10; a DTB alone is not enough to overcome it. | One target ROM with reference KMI, compatible drivers/firmware and vendor modules or verified ported alternatives.[1] [4] |
+| **Out of scope: Devicetree-external** | Display, GPU, camera, audio, DSP, and modem rely on drivers and firmware and vendor layers. | Per-path functional acceptance after passing boot/storage/power gates; silencing DTC is not a closure.[4] |
+| **Blocked: flashing or packaging** | No POCO F5/UART device is available here, no original recovery images with a reproducible recovery result, and B0 is blocked due to ABI. | Complete R1 then B0–B2 per the acceptance plan: reproducible installer, artefact compatibility, UART/ADB/pstore, and three stable boot cycles.[4] |
 
-## سجل الإقلاع الأول
+## First boot log
 
-لا يوجد سجل UART ولا محاولة إقلاع أو تفليش في هذه الجولة، عمداً. لا يمكن استبدال ذلك بنتيجة بناء ساكن أو بتاريخ تسجيل قديم.
+There is no UART log nor any boot or flashing attempt in this round, by design. That cannot be substituted with a static build result or an older recorded log.
 
-| الحقل المطلوب | نتيجة الجولة |
+| Required field | Round result |
 |---|---|
-| أول حدث نجاح | غير متاح؛ لم تُجر محاولة إقلاع. |
-| أول عائق | فشل bootstrap المحلي عند `clang: No such file or directory` قبل بناء أدوات المضيف؛ وليس هذا عطلاً منسوباً إلى Device Tree. |
-| مقتطف UART ذو صلة | غير متاح؛ يتطلب POCO F5 فعلياً وUART وصور ROM متطابقة ومسار استرداد مختبراً. |
+| First successful event | Not available; no boot attempt was made. |
+| First blocker | Local bootstrap failed at `clang: No such file or directory` before building host tools; this is not a Device Tree-attributed failure. |
+| Relevant UART excerpt | Not available; requires an actual POCO F5 with UART and matching ROM images and an exercised recovery path. |
 
-## الحواجز المؤجلة خارج هذه الجولة
+## Deferred blockers outside this round
 
-لا تزال خطوة الجاهزية التالية محكومة بحزمة إدخال محددة: مصدر Device Tree مرجعي متزامن مع ROM هدف واحد، bindings أو مصادر Qualcomm اللازمة لـADC5 وSPSS/GLINK، سلسلة أدوات Android المتطابقة، وصور `boot`/`vendor_boot`/`dtbo`/`vendor_dlkm` الأصلية مع manifest وبصمات، وجهاز `marble` بbootloader مفتوح وUART، واسترداد R1 مثبت عملياً. تضع خطة القبول صراحةً حظر تفليش قبل تحقق B0–B2 وتثبت أن مسارات vendor لا تغلق بمجرد نجاح بناء DT.[4]
+The next readiness step remains gated by a specific input set: a reference Device Tree synchronized with a single target ROM, bindings or Qualcomm sources required for ADC5 and SPSS/GLINK, a matching Android toolchain, original `boot`/`vendor_boot`/`dtbo`/`vendor_dlkm` images with manifest and checksums, a `marble` device with an open bootloader and UART, and a reproducible R1 recovery. The acceptance plan explicitly prohibits flashing before verifying B0–B2 and demonstrates that vendor paths are not closed merely by a successful DT build.[4]
 
-## الأثر على الشجرة
+## Impact on the tree
 
-أُضيف هذا التقرير فقط. لم تُمس ملفات DTS أو bindings أو drivers أو Kconfig أو نصوص البناء. لذلك لا تدّعي هذه الجولة نجاح بناء جديد أو انخفاضاً جديداً في عدادات DTC أو جاهزية للتجربة أو قابلية للتفليش.
+Only this report was added. No DTS files or bindings or drivers or Kconfig or build scripts were touched. Therefore this round does not claim a new successful build nor a new decrease in DTC counters nor readiness for experimentation nor flashability.
 
-## المراجع
+## References
 
-[1]: https://github.com/Alaa91H/Kernel-6.18-LTS/blob/marble-6.18-full-port/marble-port/BUILD_VERIFICATION.md "سجل بناء وتحقق marble"
-[2]: https://github.com/Alaa91H/Kernel-6.18-LTS/blob/marble-6.18-full-port/tools/validate_marble_dt_build.sh "بوابة تحقق DTB وDTBO المدمجين"
-[3]: https://github.com/Alaa91H/Kernel-6.18-LTS/blob/marble-6.18-full-port/marble-port/DT_WARNING_CLASSIFICATION.md "تصنيف تحذيرات Device Tree"
-[4]: https://github.com/Alaa91H/Kernel-6.18-LTS/blob/marble-6.18-full-port/marble-port/DEVICE_ACCEPTANCE_PLAN.md "خطة قبول الجهاز والاسترداد"
+[1]: https://github.com/Alaa91H/Kernel-6.18-LTS/blob/marble-6.18-full-port/marble-port/BUILD_VERIFICATION.md "marble build and verification log"
+[2]: https://github.com/Alaa91H/Kernel-6.18-LTS/blob/marble-6.18-full-port/tools/validate_marble_dt_build.sh "Merged DTB and DTBO verification gate"
+[3]: https://github.com/Alaa91H/Kernel-6.18-LTS/blob/marble-6.18-full-port/marble-port/DT_WARNING_CLASSIFICATION.md "Device Tree warning classification"
+[4]: https://github.com/Alaa91H/Kernel-6.18-LTS/blob/marble-6.18-full-port/marble-port/DEVICE_ACCEPTANCE_PLAN.md "Device acceptance and recovery plan"

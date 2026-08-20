@@ -1,22 +1,22 @@
-# سياسة المراقبة والتشخيص لـ marble
+# Monitoring and Diagnostics Policy for marble
 
-## نكهات التشخيص
+## Diagnostic flavors
 
-| المكوّن | `release` | `diagnostic` | سبب الفصل |
+| Component | `release` | `diagnostic` | Reason for separation |
 |---|---|---|---|
-| BTF ومعلومات التصحيح | مطلوبة للتحقق من KMI متى دعمتها أداة البناء. | مطلوبة أيضاً. | BTF ليس بديلاً عن اختبار الجهاز لكنه شرط مهم لفحص الواجهة. |
-| pstore/ramoops | يبقى دعم GKI الأساسي مفعلاً. | يضاف ftrace persistent عند اجتياز بناء التهيئة. | يحتفظ بسجل panic/oops لإعادة التشغيل، لكن نجاحه يحتاج ذاكرة محجوزة واختبار جهاز. |
-| ftrace | يبقى دعم GKI الأساسي فقط. | `FUNCTION_TRACER` و`FUNCTION_GRAPH_TRACER` و`FTRACE_SYSCALLS` و`BOOTTIME_TRACING`. | يتيح تحديد موضع توقف الإقلاع أو الانحدار الوظيفي؛ لا يفعّل تلقائياً في الإصدار. |
-| dynamic debug | معطّل افتراضياً. | مفعّل؛ لا تُكتب قواعد debug في cmdline افتراضياً. | يتيح تحكمًا انتقائياً في سجلات drivers من دون إغراق سجل الإصدار. |
-| watchdog/lockup/hung workqueue | إعدادات GKI الحالية تبقى مفعلة. | تبقى مفعلة مع إخراجها في تقرير الصحة. | تلتقط soft/hard lockup وRCU/workqueue stalls. |
-| KASAN/KFENCE/UBSAN | لا تضاف خيارات جديدة فوق GKI. | لا تفرض KASAN أو LOCKDEP من fragment عام. | هذه الأدوات لها أثر ذاكرة وأداء وتحتاج نواة اختبار وحزمة ROM واختبار جهاز منفصلين. |
+| BTF and debug info | Required to verify KMI when supported by the build tool. | Also required. | BTF is not a substitute for device testing but is an important precondition for interface inspection. |
+| pstore/ramoops | The baseline GKI support remains enabled. | Adds persistent ftrace when the configuration build passes. | Retains panic/oops logs across reboot, but its success requires reserved memory and device testing. |
+| ftrace | Only the baseline GKI support remains. | `FUNCTION_TRACER` and`FUNCTION_GRAPH_TRACER` and`FTRACE_SYSCALLS` and`BOOTTIME_TRACING`. | Enables pinpointing boot stalls or functional regressions; not enabled by default in the release. |
+| dynamic debug | Disabled by default. | Enabled; debug rules are not written to cmdline by default. | Allows selective control of driver logs without flooding the release log. |
+| watchdog/lockup/hung workqueue | Current GKI settings remain enabled. | Remain enabled with their output included in the health report. | They capture soft/hard lockups and RCU/workqueue stalls. |
+| KASAN/KFENCE/UBSAN | No new options are added on top of GKI. | Do not force KASAN or LOCKDEP from a common fragment. | These tools have memory and performance impacts and require a separate test kernel, ROM package, and device testing. |
 
-## الحالة المثبتة في GKI الأساسي
+## State present in baseline GKI
 
-إعداد GKI الحالي يفعّل `PSTORE` و`PSTORE_RAM` و`PSTORE_CONSOLE` و`PSTORE_PMSG` و`DEBUG_FS` و`FTRACE` و`KPROBE_EVENTS` و`KALLSYMS_ALL` و`STACKTRACE` و`FRAME_POINTER` و`MAGIC_SYSRQ` وwatchdog/RCU stall detection و`KFENCE` و`UBSAN`. أما `DYNAMIC_DEBUG` و`FUNCTION_TRACER` و`PSTORE_FTRACE` فليست مفعلة في النكهة الأساسية؛ وتصلح لتكون جزء `diagnostic` منفصلاً.
+The current GKI configuration enables `PSTORE` and `PSTORE_RAM` and `PSTORE_CONSOLE` and `PSTORE_PMSG` and `DEBUG_FS` and `FTRACE` and `KPROBE_EVENTS` and `KALLSYMS_ALL` and `STACKTRACE` and `FRAME_POINTER` and `MAGIC_SYSRQ` and watchdog/RCU stall detection and `KFENCE` and `UBSAN`. `DYNAMIC_DEBUG` and `FUNCTION_TRACER` and `PSTORE_FTRACE` are not enabled in the baseline flavor; they are appropriate to be part of a separate `diagnostic`.
 
-## بوابة التحقق من التشخيص
+## Diagnostics verification gate
 
-نجاح Kconfig أو وجود عقدة `ramoops` لا يثبت حفظ السجلات. يجب على اختبار الجهاز إثبات وجود `/sys/fs/pstore` بعد panic مراقب أو إعادة تشغيل متعمدة في بيئة استرداد، وفحص buffer فـtrace، وإثبات عدم وقوع reboot loop. لا ترفع مفاتيح panic أو fault injection أو أوامر trace الدائمة إلى نكهة `release`.
+A successful Kconfig or the presence of the `ramoops` node does not prove log persistence. Device testing must prove the presence of `/sys/fs/pstore` after a monitored panic or intentional reboot in a recovery environment, inspect the ftrace buffer, and prove there is no reboot loop. Do not promote panic keys or fault injection or permanent trace commands to the `release` flavor.
 
-> تشخيص الأعطال الفعلي هو سلسلة أدلة: صورة ذات رموز وتصحيح مناسب، وسجل serial أو pstore محفوظ، و`dmesg` بعد الإقلاع، ورمز مصدر مطابق لبصمة الصورة. لا يوجد خيار Kconfig منفرد يجعل النواة «مراقَبة بنسبة 100%».
+> Actual failure diagnosis is a chain of evidence: an image with symbols and proper debug, a preserved serial or pstore log, a post-boot `dmesg`, and source code matching the image fingerprint. There is no single Kconfig option that makes the kernel «monitored 100%».

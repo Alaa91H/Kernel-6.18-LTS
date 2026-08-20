@@ -1,116 +1,116 @@
-# حزمة الجاهزية قبل الجهاز — POCO F5 / `marble`
+# Pre-Device Readiness Packet — POCO F5 / `marble`
 
-**الحالة:** بوابة تحضير واستدلال فقط. لا تمنح هذه الحزمة إذناً لتغليف صورة أو إقلاعها أو تفليشها.
+**Status:** Preparation and inference gate only. This packet does not grant permission to package, boot, or flash an image.
 
-**مرشح المصدر المقصود:** رقعة ADC_TM7 وSPSS/GLINK في الالتزام `59d0b2603ef0deb3a746b5f8681ce8e27b495e4e`.
-**التحقق الساكن الأخير:** Image و104 وحدات وBTF/`BTFIDS` و`ukee.dtb` وDTBO؛ بوابات Device Tree `87/36/128/85`. [1]
+**Intended source baseline:** ADC_TM7 patch and SPSS/GLINK in commit `59d0b2603ef0deb3a746b5f8681ce8e27b495e4e`.
+**Last static verification:** Image and 104 modules and BTF/`BTFIDS` and `ukee.dtb` and DTBO; Device Tree gates `87/36/128/85`. [1]
 
-## 1. قرار البداية
+## 1. Start Decision
 
-لا يزال القرار الحالي **STOP — لا اختبار جهاز**. البناء الساكن اكتمل، لكنه لا يحل شرطين سابقين على أول محاولة: **R1**، أي استرداد مثبت لصورة ROM الأصلية المحددة نفسها، و**B0**، أي توافق بلا عناصر مجهولة بين مرشح 6.18 وKMI ووحدات vendor والـfirmware الخاصة بالـROM. التحليل الحالي يثبت أن artefacts المفحوصة من Evolution X 17 مبنية لنواة 5.10.256، ولذلك لا يجوز إعادة استخدام DLKM أو `vendor_boot` أو firmware على افتراض التوافق مع 6.18. [2] [3]
+The current decision remains **STOP — no device testing**. The static build completed, but it does not satisfy two prerequisites for the first attempt: **R1**, i.e., a verified recovery of the same specified original ROM image, and **B0**, i.e., compatibility with no unknown elements between the 6.18 candidate and the ROM's KMI, vendor modules, and firmware. Current analysis shows that the examined artefacts from Evolution X 17 are built for kernel 5.10.256, and therefore DLKM or `vendor_boot` or firmware must not be reused on the assumption of compatibility with 6.18. [2] [3]
 
-> لا تحوّل تعبئة الجداول أدناه الحاجز إلى نجاح. لا تصبح البوابة خضراء إلا عند حفظ الدليل المطلوب ومراجعته، وعندها فقط تنتقل إلى البوابة التالية بالترتيب.
+> Filling in the tables below does not turn the barrier into success. The gate only becomes green when the required evidence is preserved and reviewed, and only then does it move to the next gate in order.
 
-| البوابة | الحالة الآن | شرط التحويل إلى أخضر | نتيجة عدم تحقق الشرط |
+| Gate | Current state | Condition to turn green | Result if condition not met |
 |---|---|---|---|
-| R0 — جرد | مكتمل ساكناً لمرجع ROM واحد، غير مثبت على جهاز | manifest صور أصلي كامل وبصمات SHA-256 ومكان حفظ مستقل | لا تعديل على الجهاز. |
-| R1 — استرداد | **غير منفذ** | عودة ROM الأصلي نفسه إلى إقلاع مستقر بعد إجراء استرداد مراجع | توقف مطلق؛ لا مرشح 6.18. |
-| B0 — توافق artefacts | **محجوب/فاشل** | KMI مرجعي، وحدات وfirmware متوافقة، وDTBO/vendor boot لا تحوي مكونات 5.10 غير متوافقة | لا تغليف ولا إقلاع تجريبي. |
-| B1 — الإقلاع المبكر | غير مفتوح | R1 وB0 أخضران، ومسار اختبار قابل للاسترداد وسجل UART/pstore | استعادة فورية واحتفاظ بالسجل. |
-| B2 — الاستقرار | غير مفتوح | ثلاث دورات إقلاع وإيقاف مستقرة بعد B1 | عودة إلى B1؛ لا اختبارات مجال عتادي. |
+| R0 — Inventory | Statically complete for a single ROM reference, not installed on device | Original images manifest complete with SHA-256 fingerprints and independent storage location | No modification to the device. |
+| R1 — Recovery | **Not executed** | Return of the same original ROM to a stable boot after performing the referenced recovery | Absolute stop; no 6.18 candidate. |
+| B0 — Artefact compatibility | **Blocked/Failed** | Reference KMI, compatible modules and firmware, and DTBO/vendor boot do not contain incompatible 5.10 components | No packaging nor experimental booting. |
+| B1 — Early boot | Not open | R1 and B0 green, recoverable test pathway and UART/pstore logs | Immediate recovery and log retention. |
+| B2 — Stability | Not open | Three stable boot/shutdown cycles after B1 | Fallback to B1; no field hardware tests. |
 
-## 2. ملف هوية ROM والجهاز
+## 2. ROM and Device Identity File
 
-يملأ المختبر هذا القسم من **جهاز واحد وROM واحد فقط**. لا يجوز خلط boot أو DTBO أو vendor boot أو DLKM أو firmware من builds مختلفة، ولا يوضع الرقم التسلسلي الكامل أو أي بيانات شخصية في Git؛ يستخدم معرّفاً محجوباً ومكاناً خاصاً لدليل الصور.
+The tester fills this section for one device and one ROM only. It is not permitted to mix boot or DTBO or vendor_boot or DLKM or firmware from different builds, and the full serial number or any personal data must not be placed in Git; a masked identifier and a private location for the image manifest must be used.
 
-| حقل مطلوب | القيمة المرصودة | دليل محفوظ خارج Git | حالة المراجعة |
+| Required field | Observed value | Evidence stored outside Git | Review status |
 |---|---|---|---|
-| طراز الجهاز وcodename | `POCO F5 / marble` فقط بعد التحقق | لقطة fastboot أو تعريف منتج محجوب المعرف | غير مكتمل |
-| حالة bootloader وUSB | حالة موثقة على الجهاز المخصص للاختبار | لقطة حالة واتصال USB مستقر | غير مكتمل |
-| إصدار ROM وAndroid | build fingerprint كامل لمرشح واحد | `getprop` محفوظ خارج Git | غير مكتمل |
-| معرف build وpatch level | من النظام الأصلي نفسه | سجل properties مؤرخ | غير مكتمل |
-| تاريخ الجرد واسم المختبر | تاريخ/معرف داخلي غير شخصي | سجل عملية | غير مكتمل |
-| مسار نسخ الاسترداد | موقع خاص قابل للقراءة والاستعادة | دليل وجود وبصمات، لا صور ضمن Git | غير مكتمل |
+| Device model and codename | `POCO F5 / marble` only after verification | Fastboot snapshot or product definition with masked identifier | Incomplete |
+| Bootloader and USB state | Documented state on the test device | Snapshot of state and stable USB connection | Incomplete |
+| ROM and Android version | Full build fingerprint for a single candidate | `getprop` stored outside Git | Incomplete |
+| Build id and patch level | From the original system itself | Dated properties log | Incomplete |
+| Inventory date and tester name | Date/internal non-personal identifier | Process log | Incomplete |
+| Recovery copies path | Private readable and restorable location | Proof of presence and fingerprints, no images in Git | Incomplete |
 
-## 3. Manifest الاسترداد (R0)
+## 3. Recovery Manifest (R0)
 
-ينشأ ملف manifest خارج Git قبل أي تعديل. يسجل كل artefact باسم الملف وحجمه وSHA-256 ومصدره وتاريخ الحصول عليه وارتباطه الدقيق بـbuild fingerprint. لا تحفظ صور مملوكة أو مفاتيح أو بيانات جهاز في هذا المستودع.
+A manifest file is created outside Git before any modification. Each artefact is recorded with filename, size, SHA-256, source, date acquired, and its precise linkage to the build fingerprint. Do not store proprietary images, keys, or device data in this repository.
 
-| فئة artefact | الحد الأدنى الواجب جرده | الدليل المطلوب |
+| Artefact category | Minimum to be inventoried | Required evidence |
 |---|---|---|
-| صور الإقلاع | boot وvendor_boot وdtbo، والأقسام المطلوبة في إجراء الاسترداد المعتمد للـROM | اسم، حجم، SHA-256، مصدر، وارتباط بـbuild fingerprint. |
-| vendor modules | `vendor_dlkm` ومحتوى DLKM ذي الصلة داخل `vendor_boot` و`system_dlkm` إن وجد | قائمة وحدات، `vermagic`، وبصمات الحاويات. |
-| firmware | firmware المشار إليه من modem/DSP/WLAN/SPSS والـvendor firmware paths | قائمة مسارات وبصمات ومرجع ROM واحد. |
-| تعريفات الشجرة | DTBO الأصلية والـDTB/overlays ذات الصلة | بصمات وفهرس labels/overlays. |
-| مسار الاسترداد | تعليمات maintainer-reviewed المطابقة للإصدار نفسه | رابط/نسخة مؤرشفة ومراجعة ثانية قبل استخدامها. |
+| Boot images | `boot`, `vendor_boot`, and `dtbo`, and the partitions required by the ROM's approved recovery procedure | Name, size, SHA-256, source, and linkage to build fingerprint. |
+| vendor modules | `vendor_dlkm` and DLKM-related content inside `vendor_boot` and `system_dlkm` if present | List of modules, `vermagic`, and container fingerprints. |
+| firmware | Firmware referenced by modem/DSP/WLAN/SPSS and the vendor firmware paths | List of paths and fingerprints and single ROM reference. |
+| Tree definitions | Original DTBO and the relevant DTB/overlays | Fingerprints and index of labels/overlays. |
+| Recovery path | maintainer-reviewed instructions matching the same release | Link/archived copy and second review before use. |
 
-**معيار R0:** لا توجد خانات فارغة، ولا artefact بلا بصمة، ولا مصدر من ROM مختلف. يجري فحص manifest من شخص ثانٍ قبل فتح R1.
+**R0 Criterion:** No empty fields, no artefact without a fingerprint, no source from a different ROM. The manifest is reviewed by a second person before opening R1.
 
-## 4. بروفة الاسترداد (R1)
+## 4. Recovery Rehearsal (R1)
 
-R1 لا يختبر مرشح 6.18. يثبت فقط أن الجهاز والـROM المحددين يمكن إعادتهما إلى حالتهما الأصلية عبر مسار الاسترداد المراجع. يتم ذلك بواسطة شخص يملك الجهاز والمسؤولية عن بياناته، وبعد نسخ احتياطي مناسب واتباع وثائق ROM/المصنّع المطابقة. لا يقدم هذا المستودع أوامر تفليش أو صوراً أو مفاتيح.
+R1 does not test the 6.18 candidate. It only demonstrates that the specified device and ROM can be returned to their original state via the referenced recovery path. This is performed by the device owner, who is responsible for their data, after appropriate backups and following the matching ROM/manufacturer documentation. This repository does not provide flashing commands, images, or keys.
 
-| دليل R1 الإلزامي | معيار القبول |
+| Mandatory R1 evidence | Acceptance criterion |
 |---|---|
-| إثبات أن ROM الأصلي يعود للإقلاع | هوية ROM بعد الاسترداد تطابق build fingerprint المسجل في R0. |
-| اتصال USB في النظام وfastboot | سجلان منفصلان بوقت الاختبار ومعرّف جهاز محجوب. |
-| سجل إقلاع أصلي | kernel log وlogcat محفوظان خارج Git؛ لا panic أو reboot غير مفسر. |
-| فحص تخزين أساس | لا أخطاء UFS أو mount أو I/O في السجل الأولي. |
-| سجل إجراء الاسترداد | تسلسل زمني قابل للمراجعة، مع أي مشكلة وحلها. |
+| Proof that the original ROM returns to boot | ROM identity after recovery matches the build fingerprint recorded in R0. |
+| USB connection in system and fastboot | Separate logs with timestamp of the test and masked device identifier. |
+| Original boot log | kernel log and logcat stored outside Git; no panic or unexplained reboot. |
+| Base storage inspection | No UFS, mount, or I/O errors in the initial log. |
+| Recovery procedure log | Reviewable timeline with any problem and its resolution. |
 
-**قاعدة R1:** أي فشل، أو حالة استرداد غير مفهومة، أو اختلاف في fingerprint يعيد الحالة إلى R0. لا توجد استثناءات لبناء ناجح أو لتحذيرات DTC منخفضة.
+**R1 Rule:** Any failure, unclear recovery state, or fingerprint mismatch returns the state to R0. There are no exceptions for a successful build or for low DTC warnings.
 
-## 5. تقرير توافق B0
+## 5. B0 Compatibility Report
 
-بعد R1 فقط، يعد تقرير B0 من مصادر ROM نفسها. لا يهدف التقرير إلى إيجاد طريقة لتحميل وحدات 5.10 في 6.18؛ هدفه إثبات أن كل مكوّن مطلوب له بديل متوافق أو أن مساره معطّل بطريقة مقصودة وآمنة.
+Only after R1, the B0 report is prepared from the same ROM sources. The report is not intended to find a way to load 5.10 modules into 6.18; its goal is to demonstrate that every required component has a compatible replacement or that its pathway is intentionally and safely disabled.
 
-| محور المقارنة | دليل B0 المطلوب | الحالة المعروفة |
+| Comparison axis | Required B0 evidence | Known state |
 |---|---|---|
-| KMI/kernel release | قائمة ABI/KMI مرجعية للـROM الهدف ومقارنة مع مرشح 6.18 | غير متاحة؛ الحاجز مفتوح. |
-| DLKM | قائمة وحدات مطلوبة، `vermagic`، symbols، وخطة بديل 6.18 لكل وحدة | وحدات Evolution X 17 ذات 5.10 غير صالحة لإعادة الاستخدام. [3] |
-| `vendor_boot` وramdisk | فصل مكونات ramdisk العامة عن مكونات ROM/KMI الخاصة | لا يسمح بإعادة استخدام مكونات 5.10 افتراضاً. |
-| firmware | manifest firmware متوافق مع كل driver ممكّن | لم يثبت لـSPSS أو بقية مسارات vendor. |
-| Device Tree/DTBO | تقرير فرق سِماني وبصمات، لا تغيير تجميلي | بوابات DT ثابتة سليمة؛ لا قبول runtime. [1] |
-| الاسترداد | ربط artefacts المرشحة بمسار R1 مثبت | غير مفتوح ما دام B0 محجوباً. |
+| KMI/kernel release | Reference ABI/KMI list for the target ROM and comparison with the 6.18 candidate | Not available; the barrier is open. |
+| DLKM | List of required modules, `vermagic`, symbols, and a 6.18 alternative plan for each module | Evolution X 17 modules built for 5.10 are not valid for reuse. [3] |
+| `vendor_boot` and ramdisk | Separation of generic ramdisk components from ROM/KMI-specific components | Reuse of 5.10 components is not allowed by default. |
+| firmware | Firmware manifest compatible with each enabled driver | Not demonstrated for SPSS or the remaining vendor paths. |
+| Device Tree/DTBO | Semantic diff report and fingerprints, no cosmetic change | DT gates are intact; no runtime acceptance. [1] |
+| Recovery | Linking candidate artefacts to a proven R1 path | Not open while B0 is blocked. |
 
-**معيار B0:** صفر عنصر «مجهول» أو «يعتمد على ABI 5.10». وجود واحد فقط يمنع B1.
+**B0 Criterion:** Zero 'unknown' items or 'depends on ABI 5.10'. The presence of even one prevents B1.
 
-## 6. ترتيب فتح التعريفات بعد B0
+## 6. Order of Enabling Vendors after B0
 
-لا تُفعَّل عدة مسارات vendor معاً في أول إقلاع. يبدأ B1 بأقل مجموعة وظائف ممكنة وبصورة قابلة للاسترداد، ثم تتبع المراحل بقرار موثق بعد كل دليل.
+Multiple vendor paths are not enabled together on the first boot. B1 starts with the minimal possible feature set and in a recoverable manner, then stages follow with a documented decision after each evidence.
 
-| الترتيب | النطاق | شرط البداية | دليل الإغلاق | قاعدة التوقف |
+| Order | Scope | Start condition | Closure evidence | Stop rule |
 |---:|---|---|---|---|
-| 1 | الإقلاع والتخزين والطاقة الأساسية | B0 أخضر | ADB/UART، pstore، UFS وregulator بلا أعطال | أي panic أو I/O error يمنع الخطوة التالية. |
-| 2 | ADC_TM7 فقط | ثلاث دورات B2 أساس مستقرة | probe وIIO/SID وتسجيل thermal trip مضبوط من كل قناة حرجة | defer متكرر أو SID/IIO mismatch أو IRQ storm يعيد العزل. [4] |
-| 3 | USB/الشحن والاتصال الأساسي | B2 + سجلات ADC مستقرة | ADB/USB ودورات suspend/resume وسجلات firmware | أي reset أو خطأ تحميل firmware يوقف النطاق. |
-| 4 | SPSS بدون SPCOM | firmware `spss.mdt` متحقق، B0 خاص بـSPSS، UART وpstore وخطة SSR | PAS/GLINK/SMEM/mailbox evidence من جهاز واحد | لا يزال **غير مفتوح**؛ عقدة DT تبقى disabled. [5] |
-| 5 | الشاشة والصوت والكاميرا والمودم وDSP | قبول كل اعتماد سابق وخطة vendor/KMI محددة | قبول مجال مستقل لكل وظيفة | لا يدّعي الدعم بناء على DT أو compile فقط. |
+| 1 | Core boot, storage, and power | B0 green | ADB/UART, pstore, UFS and regulators without faults | Any panic or I/O error prevents the next step. |
+| 2 | ADC_TM7 only | Three B2 base stable cycles | probe and IIO/SID and recorded thermal trip properly set from each critical channel | repeated defer or SID/IIO mismatch or IRQ storm returns to isolation. [4] |
+| 3 | USB/charging and basic connectivity | B2 + stable ADC logs | ADB/USB and suspend/resume cycles and firmware logs | Any reset or firmware load error halts the scope. |
+| 4 | SPSS without SPCOM | Firmware `spss.mdt` verified, SPSS-specific B0, UART and pstore and SSR plan | PAS/GLINK/SMEM/mailbox evidence from a single device | Still **Not open**; DT node remains disabled. [5] |
+| 5 | Display, audio, camera, modem, and DSP | Acceptance of all prior dependencies and a defined vendor/KMI plan | Independent domain acceptance for each function | Support is not claimed based on DT or compile only. |
 
-## 7. حزمة السجلات المطلوبة لكل محاولة مستقبلية
+## 7. Required Logs Package for Each Future Attempt
 
-تجمع السجلات خارج Git، ويضاف إلى كل ملف عنوان صغير يحتوي commit المصدر وSHA-256 للـImage وbuild fingerprint ووقت الالتقاط ومعرّف جهاز محجوب. تحفظ البيانات الحساسة وserials في مخزن خاص لا في issues عامة.
+Logs are collected outside Git, and each file is prefixed with a small header containing the source commit and SHA-256 of the Image and build fingerprint and capture time and masked device identifier. Sensitive data and serials are stored in a private store, not in public issues.
 
-| لحظة الالتقاط | ملفات أو حقول إلزامية |
+| Capture moment | Mandatory files or fields |
 |---|---|
-| قبل B1 | R0 manifest المراجع، دليل R1، تقرير B0، بصمات artefacts، وقرار مراجعة صريح. |
-| أول إقلاع B1 | UART إن توفر، kernel log، logcat، `uname -a`، properties، pstore، وسبب reboot عند حدوثه. |
-| بعد panic/reboot | pstore/ramoops قبل تنظيفه، آخر kernel log، توقيت، artefact SHA، ووصف قابل للإعادة. |
-| بعد كل مجال عتاد | logs المجال، درجة حرارة/شحن إن كانت ذات صلة، وخطوة تحقق أو فشل محددة. |
-| B2 | فهرس ثلاث دورات متتالية، panics=0، وسجل إيقاف/إقلاع لكل دورة. |
+| Before B1 | Referenced R0 manifest, R1 evidence, B0 report, artefact fingerprints, and explicit review decision. |
+| First B1 boot | UART if available, kernel log, logcat, `uname -a`, properties, pstore, and reason for reboot if it occurs. |
+| After panic/reboot | pstore/ramoops before clearing, last kernel log, timing, artefact SHA, and a reproducible description. |
+| After each hardware domain | domain logs, temperature/charge if relevant, and a specific verification or failure step. |
+| B2 | Index of three consecutive cycles, panics=0, and shutdown/boot log for each cycle. |
 
-## 8. شروط الرفض الفوري
+## 8. Immediate Rejection Conditions
 
-تظل الحالة **STOP** فوراً عند أي من الحالات الآتية: غياب دليل R1، خلط artefacts من ROM مختلفة، محاولة إعادة استخدام DLKM 5.10 في 6.18، عدم وجود KMI/firmware evidence، تغييرات DT غير مثبتة لإسكات DTC، غياب UART/pstore في أول محاولة عالية المخاطر، أو رغبة في تفعيل SPSS مع بقاء firmware أو ABI مجهولين. يعود العمل إلى الوثائق والتحليل وليس إلى مزيد من المحاولات العتادية.
+The state remains STOP immediately upon any of the following: absence of R1 evidence, mixing artefacts from different ROMs, attempt to reuse 5.10 DLKM in 6.18, lack of KMI/firmware evidence, unproven DT changes to silence DTC, absence of UART/pstore in the first high-risk attempt, or desire to enable SPSS while firmware or ABI remain unknown. Work returns to documentation and analysis rather than further hardware attempts.
 
-## 9. بوابة العمل التالية
+## 9. Next Work Gate
 
-الخطوة التالية ليست B1. المطلوب من مالك الجهاز هو تزويد **R0 manifest خاصاً بـROM واحد** و**دليل R1 لاسترداد ROM الأصلي** و**مواد B0 التي تشرح KMI/DLKM/firmware**. بعد توافرها فقط تراجع هذه الحزمة لتحديد ما إذا كانت B0 قابلة للفتح أو إذا كان نقل drivers/vendor إضافي مطلوباً.
+The next step is not B1. The device owner must provide an R0 manifest for a single ROM and an R1 guide to recover the original ROM and B0 materials that explain the KMI/DLKM/firmware. Only after these are available should this packet be reviewed to determine whether B0 can be opened or whether additional drivers/vendor transfers are required.
 
-## المراجع
+## References
 
-[1]: [سجل تحقق البناء والبوابات](BUILD_VERIFICATION.md)
-[2]: [خطة قبول الجهاز والاسترداد](DEVICE_ACCEPTANCE_PLAN.md)
-[3]: [تحليل توافق Evolution X 17 وABI](EVOLUTIONX17_COMPATIBILITY_ANALYSIS.md)
-[4]: [سجل نقل ADC_TM7](ADC_TM7_PORT_2026-08-20.md)
-[5]: [سجل نقل SPSS وGLINK](SPSS_PORT_2026-08-20.md)
+[1]: [Build verification and gates](BUILD_VERIFICATION.md)
+[2]: [Device acceptance plan and recovery](DEVICE_ACCEPTANCE_PLAN.md)
+[3]: [Evolution X 17 and ABI compatibility analysis](EVOLUTIONX17_COMPATIBILITY_ANALYSIS.md)
+[4]: [ADC_TM7 port log](ADC_TM7_PORT_2026-08-20.md)
+[5]: [SPSS and GLINK port log](SPSS_PORT_2026-08-20.md)

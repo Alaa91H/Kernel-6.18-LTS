@@ -26,11 +26,11 @@
 | البوابة | الدليل المطلوب |
 |---|---|
 | C0 | fragment يحل إلى `y` في `.config`، و`olddefconfig` و`modpost` ينجحان. |
-| C1 | Image وmodules وDTB/DTBO تبنى لكل نكهة بلا regression في ميزانية DTC. |
+| C1 | Image وmodules وDTB/DTBO تبنى لكل نكهة بلا regression في ميزانية DTC. **ناجحة** عند `343b9da858dd`؛ راجع `BUILD_VERIFICATION.md`. |
 | C2 | قائمة KMI و`Module.symvers` من بيئة ACK hermetic؛ لا رمز vendor خارج allowlist. |
 | B1 | IPCC/SMEM/SMP2P probe في POCO F5، مع `dmesg` وpstore وبدون SSR أو panic. |
 
-**الحالة الحالية:** C0 فقط ناجحة. C1–B1 لم تُدّعَ بعد، و`--package boot` يبقى محجوباً.
+**الحالة الحالية:** C0 وC1 ناجحتان. C2 وB1 لم تُدّعيا بعد، و`--package boot` يبقى محجوباً.
 
 ## المراجع
 

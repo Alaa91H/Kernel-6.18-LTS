@@ -10,10 +10,13 @@ OVERLAY_ROUNDTRIP_LOG="$OUT/marble-dtbo-roundtrip.log"
 MERGED_ROUNDTRIP_LOG="$OUT/marble-merged-dtb-roundtrip.log"
 # Default budgets are the reviewed baseline, not a waiver. Set all values to
 # zero only after the corresponding source/binding fixes are proven.
-MAX_BUILD_WARNINGS="${MARBLE_DTC_MAX_BUILD_WARNINGS:-126}"
-MAX_BASE_WARNINGS="${MARBLE_DTC_MAX_BASE_WARNINGS:-50}"
-MAX_OVERLAY_WARNINGS="${MARBLE_DTC_MAX_OVERLAY_WARNINGS:-153}"
-MAX_MERGED_WARNINGS="${MARBLE_DTC_MAX_MERGED_WARNINGS:-99}"
+# Reviewed after the Cape GICv3/ITS, PCIe interrupt-map, QUP overlay, USB
+# overlay, and reserved-memory overlay contract corrections. These are ceilings:
+# a lower count always passes; a higher count is a regression.
+MAX_BUILD_WARNINGS="${MARBLE_DTC_MAX_BUILD_WARNINGS:-87}"
+MAX_BASE_WARNINGS="${MARBLE_DTC_MAX_BASE_WARNINGS:-36}"
+MAX_OVERLAY_WARNINGS="${MARBLE_DTC_MAX_OVERLAY_WARNINGS:-128}"
+MAX_MERGED_WARNINGS="${MARBLE_DTC_MAX_MERGED_WARNINGS:-85}"
 
 "$KERNEL_ROOT/tools/build_marble_dt.sh"
 

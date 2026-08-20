@@ -572,6 +572,10 @@
 	intc: interrupt-controller@17100000 {
 		compatible = "arm,gic-v3";
 		#interrupt-cells = <3>;
+		/* The ITS child uses the same one-cell Cape bus encoding as the
+		 * GIC's own resources; required by the GICv3 ITS binding. */
+		#address-cells = <1>;
+		#size-cells = <1>;
 		interrupt-controller;
 		ranges;
 		#redistributor-regions = <1>;

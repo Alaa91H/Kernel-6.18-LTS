@@ -11,6 +11,9 @@
 #include "marble-pinctrl.dtsi"
 #include "xiaomi-sm7475-common.dtsi"
 &qupv3_se15_i2c {
+	/* Match waipio-qupv3.dtsi so this overlay validates child I2C addresses. */
+	#address-cells = <1>;
+	#size-cells = <0>;
 	status = "ok";
 	/* TOP Smart PA */
 	aw882xx_smartpa@34 {
@@ -252,6 +255,9 @@
 };
 
 &qupv3_se4_spi {
+	/* Match waipio-qupv3.dtsi so this overlay validates child SPI chip-selects. */
+	#address-cells = <1>;
+	#size-cells = <0>;
 	status = "ok";
 	qcom,rt;
 	pinctrl-0 = <&mi_ts_spi_active &mi_ts_cs_active>;

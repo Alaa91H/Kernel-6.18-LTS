@@ -4,6 +4,11 @@
 #include "waipio-thermal-overlay.dtsi"
 
 &soc {
+	/* Match ukee's simple-bus contract so this overlay's reg values are
+	 * compiled with the target's actual one-cell address/size encoding. */
+	#address-cells = <1>;
+	#size-cells = <1>;
+
 	gpio_keys {
 		compatible = "gpio-keys";
 		label = "gpio-keys";
@@ -21,7 +26,7 @@
 		};
 	};
 
-	mtdoops_pmsg@0xa7000000 {
+	mtdoops_pmsg@a7000000 {
 		compatible = "mtdoops_pmsg";
 		reg = <0xa7000000 0x400000>;
 		console-size = <0x200000>;
@@ -36,6 +41,9 @@
 };
 
 &qupv3_se13_spi {
+	/* Match waipio-qupv3.dtsi so this overlay validates child reg values. */
+	#address-cells = <1>;
+	#size-cells = <0>;
 	status = "ok";
 	ir-spi@0 {
 		compatible = "ir-spi";
@@ -168,10 +176,14 @@
 };
 
 &usb0 {
+	/* Preserve the target USB bus contract while validating this overlay. */
+	#address-cells = <1>;
+	#size-cells = <1>;
 	usb-role-switch;
-
 	dwc3@a600000 {
+		reg = <0xa600000 0xd93c>;
 		usb-role-switch;
+
 	};
 
 	port {
@@ -192,9 +204,10 @@
 };
 
 &reserved_memory {
+	/* Base reserved-memory already supplies ranges; do not restate it in a
+	 * standalone overlay where the fragment parent has different cell widths. */
 	#address-cells = <2>;
 	#size-cells = <2>;
-	ranges;
 
 	ramoops@a7000000 {
 	    compatible = "ramoops";

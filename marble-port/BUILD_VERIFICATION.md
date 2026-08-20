@@ -95,3 +95,17 @@
 لا تضم الشجرة الحالية قائمة ABI/KMI مرجعية لـmarble أو ROM مستهدفاً. أصبح ROM Evolution X 17 الفعلي مجروداً الآن، ويثبت `EVOLUTIONX17_COMPATIBILITY_ANALYSIS.md` اختلاف kernel `5.10.256-gki` ووحدات vendor عن مرشح 6.18؛ لكن لا يزال لا توجد قائمة KMI معتمدة يمكن أن تحول ذلك إلى قبول. يلزم نقل drivers والوحدات أو بدائل upstream، وبناء vendor ramdisk وDTBO ملائمين، ثم اختبار جهاز فعلي وسجل إقلاع ونتائج UFS/USB/الشاشة والاتصال قبل فتح بوابة `boot.img` أو التفليش.
 
 [1]: https://github.com/acmel/dwarves "dwarves / pahole"
+
+## إعادة التحقق بعد تصحيح عقود DTC
+
+بُنيت النكهات الثلاث من الالتزام `09743b464` بعد تصحيح عقود GICv3/ITS وخرائط PCIe `interrupt-map` وسياقات QUP وUSB و`reserved-memory` في overlays. استخدمت النكهتان التشخيصيتان `PAHOLE=/home/ubuntu/tools/dwarves-install/bin/pahole`، ولم يُفعّل root أو تغليف صورة إقلاع في أي نكهة.
+
+| النكهة | وضع التشخيص | Image | SHA-256 للـImage | الوحدات | BTF |
+|---|---|---:|---|---:|---|
+| `aosp` | `diagnostic` | 46,021,120 بايت | `56172142a3fb38fc3126552e91e8b27c595953399dc0c97dcb4151eee7389324` | 104 | موجود في `vmlinux` |
+| `xiaomi` | `release` | 36,559,360 بايت | `6c65085be1c4c75c045813566411c93c3057e669aac4f343277ec71417e3f96f` | 104 | غير مفعّل في release كما هو متوقع |
+| `evolutionx-17` | `diagnostic` | 46,021,120 بايت | `e2f154e54c999d8a385051b4f54f618028fc615af121ca0b9d089a21c424ee13` | 104 | موجود في `vmlinux` |
+
+نجحت بوابة `tools/validate_marble_dt_build.sh` بالقيم الجديدة: **`87/36/128/85`** لتحذيرات سجل البناء وDTB الأساس وDTBO المفرد وDTB المدمج، على الترتيب. يمثل ذلك انخفاضاً قدره `39/14/25/14` عن خط الأساس `126/50/153/99` من دون تعطيل فحوص DTC.
+
+> يبقى هذا تحققاً ثابتاً للبناء والبنية. لا يحوّل النجاح إلى اعتماد تفليش: تحذيرات ADC/SPSS وbindings vendor المتبقية، إلى جانب عدم توافق ABI المعروف مع Evolution X 17 ذي 5.10، تتطلب source vendor مناسباً واختبار POCO F5 فعلياً قبل أي `boot.img` أو DLKM أو تفليش.

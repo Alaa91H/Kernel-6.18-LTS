@@ -1,0 +1,22 @@
+source_repository=https://github.com/Evolution-X-Devices/device_xiaomi_marble-kernel
+source_commit=03dda81f521cf7ab016ef8558b3f9d67d0fdaf79
+source_commit_date=2024-03-19T00:06:50+09:00
+
+[image_markers]
+Android Accessory Interface
+dquot_6.6.0
+Linux version %s (%s)
+Linux version 5.10.209-SilverCore-00463-g05d6dc47358a (kk@MS-7A38) (clang version 17.0.2, LLD 17.0.2) #1 SMP PREEMPT Sun Mar 17 13:14:43 IST 2024
+#1 SMP PREEMPT Sun Mar 17 13:14:43 IST 2024
+
+[representative_module_vermagic]
+module=vendor_ramdisk/qcom-spmi-adc5.ko
+vermagic=5.10.160-gki-gad4a5edc85ae SMP preempt mod_unload modversions aarch64
+module=vendor_dlkm/msm_drm.ko
+vermagic=5.10.160-gki-gad4a5edc85ae SMP preempt mod_unload modversions aarch64
+module=vendor_dlkm/qca_cld3_qca6490.ko
+vermagic=5.10.160-gki-gad4a5edc85ae SMP preempt mod_unload modversions aarch64
+
+[module_counts]
+vendor_ramdisk=360
+vendor_dlkm=316

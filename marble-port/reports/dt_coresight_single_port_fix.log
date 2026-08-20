@@ -1,0 +1,155 @@
+make: Entering directory '/home/ubuntu/poco-f5-gki-618/publish'
+make[1]: Entering directory '/home/ubuntu/poco-f5-gki-618/publish/out/marble-dt-6.18'
+  SYNC    include/config/auto.conf.cmd
+  GEN     Makefile
+  HOSTCC  scripts/basic/fixdep
+  DTC     arch/arm64/boot/dts/qcom/marble-sm7475-pm8008-overlay.dtbo
+  DTC     arch/arm64/boot/dts/qcom/ukee.dtb
+/home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/xiaomi-sm8475-common.dtsi:26.3-31: Warning (reg_format): /fragment@16/__overlay__/mtdoops_pmsg@0xa7000000:reg: property has invalid length (8 bytes) (#address-cells == 2, #size-cells == 1)
+/home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/xiaomi-sm8475-common.dtsi:42.3-13: Warning (reg_format): /fragment@17/__overlay__/ir-spi@0:reg: property has invalid length (4 bytes) (#address-cells == 2, #size-cells == 1)
+/home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/marble-sm7475.dtsi:18.3-16: Warning (reg_format): /fragment@31/__overlay__/aw882xx_smartpa@34:reg: property has invalid length (4 bytes) (#address-cells == 2, #size-cells == 1)
+/home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/marble-sm7475.dtsi:34.3-16: Warning (reg_format): /fragment@31/__overlay__/aw882xx_smartpa@35:reg: property has invalid length (4 bytes) (#address-cells == 2, #size-cells == 1)
+/home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/marble-sm7475.dtsi:262.3-13: Warning (reg_format): /fragment@38/__overlay__/m16t-touch@0:reg: property has invalid length (4 bytes) (#address-cells == 2, #size-cells == 1)
+/home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/xiaomi-sm8475-common.dtsi:197.2-9: Warning (ranges_format): /fragment@27/__overlay__:ranges: empty "ranges" property but its #size-cells (2) differs from /fragment@27 (1)
+/home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/pmk8350.dtsi:60.20-64.6: Warning (unit_address_vs_reg): /fragment@1/__overlay__/qcom,pmk8350@0/vadc@3100/pmk8350_ref_gnd: node has a reg or ranges property, but no unit name
+/home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/pmk8350.dtsi:66.22-70.6: Warning (unit_address_vs_reg): /fragment@1/__overlay__/qcom,pmk8350@0/vadc@3100/pmk8350_vref_1p25: node has a reg or ranges property, but no unit name
+/home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/pmk8350.dtsi:72.21-76.6: Warning (unit_address_vs_reg): /fragment@1/__overlay__/qcom,pmk8350@0/vadc@3100/pmk8350_die_temp: node has a reg or ranges property, but no unit name
+/home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/pmk8350.dtsi:79.19-83.6: Warning (unit_address_vs_reg): /fragment@1/__overlay__/qcom,pmk8350@0/vadc@3100/pm8350_ref_gnd: node has a reg or ranges property, but no unit name
+/home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/pmk8350.dtsi:85.21-89.6: Warning (unit_address_vs_reg): /fragment@1/__overlay__/qcom,pmk8350@0/vadc@3100/pm8350_vref_1p25: node has a reg or ranges property, but no unit name
+/home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/pmk8350.dtsi:91.20-95.6: Warning (unit_address_vs_reg): /fragment@1/__overlay__/qcom,pmk8350@0/vadc@3100/pm8350_die_temp: node has a reg or ranges property, but no unit name
+/home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/pmk8350.dtsi:97.19-101.6: Warning (unit_address_vs_reg): /fragment@1/__overlay__/qcom,pmk8350@0/vadc@3100/pm8350_vph_pwr: node has a reg or ranges property, but no unit name
+/home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/pmk8350.dtsi:104.20-108.6: Warning (unit_address_vs_reg): /fragment@1/__overlay__/qcom,pmk8350@0/vadc@3100/pm8350b_ref_gnd: node has a reg or ranges property, but no unit name
+/home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/pmk8350.dtsi:110.22-114.6: Warning (unit_address_vs_reg): /fragment@1/__overlay__/qcom,pmk8350@0/vadc@3100/pm8350b_vref_1p25: node has a reg or ranges property, but no unit name
+/home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/pmk8350.dtsi:116.21-120.6: Warning (unit_address_vs_reg): /fragment@1/__overlay__/qcom,pmk8350@0/vadc@3100/pm8350b_die_temp: node has a reg or ranges property, but no unit name
+/home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/pmk8350.dtsi:122.20-126.6: Warning (unit_address_vs_reg): /fragment@1/__overlay__/qcom,pmk8350@0/vadc@3100/pm8350b_vph_pwr: node has a reg or ranges property, but no unit name
+/home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/pmk8350.dtsi:128.21-132.6: Warning (unit_address_vs_reg): /fragment@1/__overlay__/qcom,pmk8350@0/vadc@3100/pm8350b_vbat_sns: node has a reg or ranges property, but no unit name
+/home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/pmk8350.dtsi:135.20-139.6: Warning (unit_address_vs_reg): /fragment@1/__overlay__/qcom,pmk8350@0/vadc@3100/pmr735a_ref_gnd: node has a reg or ranges property, but no unit name
+/home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/pmk8350.dtsi:141.22-145.6: Warning (unit_address_vs_reg): /fragment@1/__overlay__/qcom,pmk8350@0/vadc@3100/pmr735a_vref_1p25: node has a reg or ranges property, but no unit name
+/home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/pmk8350.dtsi:147.21-151.6: Warning (unit_address_vs_reg): /fragment@1/__overlay__/qcom,pmk8350@0/vadc@3100/pmr735a_die_temp: node has a reg or ranges property, but no unit name
+/home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/pmk8350.dtsi:154.20-158.6: Warning (unit_address_vs_reg): /fragment@1/__overlay__/qcom,pmk8350@0/vadc@3100/pmr735b_ref_gnd: node has a reg or ranges property, but no unit name
+/home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/pmk8350.dtsi:160.22-164.6: Warning (unit_address_vs_reg): /fragment@1/__overlay__/qcom,pmk8350@0/vadc@3100/pmr735b_vref_1p25: node has a reg or ranges property, but no unit name
+/home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/pmk8350.dtsi:166.21-170.6: Warning (unit_address_vs_reg): /fragment@1/__overlay__/qcom,pmk8350@0/vadc@3100/pmr735b_die_temp: node has a reg or ranges property, but no unit name
+/home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/cape-pmic-overlay.dtsi:142.19-146.4: Warning (unit_address_vs_reg): /fragment@1/__overlay__/qcom,pmk8350@0/vadc@3100/pm8350b_chg_temp: node has a reg or ranges property, but no unit name
+/home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/cape-pmic-overlay.dtsi:148.17-152.4: Warning (unit_address_vs_reg): /fragment@1/__overlay__/qcom,pmk8350@0/vadc@3100/pm8350b_iin_fb: node has a reg or ranges property, but no unit name
+/home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/cape-pmic-overlay.dtsi:154.18-158.4: Warning (unit_address_vs_reg): /fragment@1/__overlay__/qcom,pmk8350@0/vadc@3100/pm8350b_ichg_fb: node has a reg or ranges property, but no unit name
+/home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/cape-pmic-overlay.dtsi:160.21-165.4: Warning (unit_address_vs_reg): /fragment@1/__overlay__/qcom,pmk8350@0/vadc@3100/pm8350b_ichg_fb_2x: node has a reg or ranges property, but no unit name
+/home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/cape-pmic-overlay.dtsi:167.23-172.4: Warning (unit_address_vs_reg): /fragment@1/__overlay__/qcom,pmk8350@0/vadc@3100/pm8350b_ichg_fb_2p5x: node has a reg or ranges property, but no unit name
+/home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/cape-pmic-overlay.dtsi:174.26-178.4: Warning (unit_address_vs_reg): /fragment@1/__overlay__/qcom,pmk8350@0/vadc@3100/pm8350b_usb_in_v_div_16: node has a reg or ranges property, but no unit name
+/home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/cape-pmic-overlay.dtsi:180.21-184.4: Warning (unit_address_vs_reg): /fragment@1/__overlay__/qcom,pmk8350@0/vadc@3100/smb139x_1_smb_temp: node has a reg or ranges property, but no unit name
+/home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/cape-pmic-overlay.dtsi:186.21-190.4: Warning (unit_address_vs_reg): /fragment@1/__overlay__/qcom,pmk8350@0/vadc@3100/smb139x_1_ichg_smb: node has a reg or ranges property, but no unit name
+/home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/cape-pmic-overlay.dtsi:192.20-196.4: Warning (unit_address_vs_reg): /fragment@1/__overlay__/qcom,pmk8350@0/vadc@3100/smb139x_1_iin_smb: node has a reg or ranges property, but no unit name
+/home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/cape-pmic-overlay.dtsi:198.21-202.4: Warning (unit_address_vs_reg): /fragment@1/__overlay__/qcom,pmk8350@0/vadc@3100/smb139x_2_smb_temp: node has a reg or ranges property, but no unit name
+/home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/cape-pmic-overlay.dtsi:204.21-208.4: Warning (unit_address_vs_reg): /fragment@1/__overlay__/qcom,pmk8350@0/vadc@3100/smb139x_2_ichg_smb: node has a reg or ranges property, but no unit name
+/home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/cape-pmic-overlay.dtsi:210.20-214.4: Warning (unit_address_vs_reg): /fragment@1/__overlay__/qcom,pmk8350@0/vadc@3100/smb139x_2_iin_smb: node has a reg or ranges property, but no unit name
+/home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/marble-sm7475.dtsi:292.19-298.4: Warning (unit_address_vs_reg): /fragment@1/__overlay__/qcom,pmk8350@0/vadc@3100/pm8350_msm_therm: node has a reg or ranges property, but no unit name
+/home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/marble-sm7475.dtsi:300.25-306.4: Warning (unit_address_vs_reg): /fragment@1/__overlay__/qcom,pmk8350@0/vadc@3100/pm8350_cam_flash_therm: node has a reg or ranges property, but no unit name
+/home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/marble-sm7475.dtsi:308.26-314.4: Warning (unit_address_vs_reg): /fragment@1/__overlay__/qcom,pmk8350@0/vadc@3100/pm8350_hot_pocket_therm: node has a reg or ranges property, but no unit name
+/home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/marble-sm7475.dtsi:316.24-322.4: Warning (unit_address_vs_reg): /fragment@1/__overlay__/qcom,pmk8350@0/vadc@3100/pm8350_wide_rfc_therm: node has a reg or ranges property, but no unit name
+/home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/marble-sm7475.dtsi:324.25-330.4: Warning (unit_address_vs_reg): /fragment@1/__overlay__/qcom,pmk8350@0/vadc@3100/pm8350b_rear_tof_therm: node has a reg or ranges property, but no unit name
+/home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/marble-sm7475.dtsi:332.25-338.4: Warning (unit_address_vs_reg): /fragment@1/__overlay__/qcom,pmk8350@0/vadc@3100/pm8350b_usb_conn_therm: node has a reg or ranges property, but no unit name
+/home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/marble-sm7475.dtsi:340.23-346.4: Warning (unit_address_vs_reg): /fragment@1/__overlay__/qcom,pmk8350@0/vadc@3100/pm8350b_wl_chg_therm: node has a reg or ranges property, but no unit name
+/home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/marble-sm7475.dtsi:348.19-354.4: Warning (unit_address_vs_reg): /fragment@1/__overlay__/qcom,pmk8350@0/vadc@3100/pmk8350_xo_therm: node has a reg or ranges property, but no unit name
+/home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/marble-sm7475.dtsi:367.19-371.4: Warning (unit_address_vs_reg): /fragment@1/__overlay__/qcom,pmk8350@0/adc_tm@3400/pm8350_msm_therm: node has a reg or ranges property, but no unit name
+/home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/marble-sm7475.dtsi:373.25-377.4: Warning (unit_address_vs_reg): /fragment@1/__overlay__/qcom,pmk8350@0/adc_tm@3400/pm8350_cam_flash_therm: node has a reg or ranges property, but no unit name
+/home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/marble-sm7475.dtsi:379.26-383.4: Warning (unit_address_vs_reg): /fragment@1/__overlay__/qcom,pmk8350@0/adc_tm@3400/pm8350_hot_pocket_therm: node has a reg or ranges property, but no unit name
+/home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/marble-sm7475.dtsi:385.24-389.4: Warning (unit_address_vs_reg): /fragment@1/__overlay__/qcom,pmk8350@0/adc_tm@3400/pm8350_wide_rfc_therm: node has a reg or ranges property, but no unit name
+/home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/marble-sm7475.dtsi:391.25-395.4: Warning (unit_address_vs_reg): /fragment@1/__overlay__/qcom,pmk8350@0/adc_tm@3400/pm8350b_rear_tof_therm: node has a reg or ranges property, but no unit name
+/home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/marble-sm7475.dtsi:397.25-401.4: Warning (unit_address_vs_reg): /fragment@1/__overlay__/qcom,pmk8350@0/adc_tm@3400/pm8350b_usb_conn_therm: node has a reg or ranges property, but no unit name
+/home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/marble-sm7475.dtsi:403.23-407.4: Warning (unit_address_vs_reg): /fragment@1/__overlay__/qcom,pmk8350@0/adc_tm@3400/pm8350b_wl_chg_therm: node has a reg or ranges property, but no unit name
+/home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/marble-sm7475.dtsi:409.19-413.4: Warning (unit_address_vs_reg): /fragment@1/__overlay__/qcom,pmk8350@0/adc_tm@3400/pmk8350_xo_therm: node has a reg or ranges property, but no unit name
+/home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/pm8350c.dtsi:45.10-52.6: Warning (unit_address_vs_reg): /fragment@4/__overlay__/qcom,pm8350c@2/pwms@e800/lpg@1: node has a unit name, but no reg or ranges property
+/home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/pm8350c.dtsi:54.10-61.6: Warning (unit_address_vs_reg): /fragment@4/__overlay__/qcom,pm8350c@2/pwms@e800/lpg@2: node has a unit name, but no reg or ranges property
+/home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/pm8350c.dtsi:63.10-70.6: Warning (unit_address_vs_reg): /fragment@4/__overlay__/qcom,pm8350c@2/pwms@e800/lpg@3: node has a unit name, but no reg or ranges property
+/home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/xiaomi-sm8475-common.dtsi:173.15-175.4: Warning (unit_address_vs_reg): /fragment@25/__overlay__/dwc3@a600000: node has a unit name, but no reg or ranges property
+/home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/xiaomi-sm8475-common.dtsi:24.26-29.4: Warning (unit_address_format): /fragment@16/__overlay__/mtdoops_pmsg@0xa7000000: unit name should not have leading "0x"
+arch/arm64/boot/dts/qcom/marble-sm7475-pm8008-overlay.dtbo: Warning (pci_device_reg): Failed prerequisite 'reg_format'
+arch/arm64/boot/dts/qcom/marble-sm7475-pm8008-overlay.dtbo: Warning (pci_device_bus_num): Failed prerequisite 'reg_format'
+arch/arm64/boot/dts/qcom/marble-sm7475-pm8008-overlay.dtbo: Warning (simple_bus_reg): Failed prerequisite 'reg_format'
+arch/arm64/boot/dts/qcom/marble-sm7475-pm8008-overlay.dtbo: Warning (i2c_bus_reg): Failed prerequisite 'reg_format'
+arch/arm64/boot/dts/qcom/marble-sm7475-pm8008-overlay.dtbo: Warning (spi_bus_reg): Failed prerequisite 'reg_format'
+/home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/xiaomi-sm8475-common.dtsi:24.26-29.4: Warning (avoid_default_addr_size): /fragment@16/__overlay__/mtdoops_pmsg@0xa7000000: Relying on default #address-cells value
+/home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/xiaomi-sm8475-common.dtsi:24.26-29.4: Warning (avoid_default_addr_size): /fragment@16/__overlay__/mtdoops_pmsg@0xa7000000: Relying on default #size-cells value
+/home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/xiaomi-sm8475-common.dtsi:40.11-45.4: Warning (avoid_default_addr_size): /fragment@17/__overlay__/ir-spi@0: Relying on default #address-cells value
+/home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/xiaomi-sm8475-common.dtsi:40.11-45.4: Warning (avoid_default_addr_size): /fragment@17/__overlay__/ir-spi@0: Relying on default #size-cells value
+/home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/xiaomi-sm8475-common.dtsi:194.18-205.3: Warning (avoid_default_addr_size): /fragment@27/__overlay__: Relying on default #address-cells value
+/home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/xiaomi-sm8475-common.dtsi:194.18-205.3: Warning (avoid_default_addr_size): /fragment@27/__overlay__: Relying on default #size-cells value
+/home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/marble-sm7475.dtsi:16.21-30.4: Warning (avoid_default_addr_size): /fragment@31/__overlay__/aw882xx_smartpa@34: Relying on default #address-cells value
+/home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/marble-sm7475.dtsi:16.21-30.4: Warning (avoid_default_addr_size): /fragment@31/__overlay__/aw882xx_smartpa@34: Relying on default #size-cells value
+/home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/marble-sm7475.dtsi:32.21-45.4: Warning (avoid_default_addr_size): /fragment@31/__overlay__/aw882xx_smartpa@35: Relying on default #address-cells value
+/home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/marble-sm7475.dtsi:32.21-45.4: Warning (avoid_default_addr_size): /fragment@31/__overlay__/aw882xx_smartpa@35: Relying on default #size-cells value
+/home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/marble-sm7475.dtsi:259.15-285.4: Warning (avoid_default_addr_size): /fragment@38/__overlay__/m16t-touch@0: Relying on default #address-cells value
+/home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/marble-sm7475.dtsi:259.15-285.4: Warning (avoid_default_addr_size): /fragment@38/__overlay__/m16t-touch@0: Relying on default #size-cells value
+arch/arm64/boot/dts/qcom/marble-sm7475-pm8008-overlay.dtbo: Warning (avoid_unnecessary_addr_size): Failed prerequisite 'avoid_default_addr_size'
+arch/arm64/boot/dts/qcom/marble-sm7475-pm8008-overlay.dtbo: Warning (unique_unit_address): Failed prerequisite 'avoid_default_addr_size'
+/home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/cape.dtsi:587.4-31: Warning (reg_format): /soc/interrupt-controller@17100000/msi-controller@17140000:reg: property has invalid length (8 bytes) (#address-cells == 2, #size-cells == 1)
+/home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/cape.dtsi:1747.4-1748.26: Warning (reg_format): /soc/remoteproc-spss@1880000/glink-edge:reg: property has invalid length (16 bytes) (#address-cells == 2, #size-cells == 1)
+/home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/cape.dtsi:576.3-10: Warning (ranges_format): /soc/interrupt-controller@17100000:ranges: empty "ranges" property but its #address-cells (2) differs from /soc (1)
+/home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/cape.dtsi:1711.3-10: Warning (ranges_format): /soc/remoteproc-spss@1880000:ranges: empty "ranges" property but its #address-cells (2) differs from /soc (1)
+/home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/cape.dtsi:25.9-54: Warning (unit_address_vs_reg): /memory: node has a reg or ranges property, but no unit name
+/home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/cape-reserved-memory.dtsi:163.47-166.4: Warning (unit_address_vs_reg): /reserved-memory/trust_ui_vm_region@e0b00000: node has a unit name, but no reg or ranges property
+/home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/cape.dtsi:299.11-15: Warning (unit_address_vs_reg): /soc: node has a reg or ranges property, but no unit name
+  also defined at /home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/waipio-clock.dtsi:8.6-451.3
+  also defined at /home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/cape.dtsi:450.6-3125.3
+  also defined at /home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/waipio-qupv3.dtsi:3.6-1137.3
+  also defined at /home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/waipio-coresight.dtsi:1.6-4264.3
+  also defined at /home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/cape-debug.dtsi:17.6-2698.3
+  also defined at /home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/msm-arm-smmu-waipio.dtsi:3.6-409.3
+  also defined at /home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/cape-dma-heaps.dtsi:3.6-78.3
+  also defined at /home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/cape-gpu.dtsi:4.6-354.3
+  also defined at /home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/cape-thermal.dtsi:7.6-242.3
+  also defined at /home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/waipio-thermal-modem.dtsi:3.6-224.3
+  also defined at /home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/cape-thermal.dtsi:246.6-251.3
+  also defined at /home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/cape-usb.dtsi:4.6-333.3
+  also defined at /home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/cape-pcie.dtsi:3.6-566.3
+  also defined at /home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/msm-rdbg.dtsi:1.6-26.3
+  also defined at /home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/waipio-eva.dtsi:6.6-110.3
+  also defined at /home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/ipcc-test.dtsi:3.6-31.3
+  also defined at /home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/ukee.dtsi:267.6-300.3
+/home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/waipio-clock.dtsi:116.36-138.4: Warning (unit_address_vs_reg): /soc/clock-controller@0: node has a unit name, but no reg or ranges property
+/home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/waipio-clock.dtsi:140.30-166.4: Warning (unit_address_vs_reg): /soc/qcom,cpufreq-hw: node has a reg or ranges property, but no unit name
+/home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/cape.dtsi:536.29-539.6: Warning (unit_address_vs_reg): /soc/slim@3340000/ngd@1/btfmslim-driver: node has a reg or ranges property, but no unit name
+/home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/cape.dtsi:734.23-746.5: Warning (unit_address_vs_reg): /soc/qcom,dcvs/l3: node has a reg or ranges property, but no unit name
+/home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/cape.dtsi:1038.24-1042.4: Warning (unit_address_vs_reg): /soc/qcom,virtio_backend@0: node has a unit name, but no reg or ranges property
+/home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/cape.dtsi:1122.33-1136.4: Warning (unit_address_vs_reg): /soc/qseecom@c1700000: node has a unit name, but no reg or ranges property
+/home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/cape.dtsi:1737.14-1754.5: Warning (unit_address_vs_reg): /soc/remoteproc-spss@1880000/glink-edge: node has a reg or ranges property, but no unit name
+/home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/cape.dtsi:2042.27-2047.4: Warning (unit_address_vs_reg): /soc/interconnect@0: node has a unit name, but no reg or ranges property
+/home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/cape.dtsi:2049.26-2054.4: Warning (unit_address_vs_reg): /soc/interconnect@1: node has a unit name, but no reg or ranges property
+/home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/cape.dtsi:2737.33-2743.4: Warning (unit_address_vs_reg): /soc/qcom,gh_vm_loader_sec@e0b00000: node has a unit name, but no reg or ranges property
+/home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/cape.dtsi:2745.33-2752.4: Warning (unit_address_vs_reg): /soc/qcom,gh_vm_loader_sec@e0600000: node has a unit name, but no reg or ranges property
+/home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/cape.dtsi:2760.31-2769.4: Warning (unit_address_vs_reg): /soc/qcom,guestvm_loader@e0b00000: node has a unit name, but no reg or ranges property
+/home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/cape.dtsi:2771.31-2777.4: Warning (unit_address_vs_reg): /soc/qcom,guestvm_loader@e0600000: node has a unit name, but no reg or ranges property
+/home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/waipio-coresight.dtsi:1184.30-1218.4: Warning (unit_address_vs_reg): /soc/funnel@10b24000: node has a unit name, but no reg or ranges property
+/home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/waipio-coresight.dtsi:1220.36-1263.4: Warning (unit_address_vs_reg): /soc/funnel@10b44000: node has a unit name, but no reg or ranges property
+/home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/waipio-coresight.dtsi:3184.11-3189.6: Warning (unit_address_vs_reg): /soc/replicator@10b06000/out-ports/port@0: node has a unit name, but no reg or ranges property
+/home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/waipio-coresight.dtsi:3225.11-3230.6: Warning (unit_address_vs_reg): /soc/replicator@10046000/out-ports/port@0: node has a unit name, but no reg or ranges property
+/home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/msm-arm-smmu-waipio.dtsi:360.14-363.4: Warning (unit_address_vs_reg): /soc/dma_dev@0x0: node has a unit name, but no reg or ranges property
+/home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/cape-pcie.dtsi:229.22-231.5: Warning (unit_address_vs_reg): /soc/qcom,pcie@1c00000/pcie0_rp: node has a reg or ranges property, but no unit name
+  also defined at /home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/cape.dtsi:3178.11-3199.3
+/home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/cape.dtsi:3182.21-3198.4: Warning (unit_address_vs_reg): /soc/qcom,pcie@1c00000/pcie0_rp/cnss_pci: node has a reg or ranges property, but no unit name
+/home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/cape-pcie.dtsi:522.22-524.5: Warning (unit_address_vs_reg): /soc/qcom,pcie@1c08000/pcie1_rp: node has a reg or ranges property, but no unit name
+/home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/ukee.dtsi:297.23-299.4: Warning (unit_address_vs_reg): /soc/qfprom@0: node has a unit name, but no reg or ranges property
+arch/arm64/boot/dts/qcom/ukee.dtb: Warning (pci_device_reg): Failed prerequisite 'reg_format'
+arch/arm64/boot/dts/qcom/ukee.dtb: Warning (pci_device_bus_num): Failed prerequisite 'reg_format'
+arch/arm64/boot/dts/qcom/ukee.dtb: Warning (simple_bus_reg): Failed prerequisite 'reg_format'
+arch/arm64/boot/dts/qcom/ukee.dtb: Warning (i2c_bus_reg): Failed prerequisite 'reg_format'
+arch/arm64/boot/dts/qcom/ukee.dtb: Warning (spi_bus_reg): Failed prerequisite 'reg_format'
+/home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/cape.dtsi:583.36-588.5: Warning (avoid_default_addr_size): /soc/interrupt-controller@17100000/msi-controller@17140000: Relying on default #address-cells value
+/home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/cape.dtsi:583.36-588.5: Warning (avoid_default_addr_size): /soc/interrupt-controller@17100000/msi-controller@17140000: Relying on default #size-cells value
+/home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/cape.dtsi:1737.14-1754.5: Warning (avoid_default_addr_size): /soc/remoteproc-spss@1880000/glink-edge: Relying on default #address-cells value
+/home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/cape.dtsi:1737.14-1754.5: Warning (avoid_default_addr_size): /soc/remoteproc-spss@1880000/glink-edge: Relying on default #size-cells value
+arch/arm64/boot/dts/qcom/ukee.dtb: Warning (avoid_unnecessary_addr_size): Failed prerequisite 'avoid_default_addr_size'
+arch/arm64/boot/dts/qcom/ukee.dtb: Warning (unique_unit_address): Failed prerequisite 'avoid_default_addr_size'
+/home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/cape-pcie.dtsi:30.3-34.28: Warning (interrupt_map): /soc/qcom,pcie@1c00000:interrupt-map: Missing property '#address-cells' in node /soc/interrupt-controller@17100000, using 0 as fallback
+/home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/cape-pcie.dtsi:30.3-34.28: Warning (interrupt_map): /soc/qcom,pcie@1c00000:interrupt-map: Missing property '#address-cells' in node /soc/interrupt-controller@17100000, using 0 as fallback
+/home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/cape-pcie.dtsi:30.3-34.28: Warning (interrupt_map): /soc/qcom,pcie@1c00000:interrupt-map: Missing property '#address-cells' in node /soc/interrupt-controller@17100000, using 0 as fallback
+/home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/cape-pcie.dtsi:30.3-34.28: Warning (interrupt_map): /soc/qcom,pcie@1c00000:interrupt-map: Missing property '#address-cells' in node /soc/interrupt-controller@17100000, using 0 as fallback
+/home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/cape-pcie.dtsi:30.3-34.28: Warning (interrupt_map): /soc/qcom,pcie@1c00000:interrupt-map: Missing property '#address-cells' in node /soc/interrupt-controller@17100000, using 0 as fallback
+/home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/cape-pcie.dtsi:299.3-303.28: Warning (interrupt_map): /soc/qcom,pcie@1c08000:interrupt-map: Missing property '#address-cells' in node /soc/interrupt-controller@17100000, using 0 as fallback
+/home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/cape-pcie.dtsi:299.3-303.28: Warning (interrupt_map): /soc/qcom,pcie@1c08000:interrupt-map: Missing property '#address-cells' in node /soc/interrupt-controller@17100000, using 0 as fallback
+/home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/cape-pcie.dtsi:299.3-303.28: Warning (interrupt_map): /soc/qcom,pcie@1c08000:interrupt-map: Missing property '#address-cells' in node /soc/interrupt-controller@17100000, using 0 as fallback
+/home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/cape-pcie.dtsi:299.3-303.28: Warning (interrupt_map): /soc/qcom,pcie@1c08000:interrupt-map: Missing property '#address-cells' in node /soc/interrupt-controller@17100000, using 0 as fallback
+/home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/cape-pcie.dtsi:299.3-303.28: Warning (interrupt_map): /soc/qcom,pcie@1c08000:interrupt-map: Missing property '#address-cells' in node /soc/interrupt-controller@17100000, using 0 as fallback
+make[1]: Leaving directory '/home/ubuntu/poco-f5-gki-618/publish/out/marble-dt-6.18'
+make: Leaving directory '/home/ubuntu/poco-f5-gki-618/publish'
+Built marble Device Tree artifacts. warnings=126 manifest=/home/ubuntu/poco-f5-gki-618/publish/out/marble-dt-6.18/marble-dt-artifacts.tsv
+Static Device Tree validation passed: artifacts are readable; build=126/126 base=50/50 overlay=153/153 merged=99/99 warnings.

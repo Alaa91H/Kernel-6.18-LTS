@@ -89,7 +89,28 @@ fragments=("$CORE" "$PROTO")
 if [[ "$DIAGNOSTICS" == diagnostic ]]; then
   fragments+=("$DIAGNOSTIC")
 fi
-"$ROOT/scripts/kconfig/merge_config.sh" -m -O "$OUT" "$OUT/.config" "${fragments[@]}"
+
+# Apply fragments in order, replacing prior assignments for each symbol.  This
+# retains normal fragment precedence (diagnostic over proto) without emitting
+# duplicate-assignment diagnostics for settings already selected by GKI.
+merge_fragment() {
+  local fragment line symbol
+  fragment="$1"
+  while IFS= read -r line; do
+    if [[ "$line" =~ ^(CONFIG_[A-Za-z0-9_]+)= ]]; then
+      symbol="${BASH_REMATCH[1]}"
+    elif [[ "$line" =~ ^\#\ (CONFIG_[A-Za-z0-9_]+)\ is\ not\ set$ ]]; then
+      symbol="${BASH_REMATCH[1]}"
+    else
+      continue
+    fi
+    sed -i -E "/^${symbol}=/d; /^# ${symbol} is not set$/d" "$OUT/.config"
+    printf '%s\n' "$line" >> "$OUT/.config"
+  done < "$fragment"
+}
+for fragment in "${fragments[@]}"; do
+  merge_fragment "$fragment"
+done
 make -C "$ROOT" O="$OUT" ARCH="$ARCH" LLVM=1 LLVM_IAS=1 PAHOLE="$PAHOLE_TOOL" \
   LOCALVERSION="-marble-${FLAVOR}-${DIAGNOSTICS}" olddefconfig
 make -C "$ROOT" O="$OUT" ARCH="$ARCH" LLVM=1 LLVM_IAS=1 PAHOLE="$PAHOLE_TOOL" \

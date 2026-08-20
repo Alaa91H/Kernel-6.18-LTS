@@ -807,11 +807,7 @@
 		};
 
 		in-ports {
-			#address-cells = <1>;
-			#size-cells = <0>;
-
-			port@0 {
-				reg = <0>;
+			port {
 				tpda_spss_in_tpdm_spss: endpoint {
 					remote-endpoint =
 					<&tpdm_spss_out_tpda_spss>;
@@ -1528,11 +1524,7 @@
 		};
 
 		out-ports {
-			#address-cells = <1>;
-			#size-cells = <0>;
-
-			port@0 {
-				reg = <0>;
+			port {
 				funnel_ddr_dl1_out_funnel_ddr_dl0: endpoint {
 					remote-endpoint =
 					<&funnel_ddr_dl0_in_funnel_ddr_dl1>;
@@ -2241,11 +2233,7 @@
 		qcom,duplicate-funnel;
 
 		in-ports {
-			#address-cells = <1>;
-			#size-cells = <0>;
-
-			port@0 {
-				reg = <0>;
+			port {
 				funnel_modem_q6_dup_in_modem_etm0: endpoint {
 					remote-endpoint =
 					<&modem_etm0_out_funnel_modem_q6_dup>;

@@ -127,3 +127,20 @@
 تحتفظ عملية التحقق بتحذيرات DTC كما هي؛ منها تحذيرات `glink-edge` المنقولة مسبقاً. لا توجد في الرقعة أي تعديلات على ملفات DTS أو `reg` أو phandle أو unit-address، ولذلك لا تُنسب التحذيرات المعروفة إلى تغيير SPSS. السجلان الخامان هما `reports/spss_marble_full_build_2026-08-20.log` و`reports/dt_gate_spss_recheck_2026-08-20.log`.
 
 > يثبت هذا القسم قابلية بناء الرقعة وتكاملها الساكن فقط. لا توجد firmware `spss.mdt` متحققة ولا KMI/vendor manifest ولا UART أو خطة استرداد منفذة على POCO F5؛ لذلك تبقى عقدة SPSS معطلة ولا يُنتج boot image أو أي artefact تفليش.
+
+## بناء رأس فرع marble الحالي — AOSP diagnostic
+
+أُجري بناء جديد قابل للإعادة من رأس فرع `marble-6.18-full-port` عند الالتزام `d69d5a5daa894488f203f5d59edc04dc15ef4bd1`. استُخدمت نكهة `aosp` مع `diagnostic` و`root=none` و`package=none`، وClang `18.1.3` وpahole `v1.31` المحلي. استُخدم مخرج منفصل هو `out/marble-aosp-diagnostic-d69d5`؛ لا يدخل هذا المخرج أو أي صورة ناتجة في Git.
+
+| بند التحقق | النتيجة |
+|---|---|
+| Image ARM64 | ناجح؛ SHA-256 `70cf0ed8e514bcd70bfd00ec008f558afcf94af6eaac82d3cfdcf5f83e011921`. |
+| الوحدات | ناجح؛ `104` ملفات `.ko`. |
+| `ukee.dtb` | ناجح؛ SHA-256 `1577e93bbae7e1e954305ec5d2d6479b4353585b3e8cdb60563482e763eb64f0`. |
+| marble DTBO | ناجح؛ SHA-256 `1121e209271bf822597413508b4de8d1d050a75e2c946cff3634a1fc36ac8dba`. |
+| BTF | ناجح؛ مرّت مرحلتا `BTF` و`BTFIDS` في مخرج `vmlinux.unstripped`. |
+| تغليف/تفليش | لم يُنفذ؛ `package=none` و`root=none` مفروضان. |
+
+ظهرت تحذيرات DTC التاريخية المصنفة أثناء بناء `ukee.dtb` ولم تُخف أو تُخفض. لم يكن هذا الأمر إعادة تشغيل مستقلة لبوابات `tools/validate_marble_dt_build.sh` الأربع؛ لذلك تبقى آخر نتيجة بوابة موثقة `87/36/128/85` وليست نتيجة جديدة تُنسب إلى هذا البناء وحده. كما أن SPSS غير مفعّل في إعداد marble الافتراضي لهذا البناء؛ يظل تحقق SPSS المنفصل الموثق أعلاه هو دليل تكامله الساكن.
+
+> نجاح هذا البناء يثبت تكامل المصدر عند رأس الفرع فقط. لا يثبت توافق ROM Evolution X ذي النواة 5.10 أو وحدات vendor أو firmware، ولا يفتح R1/B0 أو إنتاج `boot.img` أو التفليش.

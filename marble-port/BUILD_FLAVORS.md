@@ -31,5 +31,6 @@ PAHOLE=/home/ubuntu/tools/dwarves-install/bin/pahole \\
 |---|---|
 | AOSP | `marble-port/manifests/aosp.env.example` |
 | Xiaomi | `marble-port/manifests/xiaomi.env.example` |
+| Evolution X 17 | `marble-port/manifests/evolutionx-17.env.example` |
 
 > يطبع كل بناء `build-metadata.txt` ويشمل الالتزام، النكهة، وضع التشخيص، بصمات Image وDTB/DTBO وعدد الوحدات. تحفَظ هذه البيانات مع سجل الجهاز عند اختبار الاسترداد.

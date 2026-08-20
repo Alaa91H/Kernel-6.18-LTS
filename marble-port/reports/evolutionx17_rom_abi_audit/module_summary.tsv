@@ -1,0 +1,11 @@
+metric	value
+reference_vendor_dlkm_unique	390
+reference_vendor_boot_dlkm_unique	337
+reference_unique_union	390
+reference_first_stage_load_unique	97
+reference_vendor_load_unique	289
+candidate_built_unique	104
+same_filename	4
+reference_filename_not_built	386
+first_stage_load_filename_not_built	97
+vendor_load_filename_not_built	285

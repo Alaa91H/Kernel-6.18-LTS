@@ -2,12 +2,13 @@
 
 ## بناء المصدر فقط
 
-يدعم `tools/build_marble_flavor.sh` نكهتي `aosp` و`xiaomi` كوسم منشأ قابل للتتبع، وملفي `release` و`diagnostic`. لا يغير اختيار الروم تعريفات العتاد ولا يُنشئ `boot.img`؛ فالاختلاف الحقيقي بين الرومات يقع في صور vendor والوحدات والتوقيع، وهي مدخلات لا يمكن تخمينها من اسم الروم.
+يدعم `tools/build_marble_flavor.sh` نكهات `aosp` و`xiaomi` و`evolutionx-17` كوسم منشأ قابل للتتبع، وملفي `release` و`diagnostic`. لا يغير اختيار الروم تعريفات العتاد ولا يستورد binaries من ROM ولا يُنشئ `boot.img`؛ فالاختلاف الحقيقي بين الرومات يقع في صور vendor والوحدات والتوقيع، وهي مدخلات لا يمكن تخمينها من اسم الروم.
 
 | الأمر | الناتج | الحالة |
 |---|---|---|
 | `JOBS=8 ./tools/build_marble_flavor.sh --flavor aosp --root none --diagnostics release` | Image ووحدات وDTB/DTBO موسومة بـAOSP. | مسموح كمخرج مصدر فقط. |
 | `JOBS=8 ./tools/build_marble_flavor.sh --flavor xiaomi --root none --diagnostics release` | Image ووحدات وDTB/DTBO موسومة بـXiaomi. | مسموح كمخرج مصدر فقط. |
+| `JOBS=8 ./tools/build_marble_flavor.sh --flavor evolutionx-17 --root none --diagnostics diagnostic` | Image ووحدات وDTB/DTBO موسومة بـEvolution X 17 مع BTF/diagnostics. | مسموح للتحقق الساكن فقط؛ لا يستبدل DLKM 5.10 ولا ينتج حزمة تفليش. |
 | `JOBS=8 ./tools/build_marble_flavor.sh --flavor aosp --root none --diagnostics diagnostic` | مخرج مع BTF وdynamic-debug وftrace/pstore tracing. | مسموح للتحقق؛ ليس حزمة تفليش. |
 | `--root ksu-next` أو `--root apatch` | رفض واضح. | غير مدعومين من upstream على Linux 6.18. |
 | `--package boot` | رفض واضح. | محجوب حتى manifest وKMI واختبار جهاز. |

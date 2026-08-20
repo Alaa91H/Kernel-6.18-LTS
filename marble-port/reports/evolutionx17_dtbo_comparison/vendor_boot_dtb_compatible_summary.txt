@@ -1,0 +1,4 @@
+reference_vendor_boot_compatible_unique=306
+candidate_ukee_compatible_unique=228
+same_compatible=224
+reference_compatible_not_seen_in_candidate=82

@@ -1,0 +1,4 @@
+reference_entry03_compatible_unique=73
+candidate_overlay_compatible_unique=49
+same_compatible=46
+reference_compatible_not_seen_in_candidate=27

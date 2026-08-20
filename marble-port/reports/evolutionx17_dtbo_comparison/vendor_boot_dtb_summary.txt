@@ -1,0 +1,7 @@
+official_vendor_boot_dtb_offset=12861440
+official_vendor_boot_dtb_bytes=5745935
+official_vendor_boot_dtb_file=Device Tree Blob version 17, size=481891, boot CPU=0, string block size=43431, DT structure block size=438404
+official_vendor_boot_dtb_sha256=14007aa9e277d62319e1f2296ff138e2c56a1e43d003203222e86ca56bb1308f
+local_ukee_dtb_bytes=379047
+local_ukee_dtb_file=Device Tree Blob version 17, size=379047, boot CPU=0, string block size=31311, DT structure block size=347680
+local_ukee_dtb_sha256=1d07d5ad9da131569901f3a5656bcf06e643fb1c664d826c65414bb5cbf1f5a8

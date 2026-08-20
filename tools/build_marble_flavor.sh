@@ -17,15 +17,18 @@ usage() {
 Usage: tools/build_marble_flavor.sh [options]
 
 Options:
-  --flavor aosp|xiaomi          Target ROM integration manifest (default: aosp)
+  --flavor aosp|xiaomi|evolutionx-17
+                                Target ROM integration provenance (default: aosp)
   --root none|ksu-next|apatch   Root policy (default: none)
   --diagnostics release|diagnostic
                                 Kernel diagnostics profile (default: release)
   --package none|boot           Packaging mode (default: none)
   --help                        Show this help
 
-The script builds Image, modules, ukee.dtb, and marble DTBO only.  Packaging is
-refused until a reviewed ROM manifest and hardware/KMI acceptance evidence exist.
+The script builds Image, modules, ukee.dtb, and marble DTBO only.  Selecting
+evolutionx-17 changes provenance metadata only; it never imports ROM binaries.
+Packaging is refused until a reviewed ROM manifest and hardware/KMI acceptance
+evidence exist.
 EOF
 }
 
@@ -45,7 +48,7 @@ while (($#)); do
   esac
 done
 
-case "$FLAVOR" in aosp|xiaomi) ;; *) fail "Unsupported flavor: $FLAVOR" ;; esac
+case "$FLAVOR" in aosp|xiaomi|evolutionx-17) ;; *) fail "Unsupported flavor: $FLAVOR" ;; esac
 case "$DIAGNOSTICS" in release|diagnostic) ;; *) fail "Unsupported diagnostics profile: $DIAGNOSTICS" ;; esac
 case "$PACKAGE" in none|boot) ;; *) fail "Unsupported package mode: $PACKAGE" ;; esac
 

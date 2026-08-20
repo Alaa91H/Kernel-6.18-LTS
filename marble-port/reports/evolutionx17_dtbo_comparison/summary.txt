@@ -1,0 +1,6 @@
+local_dtbo_bytes=68799
+local_dtbo_sha256=8644bb0525008aa3ffe94394c17d6c1b95a1155b86ec73986feeeb4f93cd6ce9
+local_file_type=Device Tree Blob version 17, size=68799, boot CPU=0, string block size=5583, DT structure block size=63160
+official_dtbo_container_bytes=25165824
+official_dtbo_entry_count=14
+official_dtbo_logical_size=4299397

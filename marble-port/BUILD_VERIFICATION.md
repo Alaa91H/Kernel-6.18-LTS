@@ -45,6 +45,20 @@
 
 > لا يفتح هذا النجاح بوابة التغليف: ROM Evolution X 17 المستخرج يستخدم kernel `5.10.256-gki` ووحدات `vendor_dlkm` و`vendor_boot` غير المتوافقة ABI مع 6.18. تراجع [`EVOLUTIONX17_COMPATIBILITY_ANALYSIS.md`](EVOLUTIONX17_COMPATIBILITY_ANALYSIS.md) قبل أي خطوة تخص صورة إقلاع.
 
+## إعادة التحقق بعد تفعيل P0 upstream
+
+أضيفت طبقة P0 ضيقة ومثبتة بالعقد الموجودة في `cape.dtsi`: `QCOM_IPCC` و`HWSPINLOCK_QCOM` و`QCOM_SMEM` و`QCOM_SMP2P`. بُنيت النكهات الثلاث من الالتزام النظيف `343b9da858dd`، وتحققت كل الرموز الأربعة في `.config` ومؤشرات الوحدات المضمنة. التغيير يبني أساس IPC/SMEM فقط؛ لا ينقل DLKM vendor أو يتجاوز حكم عدم توافق ABI مع Evolution X 17.
+
+| النكهة | النتيجة | Image | الوحدات | BTF | SHA-256 للـImage |
+|---|---|---:|---:|---|---|
+| `aosp` / `diagnostic` | ناجح | 46,021,120 بايت | 104 | صالح عبر `pahole v1.31` | `60c8d77bfb7d16ac75c375f29c2d15ff8e237604dfa84ab79bf090ea1e5e8f0c` |
+| `xiaomi` / `release` | ناجح | 36,559,360 بايت | 104 | غير مطلوب في release | `d6c1c60330b9dd1451ddb0b4d51ffe916c83bfed0fce2433e4bc2b952d9ffd23` |
+| `evolutionx-17` / `diagnostic` | ناجح | 46,021,120 بايت | 104 | صالح عبر `pahole v1.31` | `bf0f6d639bb71e58b333cc97e627a2148f4a0af420c85136827580e82144d3c7` |
+
+بلغت كل النكهات `6.18.32-4k-g343b9da858dd`، وبقي `root=none` و`package=none`. تضبط `tools/validate_marble_dt_build.sh` الآن سقف التحذيرات المراجع (`129/53/154/103` للبناء/DTB/DTBO/DTB المدمج) وترفض أي تراجع؛ القياس الفعلي بعد P0 هو `129/53/153/102`، أي لا تحذيرات جديدة.
+
+> **قرار الجاهزية:** البناء وBTF وP0 static-success، لكن معيار «0 تحذير و0 خطأ» لم يتحقق: توجد 129 رسالة DTC في build محدد، و386 وحدة مرجعية من Evolution X 17 لا يمكن إعادة استخدامها. لا تُنتج صورة إقلاع ولا يُفعل DLKM أو تفليش حتى نقل bindings/drivers vendor المتبقية وإنشاء KMI baseline واختبار POCO F5 فعلياً.
+
 ## معالجة BTF
 
 فشل بناء BTF أولاً مع `pahole v1.25` لأن الأداة بلغت حد متغيرات per-CPU البالغ `4096`، ثم فشل `resolve_btfids` في قراءة BTF الناتج. بُني `pahole v1.31` محلياً من مصدر مشروع [dwarves الرسمي][1]، وثبت اختبار مستقل قدرته على ترميز BTF وسيط النواة بحجم `6,969,029` بايت. يمرر `tools/build_marble_flavor.sh` الآن قيمة `PAHOLE` كمتغير Make صريح، وسجل البناء الناجح يستخدم `/home/ubuntu/tools/dwarves-install/bin/pahole` بالإصدار `v1.31`.

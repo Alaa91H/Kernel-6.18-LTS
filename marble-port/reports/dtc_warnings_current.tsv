@@ -56,7 +56,6 @@ unit_address_vs_reg	/home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qco
 unit_address_vs_reg	/home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/pm8350c.dtsi	63.10-70.6	/fragment@4/__overlay__/qcom,pm8350c@2/pwms@e800/lpg@3: node has a unit name, but no reg or ranges property
 unit_address_vs_reg	/home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/xiaomi-sm8475-common.dtsi	173.15-175.4	/fragment@25/__overlay__/dwc3@a600000: node has a unit name, but no reg or ranges property
 unit_address_format	/home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/xiaomi-sm8475-common.dtsi	24.26-29.4	/fragment@16/__overlay__/mtdoops_pmsg@0xa7000000: unit name should not have leading "0x"
-unit_address_format	/home/ubuntu/poco-f5-gki-618/publish/arch/arm64/boot/dts/qcom/xiaomi-sm8475-common.dtsi	199.21-204.4	/fragment@27/__overlay__/ramoops@0xa7000000: unit name should not have leading "0x"
 pci_device_reg	arch/arm64/boot/dts/qcom/marble-sm7475-pm8008-overlay.dtbo		Failed prerequisite 'reg_format'
 pci_device_bus_num	arch/arm64/boot/dts/qcom/marble-sm7475-pm8008-overlay.dtbo		Failed prerequisite 'reg_format'
 simple_bus_reg	arch/arm64/boot/dts/qcom/marble-sm7475-pm8008-overlay.dtbo		Failed prerequisite 'reg_format'

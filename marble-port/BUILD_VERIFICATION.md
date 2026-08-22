@@ -144,3 +144,23 @@ A new reproducible build was run from the tip of branch `marble-6.18-full-port` 
 Historical classified DTC warnings appeared while building `ukee.dtb` and were not hidden or reduced. This run was not an independent rerun of the four `tools/validate_marble_dt_build.sh` gates; therefore the last documented gate result remains `87/36/128/85` and is not attributed as a new result of this build alone. SPSS is also not enabled in the default marble configuration for this build; the separate SPSS verification documented above remains the proof of its static integration.
 
 > Success of this build proves source-tree integration at the branch tip only. It does not prove compatibility with the Evolution X ROM using a 5.10 kernel or with vendor modules or firmware, nor does it open R1/B0 or produce `boot.img` or enable flashing.
+
+## Reproduced BTF Remediation with pahole v1.31
+
+A user-supplied Templar build log did not contain a device boot record; it failed during the kernel build at BTF generation. Its decisive sequence was `Reached the limit of per-CPU variables: 4096`, followed by `BTFIDS vmlinux.unstripped` and `FAILED: load BTF from vmlinux.unstripped: Invalid argument`. This is the same BTF tool limitation documented earlier in this record, rather than a device-runtime failure.
+
+To reproduce the remediation in a clean environment, the official dwarves `v1.31` source tag (`1f2805b6eef104df3125143c949b391f6122e5b9`) was built locally. A small local wrapper exported the dwarves library directory and invoked pahole explicitly; `pahole --version` returned `v1.31`. The build script was verified to forward the `PAHOLE` variable to every relevant Make invocation, including configuration, merge, build, and metadata collection.
+
+A clean `aosp` diagnostic build was then run from commit `9789d28ed8d6c408c246ce79d70fd0e526d3cac4`, with `root=none`, `package=none`, and `PAHOLE=/home/ubuntu/work/tools/pahole-v1.31`. The generated metadata records `pahole_version=v1.31`; the build passed both the `BTF` and `BTFIDS` stages. A subsequent `pahole -F btf -C task_struct vmlinux` invocation succeeded, which proves that the emitted BTF is readable by the same toolchain.
+
+| Verification item | Result |
+|---|---|
+| Image ARM64 | Passed; SHA-256 `6256cec9a28c4d7fab6a9b078fe793b90436eafb7d3778ecf6aadb260ea26500`. |
+| Modules | Passed; `104` `.ko` files. |
+| `ukee.dtb` | Passed; SHA-256 `1577e93bbae7e1e954305ec5d2d6479b4353585b3e8cdb60563482e763eb64f0`. |
+| marble DTBO | Passed; SHA-256 `1121e209271bf822597413508b4de8d1d050a75e2c946cff3634a1fc36ac8dba`. |
+| `BTF` and `BTFIDS` | Passed without disabling BTF. |
+| BTF readability | Passed with `pahole -F btf -C task_struct vmlinux`. |
+| Packaging and flashing | Not performed; `package=none` and `root=none` remained enforced. |
+
+This verifies the BTF remediation for this reproducible marble build. It does not validate the different Templar source tree, XClang 22/O3 configuration, AnyKernel packaging, a boot image, or runtime behavior on a POCO F5. The four non-fatal `modpost` prototype warnings observed in the supplied log remain a separate code-quality item and are not suppressed by this result.

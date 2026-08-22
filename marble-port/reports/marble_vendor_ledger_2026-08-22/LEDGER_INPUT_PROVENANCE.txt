@@ -1,0 +1,10 @@
+ACK_COMMIT	34a6e975936c4cc616ce4fad1e6dec31c1e3c59c
+XIAOMI_KERNEL_COMMIT	48952ed36228217531482b39d5bef13e7fd808ec
+FIRST_STAGE_INPUT	marble-port/reports/evolutionx17_rom_abi_audit/first_stage_load_filename_gaps.txt
+VENDOR_LOAD_INPUT	marble-port/reports/evolutionx17_rom_abi_audit/vendor_load_filename_gaps.txt
+CONTRACT_INPUT	marble-port/reports/evolutionx17_module_porting_contract.tsv
+FIRST_STAGE_GAPS	97
+VENDOR_LOAD_GAPS	285
+UNIQUE_GAPS	382
+LEDGER_SHA256	3cf14df27d91a79efb1e101c4d33d945d143ee6d744937caeba1a6b2d05ea3b6
+SCOPE	text-only source-candidate inventory; no ROM, module binary, firmware, image, package, key, or device operation was used

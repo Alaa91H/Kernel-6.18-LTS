@@ -1,0 +1,97 @@
+name: Marble GKI Prototype CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: marble-gki-prototype-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  review:
+    name: Script and patch review
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Check out source
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0
+
+      - name: Validate scripts and whitespace
+        shell: bash
+        run: |
+          set -euo pipefail
+          bash -n build_marble_gki_6_18_proto.sh
+          bash -n tools/verify_marble_gki_prototype.sh
+          if git rev-parse --verify HEAD^ >/dev/null 2>&1; then
+            git diff --check HEAD^..HEAD
+          fi
+
+      - name: Check the changed commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "${GITHUB_EVENT_NAME}" == "pull_request" ]]; then
+            range="${{ github.event.pull_request.base.sha }}..${GITHUB_SHA}"
+          elif git rev-parse --verify HEAD^ >/dev/null 2>&1; then
+            range="HEAD^..HEAD"
+          else
+            echo "No parent commit is available; skipping range-based checkpatch."
+            exit 0
+          fi
+          patch="$(mktemp)"
+          git diff --no-ext-diff --unified=1 "$range" -- '*.c' '*.h' > "$patch"
+          if [[ -s "$patch" ]]; then
+            scripts/checkpatch.pl --strict "$patch"
+          else
+            echo "No C or header changes in range; checkpatch not required."
+          fi
+
+  build:
+    name: Build and verify arm64 prototype
+    needs: review
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - name: Check out source
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 1
+
+      - name: Install build prerequisites
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            bc bison clang cpio flex libdw-dev libelf-dev libncurses-dev \
+            libssl-dev llvm lld make pahole
+
+      - name: Build the non-flashable prototype
+        shell: bash
+        run: |
+          set -euo pipefail
+          export OUT_DIR="${RUNNER_TEMP}/marble-gki-prototype"
+          export JOBS=2
+          ./build_marble_gki_6_18_proto.sh | tee "${RUNNER_TEMP}/marble-gki-build.log"
+          sha256sum "${OUT_DIR}/arch/arm64/boot/Image" > "${RUNNER_TEMP}/Image.sha256"
+
+      - name: Upload source-build evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: marble-gki-prototype-${{ github.sha }}
+          if-no-files-found: error
+          retention-days: 7
+          path: |
+            ${{ runner.temp }}/marble-gki-prototype/.config
+            ${{ runner.temp }}/marble-gki-prototype/build-metadata.txt
+            ${{ runner.temp }}/marble-gki-build.log
+            ${{ runner.temp }}/Image.sha256

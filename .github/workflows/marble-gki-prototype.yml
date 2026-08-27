@@ -35,6 +35,7 @@ jobs:
           bash -n tools/verify_marble_gki_prototype.sh
           bash -n tools/create_marble_gki_evidence.sh
           bash -n tools/verify_marble_gki_evidence.sh
+          bash -n tools/test_verify_marble_gki_evidence.sh
           if git rev-parse --verify HEAD^ >/dev/null 2>&1; then
             git diff --check HEAD^..HEAD
           fi
@@ -115,6 +116,14 @@ jobs:
         run: |
           set -euo pipefail
           ./tools/verify_marble_gki_evidence.sh \
+            "${RUNNER_TEMP}/marble-gki-evidence/marble-gki-source-build-evidence.tar.gz" \
+            "${RUNNER_TEMP}/marble-gki-evidence/marble-gki-source-build-evidence.tar.gz.sha256"
+
+      - name: Run evidence-verifier negative tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          ./tools/test_verify_marble_gki_evidence.sh \
             "${RUNNER_TEMP}/marble-gki-evidence/marble-gki-source-build-evidence.tar.gz" \
             "${RUNNER_TEMP}/marble-gki-evidence/marble-gki-source-build-evidence.tar.gz.sha256"
 

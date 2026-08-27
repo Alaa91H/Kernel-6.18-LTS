@@ -1,0 +1,112 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0
+#
+# Regression tests for verify_marble_gki_evidence.sh. The supplied bundle must
+# already be valid. This test copies it into private temporary directories and
+# proves that controlled malformed variants are rejected. It creates no kernel
+# image and makes no device-support claim.
+set -euo pipefail
+
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd -P)"
+VERIFIER="$ROOT/tools/verify_marble_gki_evidence.sh"
+BUNDLE="${1:-}"
+CHECKSUM="${2:-}"
+
+usage()
+{
+	printf 'Usage: %s <evidence.tar.gz> [evidence.tar.gz.sha256]\n' "$0" >&2
+	exit 2
+}
+
+fail()
+{
+	printf 'evidence verifier self-test failed: %s\n' "$*" >&2
+	exit 1
+}
+
+expect_reject()
+{
+	local description="$1"
+	shift
+	if "$VERIFIER" "$@" >/dev/null 2>&1; then
+		fail "verifier accepted invalid fixture: $description"
+	fi
+	printf 'Rejected invalid fixture: %s\n' "$description"
+}
+
+[[ -n "$BUNDLE" ]] || usage
+[[ -s "$BUNDLE" ]] || fail "evidence archive is missing or empty: $BUNDLE"
+if [[ -z "$CHECKSUM" ]]; then
+	CHECKSUM="$BUNDLE.sha256"
+fi
+[[ -s "$CHECKSUM" ]] || fail "evidence checksum is missing or empty: $CHECKSUM"
+[[ -x "$VERIFIER" ]] || fail "verifier is unavailable or not executable: $VERIFIER"
+
+for tool in basename cp mktemp rm sed sha256sum tar; do
+	command -v "$tool" >/dev/null 2>&1 || fail "required command is unavailable: $tool"
+done
+
+work="$(mktemp -d)"
+cleanup()
+{
+	rm -rf "$work"
+}
+trap cleanup EXIT
+
+archive_name="$(basename "$BUNDLE")"
+checksum_name="$(basename "$CHECKSUM")"
+
+repack()
+{
+	local fixture_dir="$1"
+	(
+		cd "$fixture_dir/stage"
+		tar --sort=name --mtime='@0' --owner=0 --group=0 --numeric-owner \
+			-czf "$fixture_dir/$archive_name" \
+			effective.config build-metadata.txt build.log Image.sha256 manifest.sha256
+		sha256sum "$fixture_dir/$archive_name" > "$fixture_dir/$checksum_name"
+	)
+}
+
+extract_bundle()
+{
+	local fixture_dir="$1"
+	mkdir -p "$fixture_dir/stage"
+	tar -xzf "$BUNDLE" --no-same-owner --no-same-permissions -C "$fixture_dir/stage"
+}
+
+"$VERIFIER" "$BUNDLE" "$CHECKSUM" >/dev/null
+printf 'Accepted valid evidence bundle.\n'
+
+corrupt="$work/corrupt"
+mkdir -p "$corrupt"
+cp "$BUNDLE" "$corrupt/$archive_name"
+cp "$CHECKSUM" "$corrupt/$checksum_name"
+printf 'controlled corruption\n' >> "$corrupt/$archive_name"
+expect_reject 'external checksum mismatch' "$corrupt/$archive_name" "$corrupt/$checksum_name"
+
+layout="$work/layout"
+extract_bundle "$layout"
+printf 'unexpected archive member\n' > "$layout/stage/unexpected.txt"
+(
+	cd "$layout/stage"
+	tar --sort=name --mtime='@0' --owner=0 --group=0 --numeric-owner \
+		-czf "$layout/$archive_name" \
+		effective.config build-metadata.txt build.log Image.sha256 manifest.sha256 unexpected.txt
+	sha256sum "$layout/$archive_name" > "$layout/$checksum_name"
+)
+expect_reject 'unexpected archive member' "$layout/$archive_name" "$layout/$checksum_name"
+
+metadata="$work/metadata"
+extract_bundle "$metadata"
+sed -i 's/^config_sha256=.*/config_sha256=0000000000000000000000000000000000000000000000000000000000000000/' \
+	"$metadata/stage/build-metadata.txt"
+(
+	cd "$metadata/stage"
+	sha256sum effective.config build-metadata.txt build.log Image.sha256 > manifest.sha256
+)
+repack "$metadata"
+expect_reject 'metadata configuration checksum mismatch' \
+	"$metadata/$archive_name" "$metadata/$checksum_name"
+
+printf 'Evidence verifier self-test passed.\n'

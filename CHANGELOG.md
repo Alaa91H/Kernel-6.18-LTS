@@ -4,6 +4,25 @@ All notable changes to the **Kernel-6.18-LTS marble prototype** are documented i
 
 > Release artifacts from this repository are **not flash-ready** unless a future release explicitly provides independently reviewed device-validation evidence, a compatible ROM/vendor contract, and a recovery plan.
 
+## [marble-6.18.32-r6] — 2026-08-27
+
+### Added
+
+| Area | Change |
+|---|---|
+| Evidence-verifier regression test | Added `tools/test_verify_marble_gki_evidence.sh`, a deterministic self-test that first proves acceptance of the valid non-flashable evidence archive produced by CI. |
+| Negative coverage | The self-test also proves rejection of a copy with a broken external checksum, an archive with an unexpected member and refreshed external checksum, and an archive whose regenerated internal manifest preserves a deliberately incorrect metadata configuration hash. |
+
+### Changed
+
+| Area | Change |
+|---|---|
+| Evidence-verifier regression gate | After CI verifies its produced archive, it now runs the self-test against that archive before tag-only attestation and upload. This proves the verifier rejects controlled layout and semantic violations of the actual producer/consumer contract. |
+
+### Validation boundary
+
+The self-test exercises archive-verifier behaviour only. It uses an evidence archive whose fixed layout excludes a kernel image, and does not establish build reproducibility, artifact security, attestation validity, device bootability, hardware functionality, or compatibility with any ROM/vendor/KMI contract. Provenance remains verified separately with `gh attestation verify`. [2]
+
 ## [marble-6.18.32-r5] — 2026-08-27
 
 ### Added

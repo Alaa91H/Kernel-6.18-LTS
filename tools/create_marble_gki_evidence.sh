@@ -64,7 +64,10 @@ bundle="$EVIDENCE_DIR/$BUNDLE_NAME"
 tar --sort=name --mtime='@0' --owner=0 --group=0 --numeric-owner \
 	-czf "$bundle" -C "$stage" \
 	effective.config build-metadata.txt build.log Image.sha256 manifest.sha256
-sha256sum "$bundle" > "$bundle.sha256"
+(
+	cd "$EVIDENCE_DIR"
+	sha256sum "$BUNDLE_NAME" > "$BUNDLE_NAME.sha256"
+)
 
 printf 'Evidence bundle created: %s\n' "$bundle"
 printf 'Evidence bundle checksum: %s\n' "$bundle.sha256"

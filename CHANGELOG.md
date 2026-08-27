@@ -4,6 +4,19 @@ All notable changes to the **Kernel-6.18-LTS marble prototype** are documented i
 
 > Release artifacts from this repository are **not flash-ready** unless a future release explicitly provides independently reviewed device-validation evidence, a compatible ROM/vendor contract, and a recovery plan.
 
+## [marble-6.18.32-r4] — 2026-08-27
+
+### Fixed
+
+| Area | Correction |
+|---|---|
+| Evidence-bundle portability | The external SHA-256 file now records only the evidence archive basename instead of the absolute temporary path used by the CI runner. Consumers can therefore run `sha256sum -c marble-gki-source-build-evidence.tar.gz.sha256` after downloading both files into any directory. |
+| Release verification | Added a local regression check that copies the evidence archive and checksum into a distinct download directory, verifies the external archive checksum there, then verifies the archive's internal manifest. |
+
+### Release note
+
+The `marble-6.18.32-r3` tag exercised the attestation workflow but did not have a published GitHub Release. r4 supersedes it as the consumable pre-release because its evidence checksum is portable. This correction affects evidence distribution and verification only; it does not alter kernel source, build configuration, output safety scope, or device-validation status.
+
 ## [marble-6.18.32-r3] — 2026-08-27
 
 ### Added

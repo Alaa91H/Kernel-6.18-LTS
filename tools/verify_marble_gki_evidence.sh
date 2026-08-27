@@ -2,8 +2,9 @@
 # SPDX-License-Identifier: GPL-2.0
 #
 # Verify a portable, non-flashable Marble GKI source-build evidence archive.
-# This verifier checks archive integrity and recorded configuration metadata. It
-# does not verify a GitHub attestation, establish artifact security, or prove
+# This verifier checks archive integrity, member-type policy, and recorded
+# configuration metadata. It does not verify a GitHub attestation, establish
+# artifact security, or prove
 # device bootability, KMI compatibility, ROM compatibility, or hardware support.
 set -euo pipefail
 
@@ -85,6 +86,8 @@ trap cleanup EXIT
 printf '%s\n' "${expected_entries[@]}" | LC_ALL=C sort > "$expected_list"
 tar -tzf "$BUNDLE" | LC_ALL=C sort > "$entry_list"
 cmp -s "$expected_list" "$entry_list" || die 'archive contents differ from the fixed evidence layout'
+tar -tvzf "$BUNDLE" | awk 'NF == 0 || substr($1, 1, 1) != "-" { exit 1 }' || \
+	die 'archive contains a non-regular member'
 
 tar -xzf "$BUNDLE" --no-same-owner --no-same-permissions -C "$stage"
 

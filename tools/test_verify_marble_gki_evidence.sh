@@ -34,6 +34,20 @@ expect_reject()
 	printf 'Rejected invalid fixture: %s\n' "$description"
 }
 
+expect_reject_with_message()
+{
+	local description="$1"
+	local expected_message="$2"
+	local output
+	shift 2
+	if output="$("$VERIFIER" "$@" 2>&1)"; then
+		fail "verifier accepted invalid fixture: $description"
+	fi
+	[[ "$output" == *"$expected_message"* ]] || \
+		fail "verifier rejected fixture for an unexpected reason: $description"
+	printf 'Rejected invalid fixture: %s\n' "$description"
+}
+
 [[ -n "$BUNDLE" ]] || usage
 [[ -s "$BUNDLE" ]] || fail "evidence archive is missing or empty: $BUNDLE"
 if [[ -z "$CHECKSUM" ]]; then
@@ -42,7 +56,7 @@ fi
 [[ -s "$CHECKSUM" ]] || fail "evidence checksum is missing or empty: $CHECKSUM"
 [[ -x "$VERIFIER" ]] || fail "verifier is unavailable or not executable: $VERIFIER"
 
-for tool in basename cp mktemp rm sed sha256sum tar; do
+for tool in basename cp ln mktemp rm sed sha256sum tar; do
 	command -v "$tool" >/dev/null 2>&1 || fail "required command is unavailable: $tool"
 done
 
@@ -96,6 +110,18 @@ printf 'unexpected archive member\n' > "$layout/stage/unexpected.txt"
 	sha256sum "$layout/$archive_name" > "$layout/$checksum_name"
 )
 expect_reject 'unexpected archive member' "$layout/$archive_name" "$layout/$checksum_name"
+
+link="$work/link"
+extract_bundle "$link"
+rm "$link/stage/build.log"
+ln -s effective.config "$link/stage/build.log"
+(
+	cd "$link/stage"
+	sha256sum effective.config build-metadata.txt build.log Image.sha256 > manifest.sha256
+)
+repack "$link"
+expect_reject_with_message 'symbolic-link archive member' 'archive contains a non-regular member' \
+	"$link/$archive_name" "$link/$checksum_name"
 
 metadata="$work/metadata"
 extract_bundle "$metadata"

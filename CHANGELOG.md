@@ -4,6 +4,27 @@ All notable changes to the **Kernel-6.18-LTS marble prototype** are documented i
 
 > Release artifacts from this repository are **not flash-ready** unless a future release explicitly provides independently reviewed device-validation evidence, a compatible ROM/vendor contract, and a recovery plan.
 
+## [marble-6.18.32-r7] — 2026-08-27
+
+### Added
+
+| Area | Change |
+|---|---|
+| Evidence archive member policy | The offline evidence verifier now accepts only the five expected **regular files** before it extracts the archive. This rejects symbolic links, hard links, directories, devices, and other non-regular member types even when their names match the fixed layout. |
+| Negative verifier coverage | The r6 self-test now constructs a checksum-valid archive that replaces an expected `build.log` member with a symbolic link, and requires the verifier to reject it specifically under the member-type policy. |
+| Marble source register | Added `DEVICE_ENABLEMENT_SOURCES.md`, an English source-admission register that records the observed Xiaomi and LineageOS Marble contracts and the evidence required before device-specific files may be imported. |
+
+### Changed
+
+| Area | Change |
+|---|---|
+| Consumer verification | Archive verification now enforces the regular-member policy before extraction, then performs the existing manifest, configuration, metadata, and safety-scope checks. |
+| Device-completion boundary | The project now explicitly records that available Marble sources span a Xiaomi 5.10 vendor kernel and a separately versioned LineageOS product/vendor contract; neither is a verified, direct import source for ACK/GKI 6.18. |
+
+### Validation boundary
+
+The member-type policy reduces the local attack surface of evidence inspection. It does not establish the security of an archive, the correctness of third-party source material, build reproducibility, attestation validity, device bootability, ROM/vendor/KMI compatibility, firmware availability, recovery safety, or hardware functionality. Artifact provenance remains a separate check with `gh attestation verify`. [2]
+
 ## [marble-6.18.32-r6] — 2026-08-27
 
 ### Added

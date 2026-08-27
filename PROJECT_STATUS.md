@@ -8,9 +8,9 @@ This repository tracks a **host-side Android Common Kernel / Generic Kernel Imag
 
 | Capability | Current evidence | Release claim permitted |
 |---|---|---|
-| ARM64 `Image` source build | Validated by the local helper and the r2 CI workflow | A source-build artifact can be reproduced under the recorded toolchain conditions. |
+| ARM64 `Image` source build | Validated by the local helper and the active CI workflow | A source-build artifact can be reproduced under the recorded toolchain conditions. |
 | Configuration intent | Checked against the merged `.config` after `olddefconfig` | The generic-GKI facilities in the fragment are enabled as requested. |
-| Artifact provenance | SHA-256, source revision, tree state, config hash, compiler line, module and DTB counts | Build outputs can be traced to a particular source state and configuration. |
+| Evidence integrity and provenance | Fixed regular-file archive layout, SHA-256, internal manifest, source revision, tree state, configuration hash, compiler line, module/DTB counts, and tag-only attestation | Evidence content and its recorded source state can be checked separately. An attestation is provenance evidence, not a device-compatibility certification. |
 | Runtime testing | Not performed | No boot, peripheral, suspend/resume, thermal, modem, GPU, camera, display, audio, Wi-Fi, Bluetooth, or storage-functional claim is allowed. |
 | Device integration | Not available | No `boot.img`, `vendor_boot.img`, DTBO package, recovery package, root integration, flashing ZIP, or firmware bundle is provided. |
 | Vendor and KMI compatibility | Not established | Existing vendor modules and ROM partitions must not be reused or assumed compatible. |
@@ -29,13 +29,13 @@ For recent Android common kernels, AOSP documents Bazel/Kleaf as the standard GK
 
 ## CI contract
 
-The r2 workflow runs on pull requests, pushes to `main`, and manual dispatch. It verifies scripts, config intent, changed-commit patch style, the full prototype build, and output integrity. Its uploaded artifact contains only metadata, checksums, the merged `.config`, and verification output. It deliberately does not publish packaging or flashing artifacts.
+The active workflow runs on pull requests, pushes to `main`, matching `marble-*` tags, and manual dispatch. It verifies shell syntax, whitespace, evidence-verifier positive and negative cases, configuration intent, changed-commit patch style, the full prototype build, evidence integrity, and tag-only provenance attestation. Its uploaded artifact contains only build records and the non-flashable evidence archive; it deliberately does not publish packaging or flashing artifacts.
 
 GitHub recommends least-privilege workflow tokens, avoiding privileged PR triggers for untrusted code, and full commit-SHA pins for third-party actions. [3]
 
 ## Device-acceptance gate
 
-A future device-focused release requires evidence for every item below before the project can change its non-flashable status.
+A future device-focused release requires evidence for every item below before the project can change its non-flashable status. `DEVICE_ENABLEMENT_SOURCES.md` additionally records why currently available Xiaomi and LineageOS source trees cannot be copied into this ACK/GKI 6.18 prototype as complete Marble support.
 
 | Gate | Minimum evidence required |
 |---|---|

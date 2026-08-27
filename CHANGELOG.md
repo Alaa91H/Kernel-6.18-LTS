@@ -12,6 +12,7 @@ All notable changes to the **Kernel-6.18-LTS marble prototype** are documented i
 |---|---|
 | Evidence-bundle portability | The external SHA-256 file now records only the evidence archive basename instead of the absolute temporary path used by the CI runner. Consumers can therefore run `sha256sum -c marble-gki-source-build-evidence.tar.gz.sha256` after downloading both files into any directory. |
 | Release verification | Added a local regression check that copies the evidence archive and checksum into a distinct download directory, verifies the external archive checksum there, then verifies the archive's internal manifest. |
+| CI runner compatibility | Updated the evidence-upload action to a commit-pinned v5 reference, eliminating the prior Node.js 20 deprecation annotation without weakening action pinning. |
 
 ### Release note
 

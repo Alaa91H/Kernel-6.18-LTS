@@ -4,6 +4,26 @@ All notable changes to the **Kernel-6.18-LTS marble prototype** are documented i
 
 > Release artifacts from this repository are **not flash-ready** unless a future release explicitly provides independently reviewed device-validation evidence, a compatible ROM/vendor contract, and a recovery plan.
 
+## [marble-6.18.32-r9] — 2026-08-27
+
+### Added
+
+| Area | Change |
+|---|---|
+| Fixed metadata schema | The offline verifier now requires `build-metadata.txt` to contain exactly one record for each of the twelve producer-defined keys. It rejects malformed records, unknown keys, and duplicate keys before any metadata value is trusted. |
+| Negative verifier coverage | The self-test now derives checksum-valid, internally consistent fixtures that add an unreviewed metadata key or duplicate `source_dirty`, and verifies that each is rejected under the fixed-schema policy. |
+
+### Changed
+
+| Area | Change |
+|---|---|
+| Evidence evaluation order | Metadata-schema validation now runs before scope, source, checksum, and release-policy evaluation, ensuring those checks consume an unambiguous producer record. |
+| Consumer contract | README documentation now identifies the five-file archive layout and twelve-key metadata schema as part of the offline evidence format. |
+
+### Validation boundary
+
+The schema check hardens the interpretation of an evidence record; it does not make source metadata complete, establish provenance on its own, prove reproducibility, validate a Device Tree or driver port, establish any vendor/KMI/firmware/ROM/boot-chain/recovery compatibility, prove bootability, or prove hardware functionality. GitHub artifact attestation remains a separate provenance check with `gh attestation verify`. [2]
+
 ## [marble-6.18.32-r8] — 2026-08-27
 
 ### Added

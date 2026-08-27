@@ -57,6 +57,20 @@ expected_entries=(
 	Image.sha256
 	manifest.sha256
 )
+expected_metadata_keys=(
+	build_timestamp_utc
+	build_scope
+	source_commit
+	source_branch
+	source_dirty
+	kernel_release
+	clang_version
+	config_sha256
+	image_sha256
+	image_path
+	modules_present
+	dtbs_present
+)
 
 die()
 {
@@ -97,10 +111,13 @@ checksum_name="$(basename "$CHECKSUM")"
 
 entry_list="$(mktemp)"
 expected_list="$(mktemp)"
+metadata_key_list="$(mktemp)"
+expected_metadata_key_list="$(mktemp)"
 stage="$(mktemp -d)"
 cleanup()
 {
-	rm -f "$entry_list" "$expected_list"
+	rm -f "$entry_list" "$expected_list" "$metadata_key_list" \
+		"$expected_metadata_key_list"
 	rm -rf "$stage"
 }
 trap cleanup EXIT
@@ -112,6 +129,13 @@ tar -tvzf "$BUNDLE" | awk 'NF == 0 || substr($1, 1, 1) != "-" { exit 1 }' || \
 	die 'archive contains a non-regular member'
 
 tar -xzf "$BUNDLE" --no-same-owner --no-same-permissions -C "$stage"
+
+awk -F= 'NF < 2 || $1 !~ /^[a-z0-9_]+$/ { exit 1 } { print $1 }' \
+	"$stage/build-metadata.txt" | LC_ALL=C sort > "$metadata_key_list" || \
+	die 'build metadata contains a malformed record'
+printf '%s\n' "${expected_metadata_keys[@]}" | LC_ALL=C sort > "$expected_metadata_key_list"
+cmp -s "$expected_metadata_key_list" "$metadata_key_list" || \
+	die 'build metadata does not match the fixed schema'
 
 manifest_names="$(awk '{print $2}' "$stage/manifest.sha256")"
 expected_manifest_names="$(printf '%s\n' effective.config build-metadata.txt build.log Image.sha256)"

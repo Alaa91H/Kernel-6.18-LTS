@@ -137,6 +137,30 @@ repack "$metadata"
 expect_reject 'metadata configuration checksum mismatch' \
 	"$metadata/$archive_name" "$metadata/$checksum_name"
 
+unknown_metadata="$work/unknown-metadata"
+extract_bundle "$unknown_metadata"
+printf 'unreviewed_key=value\n' >> "$unknown_metadata/stage/build-metadata.txt"
+(
+	cd "$unknown_metadata/stage"
+	sha256sum effective.config build-metadata.txt build.log Image.sha256 > manifest.sha256
+)
+repack "$unknown_metadata"
+expect_reject_with_message 'unexpected metadata key' \
+	'build metadata does not match the fixed schema' \
+	"$unknown_metadata/$archive_name" "$unknown_metadata/$checksum_name"
+
+duplicate_metadata="$work/duplicate-metadata"
+extract_bundle "$duplicate_metadata"
+printf 'source_dirty=false\n' >> "$duplicate_metadata/stage/build-metadata.txt"
+(
+	cd "$duplicate_metadata/stage"
+	sha256sum effective.config build-metadata.txt build.log Image.sha256 > manifest.sha256
+)
+repack "$duplicate_metadata"
+expect_reject_with_message 'duplicate metadata key' \
+	'build metadata does not match the fixed schema' \
+	"$duplicate_metadata/$archive_name" "$duplicate_metadata/$checksum_name"
+
 dirty="$work/dirty"
 extract_bundle "$dirty"
 sed -i 's/^source_dirty=false$/source_dirty=true/' "$dirty/stage/build-metadata.txt"

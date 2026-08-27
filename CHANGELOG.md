@@ -4,6 +4,26 @@ All notable changes to the **Kernel-6.18-LTS marble prototype** are documented i
 
 > Release artifacts from this repository are **not flash-ready** unless a future release explicitly provides independently reviewed device-validation evidence, a compatible ROM/vendor contract, and a recovery plan.
 
+## [marble-6.18.32-r5] — 2026-08-27
+
+### Added
+
+| Area | Change |
+|---|---|
+| Offline evidence verifier | Added `tools/verify_marble_gki_evidence.sh`, a network-independent verifier for the non-flashable evidence archive. It checks the external checksum, fixed archive layout, internal manifest, required configuration policy, safety scope, source-commit format, and configuration/image-hash consistency. |
+| Consumer assurance | The verifier uses a clean temporary extraction directory and accepts a user-supplied archive/checksum pair, allowing the release asset to be checked before inspection without relying on CI logs. |
+
+### Changed
+
+| Area | Change |
+|---|---|
+| CI evidence gate | CI now validates the generated evidence archive immediately after it is created and before the release-tag attestation and artifact upload steps. |
+| Verification model | The project now documents two independent layers: the offline archive-content verifier and GitHub attestation verification for build provenance. An attestation provides provenance information but is not a security or device-compatibility guarantee. [2] |
+
+### Validation boundary
+
+r5 verifies only the consistency and provenance of **non-flashable source-build evidence**. It does not validate a kernel image against the bundled checksum because the image is intentionally excluded. It does not establish bootability, ROM/KMI/vendor-module compatibility, AVB/boot-chain acceptance, firmware availability, or hardware functionality.
+
 ## [marble-6.18.32-r4] — 2026-08-27
 
 ### Fixed

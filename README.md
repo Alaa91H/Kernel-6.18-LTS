@@ -8,9 +8,9 @@ This repository tracks a **host-side Android Common Kernel / Generic Kernel Imag
 
 | Capability | Current evidence | Release claim permitted |
 |---|---|---|
-| ARM64 `Image` source build | Validated by the local helper and the r3 CI workflow | A source-build artifact can be reproduced under the recorded toolchain conditions. |
+| ARM64 `Image` source build | Validated by the local helper and the r5 CI workflow | A source-build artifact can be reproduced under the recorded toolchain conditions. |
 | Configuration intent | The upstream arm64 `gki_defconfig` is materialized by CI; the prototype fragment is checked after `olddefconfig` | The generic-GKI facilities in the fragment are enabled as requested; this is not a full Android compatibility matrix. |
-| Artifact provenance | SHA-256, source revision, tree state, config hash, compiler line, module and DTB counts; tag builds add a signed evidence attestation | The evidence archive can be traced to a particular CI workflow and source state. An attestation is provenance evidence, not a security or device-compatibility certification. [4] |
+| Evidence integrity and provenance | The evidence archive is checked offline for fixed layout, external checksum, internal manifest, configuration policy, metadata consistency, and safety scope; tag builds add a signed attestation | Content integrity can be checked before inspection; the evidence archive can be traced to a particular CI workflow and source state. An attestation is provenance evidence, not a security or device-compatibility certification. [4] |
 | Runtime testing | Not performed | No boot, peripheral, suspend/resume, thermal, modem, GPU, camera, display, audio, Wi-Fi, Bluetooth, or storage-functional claim is allowed. |
 | Device integration | Not available | No `boot.img`, `vendor_boot.img`, DTBO package, recovery package, root integration, flashing ZIP, or firmware bundle is provided. |
 | Vendor and KMI compatibility | Not established | Existing vendor modules and ROM partitions must not be reused or assumed compatible. |
@@ -29,18 +29,22 @@ For recent Android common kernels, AOSP documents Bazel/Kleaf as the standard GK
 
 ## CI contract
 
-The r3 workflow runs on pull requests, pushes to `main`, matching `marble-*` tags, and manual dispatch. It validates shell syntax and whitespace, applies checkpatch when C or header changes are present, materializes the upstream arm64 `gki_defconfig`, builds the full prototype, and verifies its output integrity. This is a deliberately smaller gate than the full multi-architecture ACK matrix; it is a project-level regression guard rather than proof of platform compatibility. [2]
+The r5 workflow runs on pull requests, pushes to `main`, matching `marble-*` tags, and manual dispatch. It validates shell syntax and whitespace, applies checkpatch when C or header changes are present, materializes the upstream arm64 `gki_defconfig`, builds the full prototype, creates the evidence archive, and verifies that archive before attestation or upload. This is a deliberately smaller gate than the full multi-architecture ACK matrix; it is a project-level regression guard rather than proof of platform compatibility. [2]
 
-Every successful build produces a non-flashable evidence archive containing only the effective configuration, normalized build metadata, build log, image checksum, and a checksummed manifest. It deliberately excludes the kernel image, modules, boot images, vendor artifacts, and flashing packages. For a matching release tag, CI creates a signed attestation for the evidence archive.
+Every successful build produces a non-flashable evidence archive containing only the effective configuration, normalized build metadata, build log, image checksum, and a checksummed manifest. It deliberately excludes the kernel image, modules, boot images, vendor artifacts, and flashing packages. `tools/verify_marble_gki_evidence.sh` enforces this fixed layout and cross-checks the archive’s checksums, configuration policy, recorded commit format, and metadata. For a matching release tag, CI creates a signed attestation for the evidence archive.
 
-After downloading the evidence archive for a release, consumers can verify its provenance with:
+After downloading the archive and its `.sha256` companion into the same directory, clone the tagged source and perform both checks in order:
 
 ```bash
+sha256sum -c marble-gki-source-build-evidence.tar.gz.sha256
+./tools/verify_marble_gki_evidence.sh \
+  marble-gki-source-build-evidence.tar.gz \
+  marble-gki-source-build-evidence.tar.gz.sha256
 gh attestation verify marble-gki-source-build-evidence.tar.gz \
   --repo Alaa91H/Kernel-6.18-LTS
 ```
 
-GitHub recommends least-privilege workflow tokens, avoiding privileged PR triggers for untrusted code, and full commit-SHA pins for third-party actions. [3] Artifact attestations cryptographically bind an artifact to a workflow and source context, but must be evaluated against an appropriate consumer policy; they are not evidence that an artifact is secure. [4]
+The first two commands validate archive content and recorded evidence without network access. The third command verifies build provenance through GitHub. GitHub recommends least-privilege workflow tokens, avoiding privileged PR triggers for untrusted code, and full commit-SHA pins for third-party actions. [3] Artifact attestations cryptographically bind an artifact to a workflow and source context, but must be evaluated against an appropriate consumer policy; they are not evidence that an artifact is secure. [4]
 
 ## Device-acceptance gate
 

@@ -1,8 +1,10 @@
+---
 name: Marble GKI Prototype CI
 
 on:
   push:
     branches: [main]
+    tags: ["marble-*"]
   pull_request:
     branches: [main]
   workflow_dispatch:
@@ -21,7 +23,7 @@ jobs:
     timeout-minutes: 15
     steps:
       - name: Check out source
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09  # v5.0.0
         with:
           fetch-depth: 0
 
@@ -31,6 +33,7 @@ jobs:
           set -euo pipefail
           bash -n build_marble_gki_6_18_proto.sh
           bash -n tools/verify_marble_gki_prototype.sh
+          bash -n tools/create_marble_gki_evidence.sh
           if git rev-parse --verify HEAD^ >/dev/null 2>&1; then
             git diff --check HEAD^..HEAD
           fi
@@ -60,9 +63,13 @@ jobs:
     needs: review
     runs-on: ubuntu-24.04
     timeout-minutes: 90
+    permissions:
+      contents: read
+      id-token: write
+      attestations: write
     steps:
       - name: Check out source
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09  # v5.0.0
         with:
           fetch-depth: 1
 
@@ -75,6 +82,15 @@ jobs:
             bc bison clang cpio flex libdw-dev libelf-dev libncurses-dev \
             libssl-dev llvm lld make pahole
 
+      - name: Validate upstream arm64 GKI configuration
+        shell: bash
+        run: |
+          set -euo pipefail
+          export GKI_OUT="${RUNNER_TEMP}/gki-defconfig"
+          make O="${GKI_OUT}" ARCH=arm64 LLVM=1 LLVM_IAS=1 gki_defconfig
+          test -s "${GKI_OUT}/.config"
+          grep -Fqx 'CONFIG_ARM64=y' "${GKI_OUT}/.config"
+
       - name: Build the non-flashable prototype
         shell: bash
         run: |
@@ -84,14 +100,32 @@ jobs:
           ./build_marble_gki_6_18_proto.sh | tee "${RUNNER_TEMP}/marble-gki-build.log"
           sha256sum "${OUT_DIR}/arch/arm64/boot/Image" > "${RUNNER_TEMP}/Image.sha256"
 
+      - name: Create non-flashable build evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          export OUT_DIR="${RUNNER_TEMP}/marble-gki-prototype"
+          export EVIDENCE_DIR="${RUNNER_TEMP}/marble-gki-evidence"
+          export BUILD_LOG="${RUNNER_TEMP}/marble-gki-build.log"
+          ./tools/create_marble_gki_evidence.sh
+
+      - name: Attest release evidence
+        if: startsWith(github.ref, 'refs/tags/marble-')
+        uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6  # v4.2.2
+        with:
+          subject-path: "${{ runner.temp }}/marble-gki-evidence/marble-gki-source-build-evidence.tar.gz"
+
       - name: Upload source-build evidence
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02  # v4.6.2
         with:
           name: marble-gki-prototype-${{ github.sha }}
           if-no-files-found: error
           retention-days: 7
           path: |
+            ${{ runner.temp }}/gki-defconfig/.config
             ${{ runner.temp }}/marble-gki-prototype/.config
             ${{ runner.temp }}/marble-gki-prototype/build-metadata.txt
             ${{ runner.temp }}/marble-gki-build.log
             ${{ runner.temp }}/Image.sha256
+            ${{ runner.temp }}/marble-gki-evidence/marble-gki-source-build-evidence.tar.gz
+            ${{ runner.temp }}/marble-gki-evidence/marble-gki-source-build-evidence.tar.gz.sha256

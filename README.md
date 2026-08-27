@@ -8,9 +8,9 @@ This repository tracks a **host-side Android Common Kernel / Generic Kernel Imag
 
 | Capability | Current evidence | Release claim permitted |
 |---|---|---|
-| ARM64 `Image` source build | Validated by the local helper and the r2 CI workflow | A source-build artifact can be reproduced under the recorded toolchain conditions. |
-| Configuration intent | Checked against the merged `.config` after `olddefconfig` | The generic-GKI facilities in the fragment are enabled as requested. |
-| Artifact provenance | SHA-256, source revision, tree state, config hash, compiler line, module and DTB counts | Build outputs can be traced to a particular source state and configuration. |
+| ARM64 `Image` source build | Validated by the local helper and the r3 CI workflow | A source-build artifact can be reproduced under the recorded toolchain conditions. |
+| Configuration intent | The upstream arm64 `gki_defconfig` is materialized by CI; the prototype fragment is checked after `olddefconfig` | The generic-GKI facilities in the fragment are enabled as requested; this is not a full Android compatibility matrix. |
+| Artifact provenance | SHA-256, source revision, tree state, config hash, compiler line, module and DTB counts; tag builds add a signed evidence attestation | The evidence archive can be traced to a particular CI workflow and source state. An attestation is provenance evidence, not a security or device-compatibility certification. [4] |
 | Runtime testing | Not performed | No boot, peripheral, suspend/resume, thermal, modem, GPU, camera, display, audio, Wi-Fi, Bluetooth, or storage-functional claim is allowed. |
 | Device integration | Not available | No `boot.img`, `vendor_boot.img`, DTBO package, recovery package, root integration, flashing ZIP, or firmware bundle is provided. |
 | Vendor and KMI compatibility | Not established | Existing vendor modules and ROM partitions must not be reused or assumed compatible. |
@@ -29,9 +29,18 @@ For recent Android common kernels, AOSP documents Bazel/Kleaf as the standard GK
 
 ## CI contract
 
-The r2 workflow runs on pull requests, pushes to `main`, and manual dispatch. It verifies scripts, config intent, changed-commit patch style, the full prototype build, and output integrity. Its uploaded artifact contains only metadata, checksums, the merged `.config`, and verification output. It deliberately does not publish packaging or flashing artifacts.
+The r3 workflow runs on pull requests, pushes to `main`, matching `marble-*` tags, and manual dispatch. It validates shell syntax and whitespace, applies checkpatch when C or header changes are present, materializes the upstream arm64 `gki_defconfig`, builds the full prototype, and verifies its output integrity. This is a deliberately smaller gate than the full multi-architecture ACK matrix; it is a project-level regression guard rather than proof of platform compatibility. [2]
 
-GitHub recommends least-privilege workflow tokens, avoiding privileged PR triggers for untrusted code, and full commit-SHA pins for third-party actions. [3]
+Every successful build produces a non-flashable evidence archive containing only the effective configuration, normalized build metadata, build log, image checksum, and a checksummed manifest. It deliberately excludes the kernel image, modules, boot images, vendor artifacts, and flashing packages. For a matching release tag, CI creates a signed attestation for the evidence archive.
+
+After downloading the evidence archive for a release, consumers can verify its provenance with:
+
+```bash
+gh attestation verify marble-gki-source-build-evidence.tar.gz \
+  --repo Alaa91H/Kernel-6.18-LTS
+```
+
+GitHub recommends least-privilege workflow tokens, avoiding privileged PR triggers for untrusted code, and full commit-SHA pins for third-party actions. [3] Artifact attestations cryptographically bind an artifact to a workflow and source context, but must be evaluated against an appropriate consumer policy; they are not evidence that an artifact is secure. [4]
 
 ## Device-acceptance gate
 
@@ -52,3 +61,4 @@ A future device-focused release requires evidence for every item below before th
 [1]: https://source.android.com/docs/setup/build/building-kernels "Android Open Source Project — Build kernels"
 [2]: https://android.googlesource.com/kernel/build/+/master/kleaf/ "AOSP Kleaf — Building Android Kernels with Bazel"
 [3]: https://docs.github.com/en/actions/reference/security/secure-use "GitHub Docs — Secure use reference"
+[4]: https://docs.github.com/en/actions/concepts/security/artifact-attestations "GitHub Docs — Artifact attestations"

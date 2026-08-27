@@ -4,6 +4,35 @@ All notable changes to the **Kernel-6.18-LTS marble prototype** are documented i
 
 > Release artifacts from this repository are **not flash-ready** unless a future release explicitly provides independently reviewed device-validation evidence, a compatible ROM/vendor contract, and a recovery plan.
 
+## [marble-6.18.32-r3] — 2026-08-27
+
+### Added
+
+| Area | Change |
+|---|---|
+| ACK-aligned configuration gate | CI now materializes the upstream arm64 `gki_defconfig` and asserts that a valid arm64 configuration is generated before running the prototype build. This adds a low-cost guard aligned with Android Common Kernel patch expectations. [1] |
+| Portable build evidence | Added `tools/create_marble_gki_evidence.sh`, which creates a normalized, checksum-protected archive containing the effective configuration, build metadata, build log, image hash, and manifest. It deliberately excludes the kernel image, modules, boot images, and device artifacts. |
+| Release provenance | Builds triggered by `marble-*` tags now generate a signed GitHub artifact attestation for the evidence archive. The attestation binds the archive to its workflow, source revision, and build context; it does not certify security or device compatibility. [2] |
+
+### Changed
+
+| Area | Change |
+|---|---|
+| Continuous integration | The workflow now runs for protected release tags as well as pull requests, main-branch pushes, and manual dispatch. Release-tag runs retain the same build and verification gates before signing evidence. |
+| Action runtime | Updated the checkout action to a commit-pinned v5 reference, removing the prior Node.js 20 deprecation annotation while retaining immutable action pinning. |
+| Validation boundary | r3 distinguishes evidence integrity from software or hardware quality: a successful attestation verifies provenance for the evidence archive, not a flash image or a POCO F5 hardware result. |
+
+### Fixed
+
+| Area | Correction |
+|---|---|
+| Supply-chain auditability | Consumers no longer need to rely solely on mutable CI logs for release evidence. The new archive has deterministic tar metadata, an internal manifest, an external checksum file, and a release-tag attestation. |
+| Early failure detection | A malformed or unsupported arm64 GKI base configuration now fails before the expensive prototype build begins. |
+
+### Validation boundary
+
+r3 still does **not** provide a flashable kernel. The release output is limited to signed source-build evidence and validation metadata. It does not establish Marble bootability, KMI/vendor-module compatibility, AVB/boot-chain acceptance, firmware availability, ROM compatibility, thermals, radios, cameras, storage, charging, or recovery behaviour.
+
 ## [marble-6.18.32-r2] — 2026-08-27
 
 ### Added
@@ -32,7 +61,7 @@ All notable changes to the **Kernel-6.18-LTS marble prototype** are documented i
 
 ### Security
 
-The workflow uses the minimum `contents: read` token permission, avoids privileged pull-request triggers and secrets, and pins every external action to a full commit SHA. GitHub identifies full-SHA pinning as the immutable option for actions. [1]
+The workflow uses the minimum `contents: read` token permission, avoids privileged pull-request triggers and secrets, and pins every external action to a full commit SHA. GitHub identifies full-SHA pinning as the immutable option for actions. [3]
 
 ### Validation boundary
 
@@ -44,4 +73,6 @@ The initial pre-release published a static-verification ARM64 `Image` with check
 
 ## References
 
-[1]: https://docs.github.com/en/actions/reference/security/secure-use "GitHub Docs — Secure use reference"
+[1]: https://android.googlesource.com/kernel/common/ "Android Common Kernel — patch requirements"
+[2]: https://docs.github.com/en/actions/concepts/security/artifact-attestations "GitHub Docs — Artifact attestations"
+[3]: https://docs.github.com/en/actions/reference/security/secure-use "GitHub Docs — Secure use reference"

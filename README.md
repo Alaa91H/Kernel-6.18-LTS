@@ -29,22 +29,22 @@ For recent Android common kernels, AOSP documents Bazel/Kleaf as the standard GK
 
 ## CI contract
 
-The r7 workflow runs on pull requests, pushes to `main`, matching `marble-*` tags, and manual dispatch. It validates shell syntax and whitespace, exercises deterministic positive and negative self-tests for the evidence verifier, applies checkpatch when C or header changes are present, materializes the upstream arm64 `gki_defconfig`, builds the full prototype, creates the evidence archive, and verifies that archive before attestation or upload. The self-test proves only that controlled malformed evidence is rejected, including a checksum-valid archive that substitutes a symbolic link for an expected member; it contains no kernel image and does not replace reproducibility, provenance, or device validation. This is a deliberately smaller gate than the full multi-architecture ACK matrix; it is a project-level regression guard rather than proof of platform compatibility. [2]
+The r8 workflow runs on pull requests, pushes to `main`, matching `marble-*` tags, and manual dispatch. It validates shell syntax and whitespace, exercises deterministic positive and negative self-tests for the evidence verifier, applies checkpatch when C or header changes are present, materializes the upstream arm64 `gki_defconfig`, builds the full prototype, creates the evidence archive, and verifies that archive before attestation or upload. A matching release tag additionally requires evidence metadata to record `source_dirty=false` before CI attests the archive. The self-test proves only that controlled malformed evidence is rejected, including a checksum-valid archive that substitutes a symbolic link for an expected member and a consistent fixture that records a dirty source tree; it contains no kernel image and does not replace reproducibility, provenance, or device validation. This is a deliberately smaller gate than the full multi-architecture ACK matrix; it is a project-level regression guard rather than proof of platform compatibility. [2]
 
-Every successful build produces a non-flashable evidence archive containing only the effective configuration, normalized build metadata, build log, image checksum, and a checksummed manifest. It deliberately excludes the kernel image, modules, boot images, vendor artifacts, and flashing packages. `tools/verify_marble_gki_evidence.sh` accepts only the five expected regular files, then cross-checks the archive’s checksums, configuration policy, recorded commit format, and metadata. For a matching release tag, CI creates a signed attestation for the evidence archive.
+Every successful build produces a non-flashable evidence archive containing only the effective configuration, normalized build metadata, build log, image checksum, and a checksummed manifest. It deliberately excludes the kernel image, modules, boot images, vendor artifacts, and flashing packages. `tools/verify_marble_gki_evidence.sh` accepts only the five expected regular files, then cross-checks the archive’s checksums, configuration policy, recorded commit format, and metadata. Its `--require-clean-source` mode additionally requires `source_dirty=false`; CI uses that mode before it attests matching release tags.
 
 After downloading the archive and its `.sha256` companion into the same directory, clone the tagged source and perform both checks in order:
 
 ```bash
 sha256sum -c marble-gki-source-build-evidence.tar.gz.sha256
-./tools/verify_marble_gki_evidence.sh \
+./tools/verify_marble_gki_evidence.sh --require-clean-source \
   marble-gki-source-build-evidence.tar.gz \
   marble-gki-source-build-evidence.tar.gz.sha256
 gh attestation verify marble-gki-source-build-evidence.tar.gz \
   --repo Alaa91H/Kernel-6.18-LTS
 ```
 
-The first two commands validate archive content and recorded evidence without network access. The third command verifies build provenance through GitHub. GitHub recommends least-privilege workflow tokens, avoiding privileged PR triggers for untrusted code, and full commit-SHA pins for third-party actions. [3] Artifact attestations cryptographically bind an artifact to a workflow and source context, but must be evaluated against an appropriate consumer policy; they are not evidence that an artifact is secure. [4]
+The first two commands validate archive content and recorded evidence without network access; the release-mode option requires the archive to record a clean source tree. The third command verifies build provenance through GitHub. GitHub recommends least-privilege workflow tokens, avoiding privileged PR triggers for untrusted code, and full commit-SHA pins for third-party actions. [3] Artifact attestations cryptographically bind an artifact to a workflow and source context, but must be evaluated against an appropriate consumer policy; they are not evidence that an artifact is secure. [4]
 
 ## Device-acceptance gate
 

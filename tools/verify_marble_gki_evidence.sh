@@ -8,8 +8,36 @@
 # device bootability, KMI compatibility, ROM compatibility, or hardware support.
 set -euo pipefail
 
+require_clean_source=false
+
+usage()
+{
+	printf 'Usage: %s [--require-clean-source] <evidence.tar.gz> [evidence.tar.gz.sha256]\n' "$0" >&2
+	exit 2
+}
+
+while (($# > 0)); do
+	case "$1" in
+		--require-clean-source)
+			require_clean_source=true
+			shift
+			;;
+		--)
+			shift
+			break
+			;;
+		-*)
+			usage
+			;;
+		*)
+			break
+			;;
+	esac
+done
+
 BUNDLE="${1:-}"
 CHECKSUM="${2:-}"
+[[ $# -le 2 ]] || usage
 
 required_symbols=(
 	CONFIG_SERIAL_QCOM_GENI
@@ -29,12 +57,6 @@ expected_entries=(
 	Image.sha256
 	manifest.sha256
 )
-
-usage()
-{
-	printf 'Usage: %s <evidence.tar.gz> [evidence.tar.gz.sha256]\n' "$0" >&2
-	exit 2
-}
 
 die()
 {
@@ -124,6 +146,9 @@ image_record_hash="$(awk 'NR == 1 { print $1 }' "$stage/Image.sha256")"
 [[ "$recorded_commit" =~ ^[0-9a-f]{40}$ ]] || die 'build metadata has a malformed source commit'
 [[ "$recorded_dirty" == true || "$recorded_dirty" == false ]] || \
 	die 'build metadata has a malformed source-dirty value'
+if [[ "$require_clean_source" == true && "$recorded_dirty" != false ]]; then
+	die 'build metadata records a dirty source tree'
+fi
 [[ "$recorded_config_hash" =~ ^[0-9a-f]{64}$ ]] || \
 	die 'build metadata has a malformed configuration SHA-256'
 [[ "$recorded_image_hash" =~ ^[0-9a-f]{64}$ ]] || \

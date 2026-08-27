@@ -115,9 +115,13 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          ./tools/verify_marble_gki_evidence.sh \
-            "${RUNNER_TEMP}/marble-gki-evidence/marble-gki-source-build-evidence.tar.gz" \
-            "${RUNNER_TEMP}/marble-gki-evidence/marble-gki-source-build-evidence.tar.gz.sha256"
+          evidence="${RUNNER_TEMP}/marble-gki-evidence/marble-gki-source-build-evidence.tar.gz"
+          checksum="${evidence}.sha256"
+          if [[ "${GITHUB_REF}" == refs/tags/marble-* ]]; then
+            ./tools/verify_marble_gki_evidence.sh --require-clean-source "$evidence" "$checksum"
+          else
+            ./tools/verify_marble_gki_evidence.sh "$evidence" "$checksum"
+          fi
 
       - name: Run evidence-verifier negative tests
         shell: bash

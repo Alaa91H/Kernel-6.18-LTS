@@ -91,6 +91,8 @@ extract_bundle()
 
 "$VERIFIER" "$BUNDLE" "$CHECKSUM" >/dev/null
 printf 'Accepted valid evidence bundle.\n'
+"$VERIFIER" --require-clean-source "$BUNDLE" "$CHECKSUM" >/dev/null
+printf 'Accepted valid evidence bundle in clean-source mode.\n'
 
 corrupt="$work/corrupt"
 mkdir -p "$corrupt"
@@ -134,5 +136,17 @@ sed -i 's/^config_sha256=.*/config_sha256=00000000000000000000000000000000000000
 repack "$metadata"
 expect_reject 'metadata configuration checksum mismatch' \
 	"$metadata/$archive_name" "$metadata/$checksum_name"
+
+dirty="$work/dirty"
+extract_bundle "$dirty"
+sed -i 's/^source_dirty=false$/source_dirty=true/' "$dirty/stage/build-metadata.txt"
+(
+	cd "$dirty/stage"
+	sha256sum effective.config build-metadata.txt build.log Image.sha256 > manifest.sha256
+)
+repack "$dirty"
+expect_reject_with_message 'dirty source in clean-source mode' \
+	'build metadata records a dirty source tree' --require-clean-source \
+	"$dirty/$archive_name" "$dirty/$checksum_name"
 
 printf 'Evidence verifier self-test passed.\n'

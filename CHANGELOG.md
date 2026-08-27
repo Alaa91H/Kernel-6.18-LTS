@@ -4,6 +4,26 @@ All notable changes to the **Kernel-6.18-LTS marble prototype** are documented i
 
 > Release artifacts from this repository are **not flash-ready** unless a future release explicitly provides independently reviewed device-validation evidence, a compatible ROM/vendor contract, and a recovery plan.
 
+## [marble-6.18.32-r8] — 2026-08-27
+
+### Added
+
+| Area | Change |
+|---|---|
+| Clean-source release policy | Added `--require-clean-source` to `tools/verify_marble_gki_evidence.sh`. The explicit mode rejects otherwise valid evidence when its recorded `source_dirty` value is not `false`. Default verification remains available for local diagnostic evidence. |
+| Negative verifier coverage | The self-test now proves that clean CI evidence is accepted in clean-source mode and that a checksum-valid, internally consistent fixture recording `source_dirty=true` is rejected specifically by that policy. |
+
+### Changed
+
+| Area | Change |
+|---|---|
+| Tag CI gate | Matching `marble-*` tag builds invoke the verifier’s clean-source mode before evidence attestation. This makes the recorded clean-source policy part of the release-time content check as well as the provenance workflow. |
+| Consumer verification | The documented release verification command now invokes `--require-clean-source` before `gh attestation verify`. |
+
+### Validation boundary
+
+`source_dirty=false` is a narrow build-record policy, not proof that a revision is trustworthy, reproducible, secure, reviewed, device-compatible, or flash-safe. It does not establish a Marble Device Tree/driver port, vendor or vendor-DLKM compatibility, KMI/ABI compatibility, firmware availability, a boot/recovery contract, bootability, or hardware functionality. The device-source admission requirements remain in `DEVICE_ENABLEMENT_SOURCES.md`. [2]
+
 ## [marble-6.18.32-r7] — 2026-08-27
 
 ### Added
